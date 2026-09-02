@@ -13,6 +13,7 @@ interface ResultShareActionsProps {
   thresholdPercent: number
   resultTitle: string
   shareText: string
+  shareTitle?: string
 }
 
 export default function ResultShareActions({
@@ -20,6 +21,7 @@ export default function ResultShareActions({
   thresholdPercent,
   resultTitle,
   shareText,
+  shareTitle = '테스트 결과',
 }: ResultShareActionsProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -57,7 +59,7 @@ export default function ResultShareActions({
 
       const filename = buildResultFilename(thresholdPercent, resultTitle)
       const shared = await shareImage(blob, filename, {
-        title: '나의 퇴사 임계점 테스트 결과',
+        title: shareTitle,
         text: shareText,
       })
 

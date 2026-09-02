@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom'
-import PageMeta from '../components/PageMeta'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
@@ -11,10 +10,6 @@ export default function TestList() {
 
   return (
     <PageLayout backTo="/" backLabel="홈">
-      <PageMeta
-        title="테스트 목록 | Simply Test"
-        description="Simply Test에서 진행 중인 심리 테스트 목록을 확인해보세요."
-      />
       <header className="mb-6 text-center">
         <p className="mb-2 text-3xl">📋</p>
         <h1 className={ui.pageTitle}>테스트 목록</h1>
@@ -26,7 +21,7 @@ export default function TestList() {
           <Link key={test.id} to={`/tests/${test.id}`} className="block wiggle-hover">
             <StickerCard className="flex items-center gap-3 !p-4">
               <img
-                src={pixelCharacterPath('steel')}
+                src={pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')}
                 alt=""
                 className="pixel-img h-14 w-14 shrink-0 object-contain"
               />

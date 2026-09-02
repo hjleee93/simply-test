@@ -1,3 +1,7 @@
+export type Gender = 'male' | 'female'
+
+export type TestScoringMode = 'category' | 'simple'
+
 export type ScoreCategory =
   | 'work'
   | 'money'
@@ -10,7 +14,8 @@ export type ScoreMap = Partial<Record<ScoreCategory, number>>
 export type Answer = {
   id: string
   text: string
-  scores: ScoreMap
+  scores?: ScoreMap
+  score?: number
 }
 
 export type Question = {
@@ -37,11 +42,16 @@ export type TestDefinition = {
   description: string
   questions: Question[]
   results: TestResult[]
+  scoringMode?: TestScoringMode
+  requiresGender?: boolean
+  thumbnailCharacter?: string
+  resultLabel?: string
 }
 
 export type SelectedAnswer = {
   answerId: string
-  scores: ScoreMap
+  scores?: ScoreMap
+  score?: number
 }
 
 export type TestAnswers = Record<number, SelectedAnswer>

@@ -1,4 +1,6 @@
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
+import { useLocation } from 'react-router-dom'
+import { getRouteMeta } from '../lib/routeMeta'
 import { DEFAULT_OG, SITE_NAME, toAbsoluteUrl } from '../lib/site'
 
 export interface PageMetaProps {
@@ -33,7 +35,7 @@ export default function PageMeta({
   url,
   type = DEFAULT_OG.type,
 }: PageMetaProps) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     const pageUrl = url ?? (typeof window !== 'undefined' ? window.location.href : '')
     const imageUrl = toAbsoluteUrl(imagePath)
 
@@ -55,4 +57,13 @@ export default function PageMeta({
   }, [title, description, imagePath, url, type])
 
   return null
+}
+
+export function RoutePageMeta() {
+  const { pathname } = useLocation()
+  const meta = getRouteMeta(pathname)
+
+  return (
+    <PageMeta title={meta.title} description={meta.description} type={meta.type} />
+  )
 }

@@ -1,25 +1,24 @@
-import { useRef, type ReactNode } from 'react'
+import { useRef } from 'react'
 import { cn } from '../lib/cn'
-import type { ResultInsights } from '../lib/resultInsights'
+import type { GenderInsight } from '../lib/gender'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
-import { CategoryBarList } from './CategoryBar'
+import Logo from './Logo'
 import ResultCharacter from './ResultCharacter'
 import ResultShareActions from './ResultShareActions'
-import Logo from './Logo'
 import StickerCard from './StickerCard'
 
-interface ResultCardProps {
+interface GenderResultCardProps {
   result: TestResult
   thresholdPercent: number
-  insights: ResultInsights
+  insights: GenderInsight
   testTitle: string
-  resultLabel?: string
+  resultLabel: string
   onRetry: () => void
   onHome: () => void
 }
 
-function SectionTitle({ emoji, children }: { emoji: string; children: ReactNode }) {
+function SectionTitle({ emoji, children }: { emoji: string; children: string }) {
   return (
     <h3 className="mb-3 text-[15px] font-extrabold text-ink">
       {emoji} {children}
@@ -27,17 +26,17 @@ function SectionTitle({ emoji, children }: { emoji: string; children: ReactNode 
   )
 }
 
-export default function ResultCard({
+export default function GenderResultCard({
   result,
   thresholdPercent,
   insights,
   testTitle,
-  resultLabel = '퇴사 임계점',
+  resultLabel,
   onRetry,
   onHome,
-}: ResultCardProps) {
+}: GenderResultCardProps) {
   const shareRef = useRef<HTMLDivElement>(null)
-  const shareText = `${resultLabel} ${thresholdPercent}% · ${result.title} (${insights.subtype})`
+  const shareText = `${resultLabel} ${thresholdPercent}% · ${result.title} (${result.keyword})`
 
   return (
     <div>
@@ -54,7 +53,7 @@ export default function ResultCard({
           </p>
           <p className="mt-3 text-lg font-extrabold text-ink">{result.title}</p>
           <span className="mt-2 inline-block rounded-md border-2 border-ink bg-lemon px-3 py-1 text-sm font-bold text-ink">
-            {insights.subtype}
+            {result.keyword}
           </span>
         </section>
 
@@ -66,37 +65,32 @@ export default function ResultCard({
 
         <StickerCard className="mb-4">
           <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">
-            {insights.summary}
+            {result.description}
           </p>
         </StickerCard>
 
         <section className="mb-4">
-          <SectionTitle emoji="💣">당신을 퇴사하게 만드는 것</SectionTitle>
-          <StickerCard>
-            <CategoryBarList items={insights.categories} />
-          </StickerCard>
-        </section>
-
-        <section className="mb-4">
-          <SectionTitle emoji="🚨">당신의 퇴사 버튼</SectionTitle>
+          <SectionTitle emoji="📡">이성 레이더 상태</SectionTitle>
           <StickerCard soft className="text-center">
-            <p className="whitespace-pre-line text-[15px] font-extrabold leading-relaxed text-ink">
-              "{insights.resignButton}"
+            <p className="text-[15px] font-extrabold leading-relaxed text-ink">
+              {insights.radarLevel}
             </p>
           </StickerCard>
         </section>
 
         <section className="mb-4">
-          <SectionTitle emoji="💼">당신에게 필요한 회사</SectionTitle>
+          <SectionTitle emoji="👯">친구 반응 예상</SectionTitle>
+          <StickerCard soft className="text-center">
+            <p className="text-[15px] font-extrabold leading-relaxed text-ink">
+              {insights.friendReaction}
+            </p>
+          </StickerCard>
+        </section>
+
+        <section className="mb-4">
+          <SectionTitle emoji="💡">한마디 조언</SectionTitle>
           <StickerCard>
-            <ul className="space-y-2">
-              {insights.companyNeeds.map((need) => (
-                <li key={need} className="flex gap-2 text-[15px] leading-snug text-ink">
-                  <span className="font-extrabold text-accent">✓</span>
-                  <span>{need}</span>
-                </li>
-              ))}
-            </ul>
+            <p className="text-[15px] leading-relaxed text-ink">{insights.tip}</p>
           </StickerCard>
         </section>
 

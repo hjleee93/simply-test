@@ -1,4 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { RoutePageMeta } from './components/PageMeta'
 import Main from './pages/Main'
 import Result from './pages/Result'
 import Test from './pages/Test'
@@ -8,6 +9,7 @@ import TestList from './pages/TestList'
 export default function App() {
   return (
     <BrowserRouter>
+      <RoutePageMeta />
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/tests" element={<TestList />} />

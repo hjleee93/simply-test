@@ -1,10 +1,16 @@
 import type { Question, TestResult } from '../types/test'
+import og from '../lib/og.json' with { type: 'json' }
+
+const meta = og.tests.find((test) => test.id === 'retirement-threshold')!
 
 // 영역별 문항 수 (1차): work 3 · money 4 · people 4 · growth 4 · workLifeBalance 4
 export const retirementTest = {
-  id: 'retirement-threshold',
-  title: '나의 퇴사 임계점은 몇 %?',
-  description: '나는 회사에서 어디까지 참을 수 있을까?',
+  id: meta.id,
+  title: meta.title,
+  description: meta.description,
+  scoringMode: 'category' as const,
+  thumbnailCharacter: 'steel',
+  resultLabel: '퇴사 임계점',
   questions: [
     {
       id: 1,

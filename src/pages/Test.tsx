@@ -1,20 +1,30 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import GenderSelector from '../components/GenderSelector'
 import PageLayout from '../components/PageLayout'
-import PageMeta from '../components/PageMeta'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
+import type { AnswerSelection } from '../components/Question'
 import { getTest } from '../data'
+import {
+  encodeSessionToSearchParams,
+  saveTestSession,
+  type TestSession,
+} from '../lib/testSession'
 import { ui } from '../lib/ui'
-import type { ScoreMap, TestAnswers } from '../types/test'
+import type { Gender, TestAnswers } from '../types/test'
 
 export default function Test() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const test = slug ? getTest(slug) : undefined
 
+  const [gender, setGender] = useState<Gender | undefined>()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<TestAnswers>({})
+
+  const requiresGender = test?.requiresGender ?? false
+  const showGenderStep = requiresGender && !gender
 
   const currentQuestion = test?.questions[currentIndex]
   const selectedAnswerId = currentQuestion
@@ -23,10 +33,16 @@ export default function Test() {
 
   const progressCurrent = useMemo(() => {
     if (!test) return 0
+    if (showGenderStep) return 0
     return Math.min(currentIndex + 1, test.questions.length)
-  }, [currentIndex, test])
+  }, [currentIndex, showGenderStep, test])
 
-  if (!test || !currentQuestion) {
+  const progressTotal = useMemo(() => {
+    if (!test) return 0
+    return test.questions.length
+  }, [test])
+
+  if (!test || (!showGenderStep && !currentQuestion)) {
     return (
       <PageLayout backTo="/tests" backLabel="목록">
         <div className="flex flex-col items-center gap-4 py-12 text-center">
@@ -40,16 +56,29 @@ export default function Test() {
     )
   }
 
-  const handleSelect = (answerId: string, scores: ScoreMap) => {
+  const handleSelect = (answerId: string, data: AnswerSelection) => {
+    if (!currentQuestion) return
+
     const nextAnswers = {
       ...answers,
-      [currentQuestion.id]: { answerId, scores },
+      [currentQuestion.id]: { answerId, ...data },
     }
     setAnswers(nextAnswers)
 
     const isLast = currentIndex === test.questions.length - 1
     if (isLast) {
-      navigate(`/tests/${test.id}/result`, { state: { answers: nextAnswers } })
+      const session: TestSession = { answers: nextAnswers, gender }
+      saveTestSession(test.id, session)
+
+      const query = encodeSessionToSearchParams(session, test)
+      const resultPath = query
+        ? `/tests/${test.id}/result?${query}`
+        : `/tests/${test.id}/result`
+
+      navigate(resultPath, {
+        state: session,
+        replace: true,
+      })
       return
     }
 
@@ -57,28 +86,43 @@ export default function Test() {
   }
 
   const handlePrev = () => {
-    if (currentIndex === 0) return
+    if (currentIndex === 0) {
+      if (requiresGender) setGender(undefined)
+      return
+    }
     setCurrentIndex((index) => index - 1)
   }
 
   return (
     <PageLayout backTo={`/tests/${test.id}`} backLabel="나가기">
-      <PageMeta
-        title={`${test.title} 진행 중 | Simply Test`}
-        description={test.description}
-      />
       <div className="flex flex-col gap-5">
-        <ProgressBar current={progressCurrent} total={test.questions.length} />
+        <ProgressBar current={progressCurrent} total={progressTotal} />
 
-        <Question
-          question={currentQuestion}
-          selectedAnswerId={selectedAnswerId}
-          onSelect={handleSelect}
-        />
+        {showGenderStep ? (
+          <GenderSelector
+            selected={gender}
+            onSelect={(value) => {
+              setGender(value)
+            }}
+          />
+        ) : (
+          <>
+            <Question
+              question={currentQuestion!}
+              selectedAnswerId={selectedAnswerId}
+              onSelect={handleSelect}
+            />
 
-        <button type="button" className={ui.btnGhost} onClick={handlePrev} disabled={currentIndex === 0}>
-          ← 이전으로
-        </button>
+            <button
+              type="button"
+              className={ui.btnGhost}
+              onClick={handlePrev}
+              disabled={currentIndex === 0 && !requiresGender}
+            >
+              ← 이전으로
+            </button>
+          </>
+        )}
       </div>
     </PageLayout>
   )

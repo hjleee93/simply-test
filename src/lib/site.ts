@@ -1,9 +1,10 @@
-export const SITE_NAME = 'Simply Test'
+import og from './og.json' with { type: 'json' }
+
+export const SITE_NAME = og.siteName
 
 export const DEFAULT_OG = {
-  title: 'Simply Test | 나의 퇴사 임계점은 몇 %?',
-  description:
-    '귀여운 픽셀 캐릭터와 함께하는 심리 테스트. 3분이면 알 수 있는 나의 퇴사 임계점을 확인해보세요.',
+  title: og.home.title,
+  description: og.home.description,
   imagePath: '/og-image.png',
   type: 'website',
   locale: 'ko_KR',

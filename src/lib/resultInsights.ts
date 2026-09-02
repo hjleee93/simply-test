@@ -47,7 +47,7 @@ function calculateCategoryBounds(test: TestDefinition) {
   for (const question of test.questions) {
     for (const category of CATEGORY_ORDER) {
       const categoryScores = question.answers
-        .map((answer) => answer.scores[category])
+        .map((answer) => answer.scores?.[category])
         .filter((score): score is number => score !== undefined)
 
       if (categoryScores.length === 0) continue

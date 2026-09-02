@@ -18,7 +18,7 @@ export function calculateCategoryScores(answers: TestAnswers): Record<ScoreCateg
   }
 
   for (const answer of Object.values(answers)) {
-    for (const [category, score] of Object.entries(answer.scores) as [
+    for (const [category, score] of Object.entries(answer.scores ?? {}) as [
       ScoreCategory,
       number,
     ][]) {
@@ -48,10 +48,19 @@ export function sumScores(scores: ScoreMap): number {
   return Object.values(scores).reduce((sum, value) => sum + (value ?? 0), 0)
 }
 
+export function isSimpleScoring(test: TestDefinition): boolean {
+  return test.scoringMode === 'simple'
+}
+
 export function calculateRawScore(answers: TestAnswers): number {
   return Object.values(answers).reduce((total, answer) => {
-    return total + sumScores(answer.scores)
+    if (answer.score !== undefined) return total + answer.score
+    return total + sumScores(answer.scores ?? {})
   }, 0)
+}
+
+function getRawScore(answers: TestAnswers): number {
+  return calculateRawScore(answers)
 }
 
 export function calculateThresholdPercent(
@@ -70,7 +79,7 @@ export function getResult(
   test: TestDefinition,
   answers: TestAnswers,
 ): TestResult {
-  const rawScore = calculateRawScore(answers)
+  const rawScore = getRawScore(answers)
   const percent = calculateThresholdPercent(rawScore, test.questions.length)
 
   return (
@@ -84,6 +93,6 @@ export function getThresholdPercent(
   test: TestDefinition,
   answers: TestAnswers,
 ): number {
-  const rawScore = calculateRawScore(answers)
+  const rawScore = getRawScore(answers)
   return calculateThresholdPercent(rawScore, test.questions.length)
 }

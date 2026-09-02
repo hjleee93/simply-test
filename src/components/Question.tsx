@@ -2,10 +2,15 @@ import { cn } from '../lib/cn'
 import type { Question as QuestionType, ScoreMap } from '../types/test'
 import StickerCard from './StickerCard'
 
+export type AnswerSelection = {
+  scores?: ScoreMap
+  score?: number
+}
+
 interface QuestionProps {
   question: QuestionType
   selectedAnswerId?: string
-  onSelect: (answerId: string, scores: ScoreMap) => void
+  onSelect: (answerId: string, data: AnswerSelection) => void
 }
 
 export default function Question({
@@ -31,7 +36,14 @@ export default function Question({
                   ? 'border-ink bg-accent text-white'
                   : 'border-ink bg-white hover:bg-cream-dark',
               )}
-              onClick={() => onSelect(answer.id, answer.scores)}
+              onClick={() =>
+                onSelect(
+                  answer.id,
+                  answer.score !== undefined
+                    ? { score: answer.score }
+                    : { scores: answer.scores ?? {} },
+                )
+              }
             >
               {answer.text}
             </button>

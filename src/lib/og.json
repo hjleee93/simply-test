@@ -1,0 +1,23 @@
+{
+  "siteName": "Simply Test",
+  "home": {
+    "title": "Simply Test | 귀여운 심리 테스트 모음",
+    "description": "귀여운 픽셀 캐릭터와 함께하는 심리 테스트. 나도 몰랐던 내 성향을 확인해보세요."
+  },
+  "list": {
+    "title": "테스트 목록 | Simply Test",
+    "description": "Simply Test에서 진행 중인 심리 테스트 목록을 확인해보세요."
+  },
+  "tests": [
+    {
+      "id": "retirement-threshold",
+      "title": "나의 퇴사 임계점은 몇 %?",
+      "description": "나는 회사에서 어디까지 참을 수 있을까?"
+    },
+    {
+      "id": "gender-fanatic-test",
+      "title": "나 혹시 남미새/여미새인가?",
+      "description": "이성에 진심인 정도를 100%로 측정해드립니다."
+    }
+  ]
+}
