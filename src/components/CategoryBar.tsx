@@ -6,7 +6,7 @@ interface CategoryBarProps {
 }
 
 export default function CategoryBar({ item }: CategoryBarProps) {
-  const filled = Math.round(item.percent / 10)
+  const filled = Math.min(10, Math.max(0, Math.round(item.percent / 10)))
   const empty = 10 - filled
 
   return (

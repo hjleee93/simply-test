@@ -56,21 +56,30 @@ export default function Main() {
 
       <section>
         <h2 className="mb-3 text-center text-sm font-extrabold text-muted">이런 분께 딱이에요</h2>
-        <div className="space-y-3">
+        <StickerCard className="!p-0 border-dashed border-lilac bg-lilac-soft">
           {[
             { emoji: '🎯', label: '자기 성향', value: '나도 몰랐던 내 모습이 궁금할 때' },
             { emoji: '⏱️', label: '3분 컷', value: '출퇴근길에 가볍게' },
             { emoji: '💬', label: '팩폭 환영', value: '위로 말고 솔직한 한마디' },
-          ].map((item) => (
-            <StickerCard key={item.label} className="flex items-center gap-3 !p-4">
-              <span className="text-2xl">{item.emoji}</span>
+          ].map((item, index) => (
+            <div
+              key={item.label}
+              className={
+                index === 0
+                  ? 'flex items-center gap-3 px-4 py-3.5'
+                  : 'flex items-center gap-3 border-t-2 border-dashed border-lilac/50 px-4 py-3.5'
+              }
+            >
+              <span className="text-2xl" aria-hidden>
+                {item.emoji}
+              </span>
               <div className="text-left">
-                <p className="text-xs font-bold text-accent">{item.label}</p>
+                <p className="text-xs font-bold text-[#6a4fc8]">{item.label}</p>
                 <p className="text-[15px] font-bold text-ink">{item.value}</p>
               </div>
-            </StickerCard>
+            </div>
           ))}
-        </div>
+        </StickerCard>
       </section>
     </PageLayout>
   )

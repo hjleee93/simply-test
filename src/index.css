@@ -4,12 +4,14 @@
     format('woff');
   font-weight: normal;
   font-style: normal;
+  font-display: swap;
 }
 
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'NeoDunggeunmo', monospace;
+  --font-sans: 'NeoDunggeunmo', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic',
+    sans-serif;
 
   --color-cream: #fff9e8;
   --color-cream-dark: #fff0c0;
@@ -21,6 +23,7 @@
   --color-mint: #5dffb4;
   --color-lemon: #ffe600;
   --color-lilac: #c9b8ff;
+  --color-lilac-soft: #eee8ff;
   --color-cyan: #00d4ff;
 
   --color-gray-50: #fffdf5;

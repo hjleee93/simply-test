@@ -9,15 +9,19 @@ export const supabase: SupabaseClient | null =
     : null
 
 export async function saveTestResult(payload: {
+  visitorId: string
   testSlug: string
   resultId: string
   score: number
 }) {
   if (!supabase) return
 
-  await supabase.from('test_results').insert({
+  const { error } = await supabase.from('test_results').insert({
+    visitor_id: payload.visitorId,
     test_slug: payload.testSlug,
     result_id: payload.resultId,
     score: payload.score,
   })
+
+  if (error) console.error('Supabase save failed:', error.message)
 }

@@ -10,6 +10,7 @@ import { buildResultInsights } from '../lib/resultInsights'
 import { getResult, getThresholdPercent, isSimpleScoring } from '../lib/scoring'
 import { resolveTestSession } from '../lib/testSession'
 import { saveTestResult } from '../lib/supabase'
+import { getVisitorId } from '../lib/visitorId'
 import type { Gender, TestAnswers } from '../types/test'
 
 import { ui } from '../lib/ui'
@@ -41,6 +42,7 @@ export default function Result() {
     const thresholdPercent = getThresholdPercent(test, answers)
 
     void saveTestResult({
+      visitorId: getVisitorId(),
       testSlug: test.id,
       resultId: result.id,
       score: thresholdPercent,

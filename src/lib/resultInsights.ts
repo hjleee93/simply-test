@@ -46,11 +46,9 @@ function calculateCategoryBounds(test: TestDefinition) {
 
   for (const question of test.questions) {
     for (const category of CATEGORY_ORDER) {
-      const categoryScores = question.answers
-        .map((answer) => answer.scores?.[category])
-        .filter((score): score is number => score !== undefined)
-
-      if (categoryScores.length === 0) continue
+      const categoryScores = question.answers.map(
+        (answer) => answer.scores?.[category] ?? 0,
+      )
 
       maxima[category] += Math.max(...categoryScores)
       minima[category] += Math.min(...categoryScores)
@@ -62,7 +60,8 @@ function calculateCategoryBounds(test: TestDefinition) {
 
 function toPercent(raw: number, min: number, max: number): number {
   if (max <= min) return 0
-  return Math.round(((raw - min) / (max - min)) * 100)
+  const percent = Math.round(((raw - min) / (max - min)) * 100)
+  return Math.min(100, Math.max(0, percent))
 }
 
 export function calculateCategoryPercents(

@@ -11,22 +11,32 @@ function storageKey(testId: string) {
   return `${STORAGE_PREFIX}${testId}`
 }
 
-export function saveTestSession(testId: string, session: TestSession) {
+function writeStorage(storage: Storage, testId: string, raw: string) {
   try {
-    sessionStorage.setItem(storageKey(testId), JSON.stringify(session))
+    storage.setItem(storageKey(testId), raw)
   } catch {
-    // Kakao 등 일부 인앱 브라우저에서 sessionStorage가 막힐 수 있음
+    // Kakao 등 일부 인앱 브라우저에서 저장소가 막힐 수 있음
   }
 }
 
-export function loadTestSession(testId: string): TestSession | null {
+function readStorage(storage: Storage, testId: string): TestSession | null {
   try {
-    const raw = sessionStorage.getItem(storageKey(testId))
+    const raw = storage.getItem(storageKey(testId))
     if (!raw) return null
     return JSON.parse(raw) as TestSession
   } catch {
     return null
   }
+}
+
+export function saveTestSession(testId: string, session: TestSession) {
+  const raw = JSON.stringify(session)
+  writeStorage(sessionStorage, testId, raw)
+  writeStorage(localStorage, testId, raw)
+}
+
+export function loadTestSession(testId: string): TestSession | null {
+  return readStorage(sessionStorage, testId) ?? readStorage(localStorage, testId)
 }
 
 /** URL 쿼리로 답변을 직렬화 (인앱 브라우저 state 유실 대비) */
@@ -86,8 +96,8 @@ export function resolveTestSession(
     return { answers: locationState.answers, gender: locationState.gender }
   }
 
-  const fromStorage = loadTestSession(test.id)
-  if (fromStorage?.answers) return fromStorage
+  const fromQuery = decodeSessionFromSearchParams(search, test)
+  if (fromQuery?.answers) return fromQuery
 
-  return decodeSessionFromSearchParams(search, test)
+  return loadTestSession(test.id)
 }
