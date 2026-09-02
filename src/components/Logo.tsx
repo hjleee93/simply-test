@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { brandCharacterPath } from '../lib/characters'
 import { cn } from '../lib/cn'
 
 interface LogoProps {
@@ -11,7 +12,7 @@ export default function Logo({ className, iconClassName, showText = true }: Logo
   return (
     <span className={cn('inline-flex items-center gap-2', className)}>
       <img
-        src="/brand-icon.png"
+        src={brandCharacterPath()}
         alt=""
         className={cn('pixel-img h-8 w-8 shrink-0 object-contain', iconClassName)}
       />

@@ -1,7 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 196 40" fill="none" aria-labelledby="logo-title">
   <title id="logo-title">Simply Test</title>
-  <image xlink:href="/brand-icon.png" x="0" y="4" width="32" height="32" />
-  <text x="40" y="26" font-family="monospace" font-size="15" font-weight="700" fill="#1f1535">Simply Test</text>
+  <image xlink:href="/brand-sprout.png" x="2" y="4" width="32" height="32" />
+  <text x="44" y="26" font-family="monospace" font-size="15" font-weight="700" fill="#1f1535">Simply Test</text>
   <rect x="168" y="12" width="2" height="2" fill="#ff3d9a" />
   <rect x="172" y="10" width="2" height="2" fill="#ffe600" />
   <rect x="174" y="14" width="2" height="2" fill="#5dffb4" />
