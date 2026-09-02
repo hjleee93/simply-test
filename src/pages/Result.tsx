@@ -17,6 +17,7 @@ import { saveTestResult } from '../lib/supabase'
 import { getVisitorId } from '../lib/visitorId'
 import type { Gender, TestAnswers } from '../types/test'
 
+import { getOgImagePath } from '../lib/ogImages'
 import { ui } from '../lib/ui'
 
 type ResultLocationState = {
@@ -154,7 +155,14 @@ export default function Result() {
 
   return (
     <PageLayout>
-      <PageMeta title={pageTitle} description={pageDescription} type="article" />
+      <PageMeta
+        title={pageTitle}
+        description={pageDescription}
+        imagePath={getOgImagePath(`/tests/${test.id}`)}
+        type="article"
+        noindex
+        canonicalPath={`/tests/${test.id}`}
+      />
       {resultCard}
       <RecommendedTests excludeTestId={test.id} className="mt-8" />
     </PageLayout>

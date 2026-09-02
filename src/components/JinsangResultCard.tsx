@@ -33,8 +33,7 @@ export default function JinsangResultCard({
   onHome,
 }: JinsangResultCardProps) {
   const shareRef = useRef<HTMLDivElement>(null)
-  const shareText =
-    result.shareText ?? `${resultLabel} ${thresholdPercent}% · ${result.title} (${result.keyword})`
+  const shareText = result.shareText ?? `${resultLabel} ${thresholdPercent}% · ${result.title} (${result.keyword})`
 
   return (
     <div>

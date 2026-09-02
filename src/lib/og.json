@@ -12,22 +12,26 @@
     {
       "id": "retirement-threshold",
       "title": "나의 퇴사 임계점은 몇 %?",
-      "description": "나는 회사에서 어디까지 참을 수 있을까?"
+      "description": "나는 회사에서 어디까지 참을 수 있을까?",
+      "character": "steel"
     },
     {
       "id": "gender-fanatic-test",
       "title": "나 혹시 남미새/여미새인가?",
-      "description": "이성에 진심인 정도를 100%로 측정해드립니다."
+      "description": "이성에 진심인 정도를 100%로 측정해드립니다.",
+      "character": "subtle"
     },
     {
       "id": "kkondae-test",
       "title": "내가 꼰대일 가능성 테스트",
-      "description": "나는 꼰대가 아닐까? 직장 생활 속 상황으로 알아보는 나의 꼰대력 테스트"
+      "description": "나는 꼰대가 아닐까? 직장 생활 속 상황으로 알아보는 나의 꼰대력 테스트",
+      "character": "kkondae/main"
     },
     {
       "id": "jin-sang-test",
       "title": "내가 진상일 가능성 테스트",
-      "description": "나는 상식적인 사람일까, 아니면 은근히 진상일까?"
+      "description": "나는 상식적인 사람일까, 아니면 은근히 진상일까?",
+      "character": "jinsang/main"
     }
   ]
 }
