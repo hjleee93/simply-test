@@ -1,11 +1,13 @@
 import { useEffect, useMemo } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import GenderResultCard from '../components/GenderResultCard'
+import KkondaeResultCard from '../components/KkondaeResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
 import ResultCard from '../components/ResultCard'
 import { getTest } from '../data'
 import { applyGenderToResult, buildGenderInsights } from '../lib/gender'
+import { buildKkondaeInsights } from '../lib/kkondae'
 import { buildResultInsights } from '../lib/resultInsights'
 import { getResult, getThresholdPercent, isSimpleScoring } from '../lib/scoring'
 import { resolveTestSession } from '../lib/testSession'
@@ -82,9 +84,9 @@ export default function Result() {
   const result =
     test.requiresGender && gender ? applyGenderToResult(baseResult, gender) : baseResult
   const resultLabel = test.resultLabel ?? '결과'
-  const isGenderTest = isSimpleScoring(test)
+  const resultTemplate = test.resultTemplate ?? (isSimpleScoring(test) ? 'gender' : 'category')
 
-  if (isGenderTest) {
+  if (resultTemplate === 'gender') {
     const genderInsights = buildGenderInsights(thresholdPercent)
 
     return (
@@ -98,6 +100,29 @@ export default function Result() {
           result={result}
           thresholdPercent={thresholdPercent}
           insights={genderInsights}
+          testTitle={test.title}
+          resultLabel={resultLabel}
+          onHome={() => navigate('/')}
+          onRetry={() => navigate(`/tests/${test.id}/play`)}
+        />
+      </PageLayout>
+    )
+  }
+
+  if (resultTemplate === 'kkondae') {
+    const kkondaeInsights = buildKkondaeInsights(thresholdPercent)
+
+    return (
+      <PageLayout>
+        <PageMeta
+          title={`${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`}
+          description={`나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`}
+          type="article"
+        />
+        <KkondaeResultCard
+          result={result}
+          thresholdPercent={thresholdPercent}
+          insights={kkondaeInsights}
           testTitle={test.title}
           resultLabel={resultLabel}
           onHome={() => navigate('/')}

@@ -2,6 +2,8 @@ export type Gender = 'male' | 'female'
 
 export type TestScoringMode = 'category' | 'simple'
 
+export type TestResultTemplate = 'category' | 'gender' | 'kkondae'
+
 export type ScoreCategory =
   | 'work'
   | 'money'
@@ -43,9 +45,12 @@ export type TestDefinition = {
   questions: Question[]
   results: TestResult[]
   scoringMode?: TestScoringMode
+  resultTemplate?: TestResultTemplate
   requiresGender?: boolean
   thumbnailCharacter?: string
   resultLabel?: string
+  /** 문항당 최소 점수. 기본 1(1~4점), 꼰대 테스트처럼 0점부터면 0 */
+  minScorePerAnswer?: number
 }
 
 export type SelectedAnswer = {

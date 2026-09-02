@@ -66,8 +66,9 @@ function getRawScore(answers: TestAnswers): number {
 export function calculateThresholdPercent(
   rawScore: number,
   questionCount: number,
+  minScorePerAnswer = 1,
 ): number {
-  const minScore = questionCount
+  const minScore = questionCount * minScorePerAnswer
   const maxScore = questionCount * 4
 
   if (maxScore === minScore) return 0
@@ -94,5 +95,9 @@ export function getThresholdPercent(
   answers: TestAnswers,
 ): number {
   const rawScore = getRawScore(answers)
-  return calculateThresholdPercent(rawScore, test.questions.length)
+  return calculateThresholdPercent(
+    rawScore,
+    test.questions.length,
+    test.minScorePerAnswer ?? 1,
+  )
 }
