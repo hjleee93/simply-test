@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import PageMeta from '../components/PageMeta'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
@@ -7,6 +8,7 @@ import { ui } from '../lib/ui'
 export default function Main() {
   return (
     <PageLayout>
+      <PageMeta />
       <section className="pb-8 pt-4 text-center">
         <img
           src={pixelCharacterPath('adapted')}

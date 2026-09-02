@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
+import PageMeta from '../components/PageMeta'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
 import { getTest } from '../data'
@@ -62,6 +63,10 @@ export default function Test() {
 
   return (
     <PageLayout backTo={`/tests/${test.id}`} backLabel="나가기">
+      <PageMeta
+        title={`${test.title} 진행 중 | Simply Test`}
+        description={test.description}
+      />
       <div className="flex flex-col gap-5">
         <ProgressBar current={progressCurrent} total={test.questions.length} />
 

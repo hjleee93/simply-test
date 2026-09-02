@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import PageMeta from '../components/PageMeta'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
@@ -34,6 +35,7 @@ export default function TestDetail() {
 
   return (
     <PageLayout backTo="/tests" backLabel="목록">
+      <PageMeta title={`${test.title} | Simply Test`} description={test.description} />
       <header className="mb-6 text-center">
         <img
           src={pixelCharacterPath('realistic')}

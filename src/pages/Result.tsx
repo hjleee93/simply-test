@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import PageLayout from '../components/PageLayout'
+import PageMeta from '../components/PageMeta'
 import ResultCard from '../components/ResultCard'
 import { getTest } from '../data'
 import { buildResultInsights } from '../lib/resultInsights'
@@ -50,6 +51,11 @@ export default function Result() {
 
   return (
     <PageLayout>
+      <PageMeta
+        title={`퇴사 임계점 ${thresholdPercent}% · ${result.title} | Simply Test`}
+        description={`나의 퇴사 임계점은 ${thresholdPercent}%! ${result.title} (${insights.subtype})`}
+        type="article"
+      />
       <ResultCard
         result={result}
         thresholdPercent={thresholdPercent}
