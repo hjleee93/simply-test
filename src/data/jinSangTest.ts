@@ -1,0 +1,345 @@
+import type { Question, TestResult } from '../types/test'
+import og from '../lib/og.json' with { type: 'json' }
+
+const meta = og.tests.find((test) => test.id === 'jin-sang-test')!
+const JINSANG_CHAR = '/characters/pixel/jinsang'
+
+export const jinSangTest = {
+  id: meta.id,
+  title: meta.title,
+  description: meta.description,
+  scoringMode: 'simple' as const,
+  resultTemplate: 'jinsang' as const,
+  minScorePerAnswer: 0,
+  thumbnailCharacter: 'jinsang/main',
+  resultLabel: '진상력',
+
+  questions: [
+    {
+      id: 1,
+      question: '식당에서 주문한 음식이 20분 넘게 나오지 않았다.',
+      answers: [
+        { id: 'a', text: '바쁘겠지 하고 기다린다', score: 0 },
+        { id: 'b', text: '직원에게 언제쯤 나오는지 물어본다', score: 1 },
+        { id: 'c', text: '조금 늦는 것 같다고 말한다', score: 2 },
+        { id: 'd', text: '왜 이렇게 늦냐고 따진다', score: 3 },
+        { id: 'e', text: '다른 테이블은 나오는데 왜 우리 것만 안 나오냐고 항의한다', score: 4 },
+      ],
+    },
+    {
+      id: 2,
+      question: '카페에서 음료를 받았는데 생각했던 맛과 다르다.',
+      answers: [
+        { id: 'a', text: '그냥 마신다', score: 0 },
+        { id: 'b', text: '다음에는 다른 메뉴를 시킨다', score: 1 },
+        { id: 'c', text: '혹시 메뉴가 맞는지 물어본다', score: 2 },
+        { id: 'd', text: '맛이 이상하다며 교환을 요청한다', score: 3 },
+        { id: 'e', text: '환불이나 새 음료를 강하게 요구한다', score: 4 },
+      ],
+    },
+    {
+      id: 3,
+      question: '친구가 약속 시간에 15분 늦었다.',
+      answers: [
+        { id: 'a', text: '괜찮다고 한다', score: 0 },
+        { id: 'b', text: '다음부터는 조금 일찍 와달라고 한다', score: 1 },
+        { id: 'c', text: '왜 늦었는지 물어본다', score: 2 },
+        { id: 'd', text: '기다리게 한 게 짜증난다고 말한다', score: 3 },
+        { id: 'e', text: '약속 시간 개념이 없는 사람이라고 생각한다', score: 4 },
+      ],
+    },
+    {
+      id: 4,
+      question: '중고거래 상대가 3시간 동안 답장을 하지 않는다.',
+      answers: [
+        { id: 'a', text: '바쁜가 보다 하고 기다린다', score: 0 },
+        { id: 'b', text: '조금 더 기다린다', score: 1 },
+        { id: 'c', text: '거래 가능한지 다시 물어본다', score: 2 },
+        { id: 'd', text: '빨리 답해달라고 재촉한다', score: 3 },
+        { id: 'e', text: '답장 안 할 거면 거래하지 말라고 한다', score: 4 },
+      ],
+    },
+    {
+      id: 5,
+      question: '택시가 내가 생각했던 길보다 돌아서 가는 것 같다.',
+      answers: [
+        { id: 'a', text: '기사님이 더 잘 아시겠지 하고 간다', score: 0 },
+        { id: 'b', text: '조금 돌아가는 것 같다고 생각한다', score: 1 },
+        { id: 'c', text: '왜 이쪽으로 가는지 물어본다', score: 2 },
+        { id: 'd', text: '일부러 돌아가는 것 아니냐고 항의한다', score: 3 },
+        { id: 'e', text: '기사에게 강하게 따지고 신고까지 생각한다', score: 4 },
+      ],
+    },
+    {
+      id: 6,
+      question: '온라인 쇼핑으로 주문한 상품이 하루 늦게 도착했다.',
+      answers: [
+        { id: 'a', text: '하루 정도야 괜찮다', score: 0 },
+        { id: 'b', text: '배송 상황만 확인한다', score: 1 },
+        { id: 'c', text: '판매자에게 배송 지연 이유를 물어본다', score: 2 },
+        { id: 'd', text: '왜 약속한 날짜를 지키지 않았냐고 항의한다', score: 3 },
+        { id: 'e', text: '보상까지 요구한다', score: 4 },
+      ],
+    },
+    {
+      id: 7,
+      question: '식당에서 옆 테이블이 너무 시끄럽다.',
+      answers: [
+        { id: 'a', text: '그냥 신경 쓰지 않는다', score: 0 },
+        { id: 'b', text: '자리를 조금 옮긴다', score: 1 },
+        { id: 'c', text: '직원에게 조용히 말해달라고 요청한다', score: 2 },
+        { id: 'd', text: '직접 조용히 해달라고 말한다', score: 3 },
+        { id: 'e', text: '시끄럽다고 강하게 따진다', score: 4 },
+      ],
+    },
+    {
+      id: 8,
+      question: '카페에서 내 옆자리에 다른 사람이 앉았다.',
+      answers: [
+        { id: 'a', text: '아무렇지 않다', score: 0 },
+        { id: 'b', text: '조금 신경 쓰인다', score: 1 },
+        { id: 'c', text: '조금 떨어져 앉아달라고 부탁할 수도 있다', score: 2 },
+        { id: 'd', text: '왜 이렇게 가까이 앉냐고 말한다', score: 3 },
+        { id: 'e', text: '자리를 옮기라고 요구한다', score: 4 },
+      ],
+    },
+    {
+      id: 9,
+      question: '배달 음식에 요청사항이 제대로 반영되지 않았다.',
+      answers: [
+        { id: 'a', text: '그냥 먹는다', score: 0 },
+        { id: 'b', text: '다음 주문 때 다시 적는다', score: 1 },
+        { id: 'c', text: '가게에 누락된 부분을 알려준다', score: 2 },
+        { id: 'd', text: '재조리를 요청한다', score: 3 },
+        { id: 'e', text: '환불과 보상을 강하게 요구한다', score: 4 },
+      ],
+    },
+    {
+      id: 10,
+      question: '마트 계산대에서 앞사람이 계산을 오래 하고 있다.',
+      answers: [
+        { id: 'a', text: '그냥 기다린다', score: 0 },
+        { id: 'b', text: '조금 답답하지만 기다린다', score: 1 },
+        { id: 'c', text: '다른 계산대로 이동한다', score: 2 },
+        { id: 'd', text: '빨리 해달라는 눈치를 준다', score: 3 },
+        { id: 'e', text: '왜 이렇게 오래 걸리냐고 말한다', score: 4 },
+      ],
+    },
+    {
+      id: 11,
+      question: '친구가 내 부탁을 깜빡했다.',
+      answers: [
+        { id: 'a', text: '그럴 수도 있다고 생각한다', score: 0 },
+        { id: 'b', text: '다음에는 잊지 말라고 한다', score: 1 },
+        { id: 'c', text: '왜 깜빡했는지 물어본다', score: 2 },
+        { id: 'd', text: '서운하다고 따진다', score: 3 },
+        { id: 'e', text: '너는 항상 이런 식이라고 몰아붙인다', score: 4 },
+      ],
+    },
+    {
+      id: 12,
+      question: '호텔 체크인 시간이 지났는데 방이 준비되지 않았다.',
+      answers: [
+        { id: 'a', text: '조금 기다린다', score: 0 },
+        { id: 'b', text: '언제 준비되는지 물어본다', score: 1 },
+        { id: 'c', text: '빠른 준비를 요청한다', score: 2 },
+        { id: 'd', text: '서비스가 왜 이러냐고 항의한다', score: 3 },
+        { id: 'e', text: '무료 서비스나 보상을 요구한다', score: 4 },
+      ],
+    },
+    {
+      id: 13,
+      question: '식당 직원이 주문을 잘못 받았다.',
+      answers: [
+        { id: 'a', text: '다시 주문한다', score: 0 },
+        { id: 'b', text: '주문한 메뉴가 아니라고 알려준다', score: 1 },
+        { id: 'c', text: '가능하면 메뉴를 바꿔달라고 요청한다', score: 2 },
+        { id: 'd', text: '왜 주문을 제대로 안 받았냐고 말한다', score: 3 },
+        { id: 'e', text: '직원을 크게 질책한다', score: 4 },
+      ],
+    },
+    {
+      id: 14,
+      question: '공공장소에서 누군가 새치기를 했다.',
+      answers: [
+        { id: 'a', text: '그냥 넘어간다', score: 0 },
+        { id: 'b', text: '조금 불쾌하지만 넘어간다', score: 1 },
+        { id: 'c', text: '여기 줄이라고 알려준다', score: 2 },
+        { id: 'd', text: '새치기하지 말라고 강하게 말한다', score: 3 },
+        { id: 'e', text: '주변 사람들에게까지 상황을 알리며 따진다', score: 4 },
+      ],
+    },
+    {
+      id: 15,
+      question: '서비스가 마음에 들지 않았을 때 리뷰를 남긴다면?',
+      answers: [
+        { id: 'a', text: '그냥 리뷰를 남기지 않는다', score: 0 },
+        { id: 'b', text: '다음에는 이용하지 않는다', score: 1 },
+        { id: 'c', text: '아쉬웠던 점을 솔직하게 적는다', score: 2 },
+        { id: 'd', text: '불만 사항을 자세히 적는다', score: 3 },
+        { id: 'e', text: '다시는 이용하지 말라고 강하게 비판한다', score: 4 },
+      ],
+    },
+  ] as Question[],
+
+  results: [
+    {
+      id: 'legendary-patient',
+      min: 0,
+      max: 10,
+      emoji: '🪽',
+      title: '진상 세포 0%',
+      keyword: '웬만한 일은 그냥 넘어감',
+      description:
+        '웬만한 일은 그냥 넘어가는 평화주의자입니다. 다른 사람이 실수해도 한 번쯤은 이해하고 넘어가는 편이에요.\n\n식당이 늦어도, 음료가 조금 달라도 크게 신경 쓰지 않습니다. 주변에서는 당신을 보고 부처님이라고 부를 수도 있습니다.',
+      characterImage: `${JINSANG_CHAR}/pure.png`,
+      characteristics: ['참을성이 상당히 높음', '서비스에 큰 기대를 하지 않음', '갈등을 피하는 편'],
+      warning: '문제는 너무 참다가 한 번에 폭발할 가능성입니다.',
+      advice: '정당하게 요구할 수 있는 상황에서는 너무 참지 않아도 괜찮아요.',
+      shareText: '나는 진상 세포 0% 나왔는데 이 정도면 거의 부처님ㅋㅋ',
+    },
+    {
+      id: 'normal-person',
+      min: 11,
+      max: 22,
+      emoji: '🌱',
+      title: '진상 새싹',
+      keyword: '아직은 상식적인 편',
+      description:
+        '기본적으로는 상식적인 사람이지만 가끔은 "이건 좀 아닌데?"라는 생각을 합니다.\n\n아직은 대부분 좋게 넘어가지만, 불합리한 상황에서는 슬슬 할 말이 떠오르기 시작했습니다. 새싹은 물을 주면 자라니까 조심하세요.',
+      characterImage: `${JINSANG_CHAR}/fresh.png`,
+      characteristics: ['상황을 먼저 지켜봄', '웬만하면 좋게 넘어감', '필요할 때는 의견을 말함'],
+      warning: '가끔 사소한 일에도 혼자 속으로 열받을 수 있습니다.',
+      advice: '불만을 표현할 때 상대방을 공격하기보다 상황을 설명하는 습관을 들여보세요.',
+      shareText: '내가 진상일 가능성은 아직 새싹 수준이었다.',
+    },
+    {
+      id: 'common-sense',
+      min: 23,
+      max: 33,
+      emoji: '🙂',
+      title: '정상인',
+      keyword: '말해야 할 때만 말함',
+      description:
+        '불합리한 상황에서는 말할 줄 알고, 별일 아닌 일은 그냥 넘어갈 줄 아는 꽤 균형 잡힌 타입입니다.\n\n감정적으로 폭발하지 않으면서도 필요한 요구는 하는 편입니다. 이 정도면 주변에서도 "그냥 평범한 사람"으로 볼 가능성이 높습니다.',
+      characterImage: `${JINSANG_CHAR}/normal.png`,
+      characteristics: ['상황 판단이 빠름', '필요한 요구는 하는 편', '감정적으로 폭발하지 않음'],
+      warning: '상대방 입장에서는 가끔 까다롭게 느껴질 수도 있습니다.',
+      advice: '지금처럼 "이건 말해야 하나?"를 한 번 생각하고 행동하면 됩니다.',
+      shareText: '진상 테스트 했는데 나 정상인이래. 휴.',
+    },
+    {
+      id: 'subtle-demanding',
+      min: 34,
+      max: 45,
+      emoji: '👀',
+      title: '은근 까다로운 사람',
+      keyword: '속마음은 이미 컴플레인',
+      description:
+        '겉으로는 차분해 보여도 마음속으로는 불만을 꽤 많이 쌓아두는 타입입니다.\n\n본인은 정당한 기준이라고 생각하지만, 사소한 불편도 잘 발견하는 편입니다. 참다가 한 번에 말하면 상대방은 갑자기 압박을 느낄 수 있어요.',
+      characterImage: `${JINSANG_CHAR}/subtle.png`,
+      characteristics: [
+        '서비스에 대한 기대치가 높은 편',
+        '사소한 불편도 잘 발견함',
+        '참다가 한 번에 말하는 편',
+      ],
+      warning: '본인은 정당한 요구라고 생각하지만 상대방은 압박으로 느낄 수 있습니다.',
+      advice: '요구하기 전에 "이게 정말 중요한 문제인가?"를 한 번만 생각해보세요.',
+      shareText: '나 은근 까다로운 사람이었네... 들켰다.',
+    },
+    {
+      id: 'potential-troublemaker',
+      min: 46,
+      max: 57,
+      emoji: '🧐',
+      title: '잠재적 진상',
+      keyword: '권리를 지키는 데 적극적',
+      description:
+        '불편한 상황을 그냥 넘기는 법이 별로 없습니다. 내 권리를 지키는 데 상당히 적극적인 편입니다.\n\n아직 공식 진상은 아니지만, 컴플레인을 두려워하지 않는 단계에 들어섰습니다. "잠재적"이라는 말에 위안을 삼으세요.',
+      characterImage: `${JINSANG_CHAR}/potential.png`,
+      characteristics: [
+        '불합리한 상황에 민감함',
+        '컴플레인을 두려워하지 않음',
+        '원하는 것을 확실하게 말함',
+      ],
+      warning: '정당한 요구와 과도한 요구의 경계가 조금씩 흐려질 수 있습니다.',
+      advice: '내가 원하는 결과뿐 아니라 상대방이 해결할 수 있는 범위도 같이 생각해보세요.',
+      shareText: '잠재적 진상이라는데 아직 "잠재적"이라 괜찮음.',
+    },
+    {
+      id: 'rising-troublemaker',
+      min: 58,
+      max: 68,
+      emoji: '😤',
+      title: '진상력 상승 중',
+      keyword: '참기보다 해결이 먼저',
+      description:
+        '불편한 일이 생기면 참기보다 적극적으로 문제를 해결하려고 합니다. 다만 가끔 그 과정이 조금 과격해질 수 있어요.\n\n손해를 보는 것을 싫어하고, 상대방의 실수를 쉽게 넘어가지 않습니다. 아직 공식 진상은 아니지만 레이더에는 잡히기 시작했습니다.',
+      characterImage: `${JINSANG_CHAR}/rising.png`,
+      characteristics: [
+        '불만 표현에 적극적',
+        '손해 보는 것을 싫어함',
+        '상대방의 실수를 쉽게 넘어가지 않음',
+      ],
+      warning: '문제를 해결하는 것보다 상대방을 이기는 것이 목적처럼 보일 수 있습니다.',
+      advice: '말의 내용보다 말투가 더 큰 문제를 만들 수 있다는 걸 기억하세요.',
+      shareText: '진상력 상승 중ㅋㅋ 아직 공식 진상은 아니다.',
+    },
+    {
+      id: 'official-troublemaker',
+      min: 69,
+      max: 80,
+      emoji: '📢',
+      title: '공식 진상',
+      keyword: '불만은 반드시 전달함',
+      description:
+        '불만이 생기면 그냥 넘어가는 법이 없습니다. 내가 부당한 대우를 받았다고 느끼는 순간 적극적으로 행동합니다.\n\n서비스에 대한 기준이 높고, 컴플레인 경험도 많을 가능성이 있습니다. 주변에서는 당신을 "할 말은 하는 사람" 혹은 "조금 피곤한 사람"으로 기억할 수도 있어요.',
+      characterImage: `${JINSANG_CHAR}/official.png`,
+      characteristics: ['컴플레인 경험이 많음', '서비스에 대한 기준이 높음', '불만을 명확하게 표현함'],
+      warning:
+        '주변 사람들은 당신을 "할 말은 하는 사람"보다 "조금 피곤한 사람"으로 기억할 수도 있습니다.',
+      advice: '항의하기 전에 원하는 해결책을 먼저 정하고, 감정적인 표현은 최대한 빼보세요.',
+      shareText: '공식 진상 판정 받음. 억울하지만 할 말은 있음.',
+    },
+    {
+      id: 'severe-troublemaker',
+      min: 81,
+      max: 92,
+      emoji: '💀',
+      title: '중증 진상',
+      keyword: '작은 불편도 그냥 못 넘김',
+      description:
+        '작은 불편도 그냥 넘기지 않습니다. 상황이 마음에 들지 않으면 반드시 누군가에게 알려야 직성이 풀리는 타입입니다.\n\n본인은 소비자의 권리를 행사한다고 생각하지만, 주변에서는 과하다고 느낄 가능성이 높습니다. 모든 문제에 같은 강도로 대응할 필요는 없어요.',
+      characterImage: `${JINSANG_CHAR}/severe.png`,
+      characteristics: [
+        '불만을 바로 표현함',
+        '상대방의 실수에 민감함',
+        '원하는 보상을 적극적으로 요구함',
+      ],
+      warning:
+        '본인은 소비자의 권리를 행사한다고 생각하지만 주변에서는 과하다고 느낄 가능성이 높습니다.',
+      advice:
+        '한 번의 실수인지 반복되는 문제인지 구분해보세요. 모든 문제에 같은 강도로 대응할 필요는 없습니다.',
+      shareText: '중증 진상 나옴. 주변 사람들아 미안하다.',
+    },
+    {
+      id: 'legendary-troublemaker',
+      min: 93,
+      max: 100,
+      emoji: '👑',
+      title: '전설의 진상',
+      keyword: '문제 생기면 끝까지 해결',
+      description:
+        '당신에게는 불편함을 그냥 지나치는 선택지가 별로 없습니다. 문제가 생기면 원인을 찾고, 책임자를 찾고, 해결책까지 요구합니다.\n\n당신에게는 당연한 요구가 다른 사람에게는 무리한 요구로 느껴질 수 있습니다. 전설이 되는 건 쉽지만, 전설에서 내려오는 건 조금 더 어려워요.',
+      characterImage: `${JINSANG_CHAR}/legend.png`,
+      characteristics: [
+        '참을성이 매우 낮음',
+        '서비스에 대한 기준이 매우 높음',
+        '문제가 생기면 끝까지 해결하려 함',
+      ],
+      warning: '당신에게는 당연한 요구가 다른 사람에게는 무리한 요구로 느껴질 수 있습니다.',
+      advice: '항의하기 전에 "내가 원하는 게 문제 해결인지, 화풀이인지"만 한 번 생각해보세요.',
+      shareText: '전설의 진상 나왔다. 나를 감당할 수 있는 서비스만 살아남는다.',
+    },
+  ] as TestResult[],
+} as const

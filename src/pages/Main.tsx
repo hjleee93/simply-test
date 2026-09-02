@@ -26,7 +26,7 @@ export default function Main() {
           내 진짜 모습 🫠
         </h1>
         <p className="mx-auto mt-3 max-w-[280px] text-[15px] leading-relaxed text-muted">
-          귀엽게 그려진 픽셀 캐릭터가
+          귀엽게 그려진 캐릭터가
           <br />
           당신의 숨겨진 성향을 알려줘요
         </p>

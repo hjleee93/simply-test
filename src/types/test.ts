@@ -2,7 +2,7 @@ export type Gender = 'male' | 'female'
 
 export type TestScoringMode = 'category' | 'simple'
 
-export type TestResultTemplate = 'category' | 'gender' | 'kkondae'
+export type TestResultTemplate = 'category' | 'gender' | 'kkondae' | 'jinsang'
 
 export type ScoreCategory =
   | 'work'
@@ -36,6 +36,10 @@ export type TestResult = {
   keyword: string
   /** 결과 캐릭터 이미지 경로 (public 기준). 없으면 /characters/{id}.png 시도 후 emoji 폴백 */
   characterImage?: string
+  characteristics?: string[]
+  warning?: string
+  advice?: string
+  shareText?: string
 }
 
 export type TestDefinition = {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import GenderResultCard from '../components/GenderResultCard'
+import JinsangResultCard from '../components/JinsangResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
@@ -115,6 +116,19 @@ export default function Result() {
         result={result}
         thresholdPercent={thresholdPercent}
         insights={kkondaeInsights}
+        testTitle={test.title}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
+  } else if (resultTemplate === 'jinsang') {
+    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
+    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
+    resultCard = (
+      <JinsangResultCard
+        result={result}
+        thresholdPercent={thresholdPercent}
         testTitle={test.title}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}

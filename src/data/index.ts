@@ -1,4 +1,5 @@
 import { genderTest } from './genderTest'
+import { jinSangTest } from './jinSangTest'
 import { kkondaeTest } from './kkondaeTest'
 import { retirementTest } from './retirementTest'
 import og from '../lib/og.json' with { type: 'json' }
@@ -8,6 +9,7 @@ export const tests: Record<string, TestDefinition> = {
   [retirementTest.id]: retirementTest,
   [genderTest.id]: genderTest,
   [kkondaeTest.id]: kkondaeTest,
+  [jinSangTest.id]: jinSangTest,
 }
 
 export const MAIN_PAGE_TEST_LIMIT = 10
