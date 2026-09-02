@@ -1,5 +1,6 @@
 import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
+import { trackPageView } from '../lib/analytics'
 import { getRouteMeta } from '../lib/routeMeta'
 import { DEFAULT_OG, SITE_NAME, toAbsoluteUrl } from '../lib/site'
 
@@ -60,8 +61,12 @@ export default function PageMeta({
 }
 
 export function RoutePageMeta() {
-  const { pathname } = useLocation()
+  const { pathname, search } = useLocation()
   const meta = getRouteMeta(pathname)
+
+  useLayoutEffect(() => {
+    trackPageView(`${pathname}${search}`)
+  }, [pathname, search])
 
   return (
     <PageMeta title={meta.title} description={meta.description} type={meta.type} />

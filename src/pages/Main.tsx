@@ -2,11 +2,14 @@ import { Link } from 'react-router-dom'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
-import { getAllTests } from '../data'
+import TestListCard from '../components/TestListCard'
+import { getAllTests, getFeaturedTests, MAIN_PAGE_TEST_LIMIT } from '../data'
 import { ui } from '../lib/ui'
 
 export default function Main() {
-  const tests = getAllTests()
+  const featuredTests = getFeaturedTests()
+  const totalCount = getAllTests().length
+  const hasMoreTests = totalCount > MAIN_PAGE_TEST_LIMIT
 
   return (
     <PageLayout>
@@ -35,23 +38,18 @@ export default function Main() {
       <section className="mb-6">
         <h2 className="mb-3 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
         <div className="space-y-3">
-          {tests.map((test) => (
-            <Link key={test.id} to={`/tests/${test.id}`} className="block wiggle-hover">
-              <StickerCard className="flex items-center gap-3 !p-4">
-                <img
-                  src={pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')}
-                  alt=""
-                  className="pixel-img h-14 w-14 shrink-0 object-contain"
-                />
-                <div className="min-w-0 flex-1 text-left">
-                  <p className="mb-1 text-[15px] font-extrabold text-ink">{test.title}</p>
-                  <p className="text-sm leading-snug text-muted">{test.description}</p>
-                </div>
-                <span className="text-xl text-accent">→</span>
-              </StickerCard>
-            </Link>
+          {featuredTests.map((test) => (
+            <TestListCard key={test.id} test={test} />
           ))}
         </div>
+        {hasMoreTests ? (
+          <Link
+            to="/tests"
+            className="mt-4 block text-center text-sm font-bold text-accent underline-offset-2 hover:underline"
+          >
+            전체 테스트 보기 ({totalCount}개) →
+          </Link>
+        ) : null}
       </section>
 
       <section>

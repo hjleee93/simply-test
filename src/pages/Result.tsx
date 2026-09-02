@@ -1,9 +1,10 @@
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import GenderResultCard from '../components/GenderResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
+import RecommendedTests from '../components/RecommendedTests'
 import ResultCard from '../components/ResultCard'
 import { getTest } from '../data'
 import { applyGenderToResult, buildGenderInsights } from '../lib/gender'
@@ -86,61 +87,45 @@ export default function Result() {
   const resultLabel = test.resultLabel ?? '결과'
   const resultTemplate = test.resultTemplate ?? (isSimpleScoring(test) ? 'gender' : 'category')
 
+  let resultCard: ReactNode
+  let pageTitle: string
+  let pageDescription: string
+
   if (resultTemplate === 'gender') {
     const genderInsights = buildGenderInsights(thresholdPercent)
-
-    return (
-      <PageLayout>
-        <PageMeta
-          title={`${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`}
-          description={`나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`}
-          type="article"
-        />
-        <GenderResultCard
-          result={result}
-          thresholdPercent={thresholdPercent}
-          insights={genderInsights}
-          testTitle={test.title}
-          resultLabel={resultLabel}
-          onHome={() => navigate('/')}
-          onRetry={() => navigate(`/tests/${test.id}/play`)}
-        />
-      </PageLayout>
-    )
-  }
-
-  if (resultTemplate === 'kkondae') {
-    const kkondaeInsights = buildKkondaeInsights(thresholdPercent)
-
-    return (
-      <PageLayout>
-        <PageMeta
-          title={`${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`}
-          description={`나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`}
-          type="article"
-        />
-        <KkondaeResultCard
-          result={result}
-          thresholdPercent={thresholdPercent}
-          insights={kkondaeInsights}
-          testTitle={test.title}
-          resultLabel={resultLabel}
-          onHome={() => navigate('/')}
-          onRetry={() => navigate(`/tests/${test.id}/play`)}
-        />
-      </PageLayout>
-    )
-  }
-
-  const insights = buildResultInsights(test, answers, result.description)
-
-  return (
-    <PageLayout>
-      <PageMeta
-        title={`${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`}
-        description={`나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${insights.subtype})`}
-        type="article"
+    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
+    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
+    resultCard = (
+      <GenderResultCard
+        result={result}
+        thresholdPercent={thresholdPercent}
+        insights={genderInsights}
+        testTitle={test.title}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
       />
+    )
+  } else if (resultTemplate === 'kkondae') {
+    const kkondaeInsights = buildKkondaeInsights(thresholdPercent)
+    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
+    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
+    resultCard = (
+      <KkondaeResultCard
+        result={result}
+        thresholdPercent={thresholdPercent}
+        insights={kkondaeInsights}
+        testTitle={test.title}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
+  } else {
+    const insights = buildResultInsights(test, answers, result.description)
+    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
+    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${insights.subtype})`
+    resultCard = (
       <ResultCard
         result={result}
         thresholdPercent={thresholdPercent}
@@ -150,6 +135,14 @@ export default function Result() {
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
       />
+    )
+  }
+
+  return (
+    <PageLayout>
+      <PageMeta title={pageTitle} description={pageDescription} type="article" />
+      {resultCard}
+      <RecommendedTests excludeTestId={test.id} className="mt-8" />
     </PageLayout>
   )
 }
