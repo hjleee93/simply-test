@@ -1,19 +1,18 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
-import { defineConfig, type Plugin } from 'vite'
+import { defineConfig, loadEnv, type Plugin } from 'vite'
 
-function injectOgMeta(): Plugin {
+function injectOgMeta(siteUrl: string): Plugin {
   return {
     name: 'inject-og-meta',
     transformIndexHtml(html) {
-      const siteUrl = (process.env.VITE_SITE_URL ?? '').replace(/\/$/, '')
-      const ogImage = siteUrl ? `${siteUrl}/og-image.png` : '/og-image.png'
+      const normalized = siteUrl.replace(/\/$/, '')
+      const ogImage = normalized ? `${normalized}/og-image.png` : '/og-image.png'
 
-      let result = html
-        .replaceAll('__OG_IMAGE__', ogImage)
+      let result = html.replaceAll('__OG_IMAGE__', ogImage)
 
-      if (siteUrl) {
-        result = result.replaceAll('__OG_URL__', `${siteUrl}/`)
+      if (normalized) {
+        result = result.replaceAll('__OG_URL__', `${normalized}/`)
       } else {
         result = result.replace(
           /    <meta property="og:url" content="__OG_URL__" \/>\n/,
@@ -26,6 +25,11 @@ function injectOgMeta(): Plugin {
   }
 }
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), injectOgMeta()],
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+  const siteUrl = env.VITE_SITE_URL ?? ''
+
+  return {
+    plugins: [react(), tailwindcss(), injectOgMeta(siteUrl)],
+  }
 })
