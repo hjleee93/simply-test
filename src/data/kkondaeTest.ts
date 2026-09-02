@@ -197,7 +197,7 @@ export const kkondaeTest = {
     },
     {
       id: 'fresh',
-      min: 12,
+      min: 11,
       max: 22,
       emoji: '🌱',
       title: '꼰대 새싹',
@@ -219,7 +219,7 @@ export const kkondaeTest = {
     },
     {
       id: 'subtle',
-      min: 35,
+      min: 34,
       max: 45,
       emoji: '👀',
       title: '은근한 꼰대',
@@ -230,7 +230,7 @@ export const kkondaeTest = {
     },
     {
       id: 'potential',
-      min: 47,
+      min: 46,
       max: 57,
       emoji: '🧐',
       title: '잠재적 꼰대',
@@ -252,7 +252,7 @@ export const kkondaeTest = {
     },
     {
       id: 'official',
-      min: 70,
+      min: 69,
       max: 80,
       emoji: '📢',
       title: '회사 공식 꼰대',
@@ -263,7 +263,7 @@ export const kkondaeTest = {
     },
     {
       id: 'severe',
-      min: 82,
+      min: 81,
       max: 92,
       emoji: '💀',
       title: '중증 꼰대',

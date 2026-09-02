@@ -81,12 +81,16 @@ export function getResult(
   answers: TestAnswers,
 ): TestResult {
   const rawScore = getRawScore(answers)
-  const percent = calculateThresholdPercent(rawScore, test.questions.length)
+  const percent = calculateThresholdPercent(
+    rawScore,
+    test.questions.length,
+    test.minScorePerAnswer ?? 1,
+  )
 
   return (
     test.results.find(
       (result) => percent >= result.min && percent <= result.max,
-    ) ?? test.results[test.results.length - 1]
+    ) ?? test.results[0]
   )
 }
 
