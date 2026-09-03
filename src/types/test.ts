@@ -1,8 +1,25 @@
 export type Gender = 'male' | 'female'
 
-export type TestScoringMode = 'category' | 'simple'
+export type TestScoringMode = 'category' | 'simple' | 'pattern'
 
-export type TestResultTemplate = 'category' | 'gender' | 'kkondae' | 'jinsang'
+export type TestResultTemplate =
+  | 'category'
+  | 'gender'
+  | 'kkondae'
+  | 'jinsang'
+  | 'relationship'
+
+export type RelationshipPattern =
+  | 'empathy'
+  | 'boundary'
+  | 'action'
+  | 'accommodating'
+  | 'selective'
+  | 'guarded'
+  | 'solver'
+  | 'observer'
+
+export type PatternScoreMap = Partial<Record<RelationshipPattern, number>>
 
 export type ScoreCategory =
   | 'work'
@@ -18,6 +35,7 @@ export type Answer = {
   text: string
   scores?: ScoreMap
   score?: number
+  patternScores?: PatternScoreMap
 }
 
 export type Question = {
@@ -40,6 +58,10 @@ export type TestResult = {
   warning?: string
   advice?: string
   shareText?: string
+  strengths?: string[]
+  blindSpots?: string[]
+  situations?: string[]
+  viralHint?: string
 }
 
 export type TestDefinition = {
@@ -61,6 +83,7 @@ export type SelectedAnswer = {
   answerId: string
   scores?: ScoreMap
   score?: number
+  patternScores?: PatternScoreMap
 }
 
 export type TestAnswers = Record<number, SelectedAnswer>

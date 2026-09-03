@@ -32,6 +32,12 @@
       "title": "내가 진상일 가능성 테스트",
       "description": "나는 상식적인 사람일까, 아니면 은근히 진상일까?",
       "character": "jinsang/main"
+    },
+    {
+      "id": "relationship-pattern-test",
+      "title": "당신이 평소에 사람을 대하는 방식 테스트",
+      "description": "일상적인 상황 속에서 드러나는 나의 인간관계 패턴을 알아보세요.",
+      "character": "relationship/main"
     }
   ]
 }

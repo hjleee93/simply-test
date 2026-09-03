@@ -1,4 +1,22 @@
-import type { ScoreCategory, ScoreMap, TestAnswers, TestDefinition, TestResult } from '../types/test'
+import type {
+  RelationshipPattern,
+  ScoreCategory,
+  ScoreMap,
+  TestAnswers,
+  TestDefinition,
+  TestResult,
+} from '../types/test'
+
+export const PATTERN_ORDER: RelationshipPattern[] = [
+  'empathy',
+  'boundary',
+  'action',
+  'accommodating',
+  'selective',
+  'guarded',
+  'solver',
+  'observer',
+]
 
 const CATEGORY_LABELS: Record<ScoreCategory, string> = {
   work: '업무·출근',
@@ -52,6 +70,60 @@ export function isSimpleScoring(test: TestDefinition): boolean {
   return test.scoringMode === 'simple'
 }
 
+export function isPatternScoring(test: TestDefinition): boolean {
+  return test.scoringMode === 'pattern'
+}
+
+export function calculatePatternScores(
+  answers: TestAnswers,
+): Record<RelationshipPattern, number> {
+  const totals = Object.fromEntries(
+    PATTERN_ORDER.map((pattern) => [pattern, 0]),
+  ) as Record<RelationshipPattern, number>
+
+  for (const answer of Object.values(answers)) {
+    for (const [pattern, score] of Object.entries(answer.patternScores ?? {}) as [
+      RelationshipPattern,
+      number,
+    ][]) {
+      totals[pattern] += score
+    }
+  }
+
+  return totals
+}
+
+export function getTopPattern(
+  totals: Record<RelationshipPattern, number>,
+): RelationshipPattern {
+  return PATTERN_ORDER.reduce((top, pattern) =>
+    totals[pattern] > totals[top] ? pattern : top,
+  )
+}
+
+export function getPatternMatchPercent(answers: TestAnswers): number {
+  const totals = calculatePatternScores(answers)
+  const sorted = PATTERN_ORDER.map((pattern) => totals[pattern]).sort((a, b) => b - a)
+  const [first, second = 0] = sorted
+
+  if (first === 0) return 0
+  if (first + second === 0) return 100
+
+  return Math.round((first / (first + second)) * 100)
+}
+
+export function getPatternResult(
+  test: TestDefinition,
+  answers: TestAnswers,
+): TestResult {
+  const totals = calculatePatternScores(answers)
+  const topPattern = getTopPattern(totals)
+
+  return (
+    test.results.find((result) => result.id === topPattern) ?? test.results[0]
+  )
+}
+
 export function calculateRawScore(answers: TestAnswers): number {
   return Object.values(answers).reduce((total, answer) => {
     if (answer.score !== undefined) return total + answer.score
@@ -80,6 +152,10 @@ export function getResult(
   test: TestDefinition,
   answers: TestAnswers,
 ): TestResult {
+  if (isPatternScoring(test)) {
+    return getPatternResult(test, answers)
+  }
+
   const rawScore = getRawScore(answers)
   const percent = calculateThresholdPercent(
     rawScore,
@@ -98,6 +174,10 @@ export function getThresholdPercent(
   test: TestDefinition,
   answers: TestAnswers,
 ): number {
+  if (isPatternScoring(test)) {
+    return getPatternMatchPercent(answers)
+  }
+
   const rawScore = getRawScore(answers)
   return calculateThresholdPercent(
     rawScore,

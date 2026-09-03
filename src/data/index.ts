@@ -1,3 +1,4 @@
+import { relationshipPatternTest } from './relationshipPatternTest'
 import { genderTest } from './genderTest'
 import { jinSangTest } from './jinSangTest'
 import { kkondaeTest } from './kkondaeTest'
@@ -10,6 +11,7 @@ export const tests: Record<string, TestDefinition> = {
   [genderTest.id]: genderTest,
   [kkondaeTest.id]: kkondaeTest,
   [jinSangTest.id]: jinSangTest,
+  [relationshipPatternTest.id]: relationshipPatternTest,
 }
 
 export const MAIN_PAGE_TEST_LIMIT = 10

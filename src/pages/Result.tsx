@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import GenderResultCard from '../components/GenderResultCard'
 import JinsangResultCard from '../components/JinsangResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
+import RelationshipResultCard from '../components/RelationshipResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
 import RecommendedTests from '../components/RecommendedTests'
@@ -130,6 +131,19 @@ export default function Result() {
       <JinsangResultCard
         result={result}
         thresholdPercent={thresholdPercent}
+        testTitle={test.title}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
+  } else if (resultTemplate === 'relationship') {
+    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
+    pageDescription = `당신은 「${result.title}」입니다. ${result.keyword}`
+    resultCard = (
+      <RelationshipResultCard
+        result={result}
+        matchPercent={thresholdPercent}
         testTitle={test.title}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}

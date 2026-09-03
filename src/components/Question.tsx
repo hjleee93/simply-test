@@ -1,10 +1,11 @@
 import { cn } from '../lib/cn'
-import type { Question as QuestionType, ScoreMap } from '../types/test'
+import type { PatternScoreMap, Question as QuestionType, ScoreMap } from '../types/test'
 import StickerCard from './StickerCard'
 
 export type AnswerSelection = {
   scores?: ScoreMap
   score?: number
+  patternScores?: PatternScoreMap
 }
 
 interface QuestionProps {
@@ -39,9 +40,11 @@ export default function Question({
               onClick={() =>
                 onSelect(
                   answer.id,
-                  answer.score !== undefined
-                    ? { score: answer.score }
-                    : { scores: answer.scores ?? {} },
+                  answer.patternScores
+                    ? { patternScores: answer.patternScores }
+                    : answer.score !== undefined
+                      ? { score: answer.score }
+                      : { scores: answer.scores ?? {} },
                 )
               }
             >

@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .cursor
+
+# 스크립트 전용 비밀키 (커밋 금지)
+scripts/.env

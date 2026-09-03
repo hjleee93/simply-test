@@ -56,6 +56,18 @@ export function encodeSessionToSearchParams(session: TestSession, test: TestDefi
   return params.toString()
 }
 
+function decodeAnswerPayload(
+  answer: TestDefinition['questions'][number]['answers'][number],
+): Pick<TestAnswers[number], 'score' | 'scores' | 'patternScores'> {
+  if (answer.patternScores) {
+    return { patternScores: answer.patternScores }
+  }
+  if (answer.score !== undefined) {
+    return { score: answer.score }
+  }
+  return { scores: answer.scores ?? {} }
+}
+
 export function decodeSessionFromSearchParams(
   search: string,
   test: TestDefinition,
@@ -74,9 +86,7 @@ export function decodeSessionFromSearchParams(
 
     answers[question.id] = {
       answerId,
-      ...(answer.score !== undefined
-        ? { score: answer.score }
-        : { scores: answer.scores ?? {} }),
+      ...decodeAnswerPayload(answer),
     }
   }
 
