@@ -42,8 +42,16 @@
     @apply min-w-[320px] bg-cream font-sans text-base text-ink;
     background-image: radial-gradient(circle, #ffb8d9 1.5px, transparent 1.5px);
     background-size: 14px 14px;
-    -webkit-font-smoothing: none;
-    -moz-osx-font-smoothing: unset;
+  }
+
+  /* 도트 폰트의 크리스프한 픽셀 느낌은 고밀도(레티나) 화면에서만 유지한다.
+     일반 PC 모니터처럼 저밀도 화면에서 안티앨리어싱을 끄면 글자 테두리가
+     계단현상으로 깨져 보여 가독성이 떨어지므로, 거기서는 기본 스무딩을 둔다. */
+  @media (min-resolution: 2dppx) {
+    body {
+      -webkit-font-smoothing: none;
+      -moz-osx-font-smoothing: unset;
+    }
   }
 
   #root {

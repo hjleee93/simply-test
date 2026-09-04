@@ -8,18 +8,12 @@ export type TestResultTemplate =
   | 'kkondae'
   | 'jinsang'
   | 'relationship'
+  | 'company'
 
-export type RelationshipPattern =
-  | 'empathy'
-  | 'boundary'
-  | 'action'
-  | 'accommodating'
-  | 'selective'
-  | 'guarded'
-  | 'solver'
-  | 'observer'
+/** pattern 채점 모드에서 결과 유형을 식별하는 id. 테스트마다 다른 유형 집합을 쓸 수 있다. */
+export type PatternId = string
 
-export type PatternScoreMap = Partial<Record<RelationshipPattern, number>>
+export type PatternScoreMap = Partial<Record<PatternId, number>>
 
 export type ScoreCategory =
   | 'work'

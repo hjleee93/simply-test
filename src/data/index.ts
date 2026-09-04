@@ -3,6 +3,7 @@ import { genderTest } from './genderTest'
 import { jinSangTest } from './jinSangTest'
 import { kkondaeTest } from './kkondaeTest'
 import { retirementTest } from './retirementTest'
+import { workplacePersonaTest } from './workplacePersonaTest'
 import og from '../lib/og.json' with { type: 'json' }
 import type { TestDefinition } from '../types/test'
 
@@ -12,6 +13,7 @@ export const tests: Record<string, TestDefinition> = {
   [kkondaeTest.id]: kkondaeTest,
   [jinSangTest.id]: jinSangTest,
   [relationshipPatternTest.id]: relationshipPatternTest,
+  [workplacePersonaTest.id]: workplacePersonaTest,
 }
 
 export const MAIN_PAGE_TEST_LIMIT = 10
