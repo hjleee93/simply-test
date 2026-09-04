@@ -1,4 +1,4 @@
-import type { Question, TestResult } from '../types/test'
+import type { Question, TestCategoryId, TestResult } from '../types/test'
 import og from '../lib/og.json' with { type: 'json' }
 
 const meta = og.tests.find((test) => test.id === 'workplace-persona-test')!
@@ -9,6 +9,7 @@ export const workplacePersonaTest = {
   id: meta.id,
   title: meta.title,
   description: meta.description,
+  category: meta.category as TestCategoryId,
   scoringMode: 'pattern' as const,
   resultTemplate: 'company' as const,
   thumbnailCharacter: 'workplace/survival',

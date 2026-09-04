@@ -1,5 +1,7 @@
 export type Gender = 'male' | 'female'
 
+export type TestCategoryId = 'workplace' | 'relationship' | 'romance' | 'self'
+
 export type TestScoringMode = 'category' | 'simple' | 'pattern'
 
 export type TestResultTemplate =
@@ -62,6 +64,7 @@ export type TestDefinition = {
   id: string
   title: string
   description: string
+  category: TestCategoryId
   questions: Question[]
   results: TestResult[]
   scoringMode?: TestScoringMode
