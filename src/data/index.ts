@@ -46,6 +46,22 @@ function mapRow(row: TestRow): TestDefinition {
 let allTestsPromise: Promise<TestDefinition[]> | null = null
 
 async function loadAllTests(): Promise<TestDefinition[]> {
+  // 개발 서버는 Vite 미들웨어(`/__dev/tests`)로 미공개(publish_at 미래) 테스트까지 보여준다.
+  // 운영 빌드에는 이 분기가 포함되지 않으며, 콘텐츠는 항상 Supabase가 원본이다.
+  if (import.meta.env.DEV) {
+    try {
+      const response = await fetch('/__dev/tests')
+      if (!response.ok) {
+        console.error('로컬 미공개 테스트 프리뷰를 불러오지 못했어요:', response.statusText)
+        return []
+      }
+      return ((await response.json()) as TestRow[]).map(mapRow)
+    } catch (error) {
+      console.error('로컬 미공개 테스트 프리뷰를 불러오지 못했어요:', error)
+      return []
+    }
+  }
+
   if (!supabase) return []
 
   const { data, error } = await supabase
@@ -62,7 +78,7 @@ async function loadAllTests(): Promise<TestDefinition[]> {
   return (data as TestRow[]).map(mapRow)
 }
 
-/** 공개된(publish_at <= 지금) 테스트 전체. 최초 호출 결과를 캐싱한다. */
+/** 테스트 전체. 운영은 공개된 것만, 로컬 개발은 미공개 예약분까지. */
 export function fetchAllTests(): Promise<TestDefinition[]> {
   if (!allTestsPromise) {
     allTestsPromise = loadAllTests().catch((error: unknown) => {

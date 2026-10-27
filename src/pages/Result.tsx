@@ -2,6 +2,7 @@ import { useEffect, useMemo, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CompanyResultCard from '../components/CompanyResultCard'
 import GenderResultCard from '../components/GenderResultCard'
+import HalloweenResultCard from '../components/HalloweenResultCard'
 import JinsangResultCard from '../components/JinsangResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
 import RelationshipResultCard from '../components/RelationshipResultCard'
@@ -164,6 +165,19 @@ export default function Result() {
     pageDescription = `당신은 「${result.title}」입니다. ${result.keyword}`
     resultCard = (
       <CompanyResultCard
+        result={result}
+        matchPercent={thresholdPercent}
+        testTitle={test.title}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
+  } else if (resultTemplate === 'halloween') {
+    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
+    pageDescription = `내 안의 영화 빌런은 「${result.title}」! ${result.keyword}`
+    resultCard = (
+      <HalloweenResultCard
         result={result}
         matchPercent={thresholdPercent}
         testTitle={test.title}

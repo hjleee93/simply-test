@@ -11,7 +11,7 @@ export const ui = {
   stickerSoft:
     'rounded-xl border-[3px] border-dashed border-accent bg-accent-soft/60 p-5',
   badge:
-    'inline-block rounded-md border-2 border-ink bg-lemon px-3 py-1.5 text-[13px] font-bold text-ink',
+    'font-pixel inline-block rounded-md border-2 border-ink bg-lemon px-3 py-1.5 text-[13px] text-ink',
   pageTitle: 'text-[26px] font-bold leading-tight text-ink',
   pageDesc: 'text-[15px] leading-relaxed text-muted',
   sectionTitle: 'mb-3 text-[15px] font-bold text-ink',

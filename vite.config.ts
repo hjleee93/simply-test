@@ -189,6 +189,8 @@ function buildRobotsTxt(origin: string) {
     'Allow: /',
     'Disallow: /tests/*/play',
     'Disallow: /tests/*/result',
+    'Disallow: /admin',
+    'Disallow: /admin/',
   ]
 
   if (origin) {
@@ -196,6 +198,55 @@ function buildRobotsTxt(origin: string) {
   }
 
   return `${lines.join('\n')}\n`
+}
+
+/** 로컬 개발에서만 미공개(publish_at 미래) 테스트까지 보여준다.
+ *  content는 항상 Supabase가 원본이며, service_role은 Vite 서버 측에서만 사용한다. */
+function localUnpublishedTestsPreview(): Plugin {
+  return {
+    name: 'local-unpublished-tests-preview',
+    configureServer(server) {
+      server.middlewares.use('/__dev/tests', async (_req, res) => {
+        const env = loadEnv(server.config.mode, process.cwd(), '')
+        const scriptsEnvPath = path.join(process.cwd(), 'scripts', '.env')
+        if (fs.existsSync(scriptsEnvPath)) {
+          const dotenv = await import('dotenv')
+          dotenv.config({ path: scriptsEnvPath })
+        }
+
+        const supabaseUrl = process.env.SUPABASE_URL || env.VITE_SUPABASE_URL
+        const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+
+        if (!supabaseUrl || !serviceRoleKey) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(
+            JSON.stringify({
+              error:
+                '로컬 미공개 프리뷰에는 scripts/.env 의 SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY 가 필요해요.',
+            }),
+          )
+          return
+        }
+
+        const supabase = createClient(supabaseUrl, serviceRoleKey)
+        const { data, error } = await supabase
+          .from('tests')
+          .select('*')
+          .order('publish_at', { ascending: false })
+
+        if (error) {
+          res.statusCode = 500
+          res.setHeader('Content-Type', 'application/json')
+          res.end(JSON.stringify({ error: error.message }))
+          return
+        }
+
+        res.setHeader('Content-Type', 'application/json')
+        res.end(JSON.stringify(data ?? []))
+      })
+    },
+  }
 }
 
 function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[]): Plugin {
@@ -257,6 +308,6 @@ export default defineConfig(async ({ mode }) => {
   const tests = await loadPublishedTests(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
 
   return {
-    plugins: [react(), tailwindcss(), injectOgMeta(siteUrl, og, tests)],
+    plugins: [react(), tailwindcss(), localUnpublishedTestsPreview(), injectOgMeta(siteUrl, og, tests)],
   }
 })

@@ -16,7 +16,7 @@ export default function Logo({ className, iconClassName, showText = true }: Logo
         alt=""
         className={cn('pixel-img h-8 w-8 shrink-0 object-contain', iconClassName)}
       />
-      {showText ? <span className="font-bold text-ink">Simply Test</span> : null}
+      {showText ? <span className="font-pixel text-ink">Simply Test</span> : null}
     </span>
   )
 }

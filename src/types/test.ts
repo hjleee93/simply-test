@@ -11,6 +11,7 @@ export type TestResultTemplate =
   | 'jinsang'
   | 'relationship'
   | 'company'
+  | 'halloween'
 
 /** pattern 채점 모드에서 결과 유형을 식별하는 id. 테스트마다 다른 유형 집합을 쓸 수 있다. */
 export type PatternId = string

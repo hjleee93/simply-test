@@ -17,9 +17,9 @@ export default function Main() {
     <PageLayout>
       <section className="pb-8 pt-4 text-center">
         <img
-          src={pixelCharacterPath('subtle')}
+          src={pixelCharacterPath('main-hero')}
           alt=""
-          className="pixel-img mx-auto mb-4 h-32 w-32 object-contain"
+          className="pixel-img mx-auto mb-4 h-40 w-auto object-contain"
         />
         <span className={ui.badge}>심리 테스트</span>
         <h1 className="mt-4 text-[28px] font-bold leading-tight text-ink">
