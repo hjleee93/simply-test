@@ -7,7 +7,7 @@ const test: TestDefinition = {
   category: 'self',
   scoringMode: 'pattern',
   resultTemplate: 'halloween',
-  thumbnailCharacter: 'main-hero',
+  thumbnailCharacter: 'halloween-villain',
   resultLabel: '할로윈 영화 빌런',
 
   questions: [
