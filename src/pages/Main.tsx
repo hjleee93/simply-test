@@ -3,12 +3,14 @@ import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
 import TestListCard from '../components/TestListCard'
-import { getAllTests, getFeaturedTests, MAIN_PAGE_TEST_LIMIT } from '../data'
+import { MAIN_PAGE_TEST_LIMIT } from '../data'
+import { useAllTests, useFeaturedTests } from '../lib/useTests'
 import { ui } from '../lib/ui'
 
 export default function Main() {
-  const featuredTests = getFeaturedTests()
-  const totalCount = getAllTests().length
+  const { tests: featuredTests } = useFeaturedTests()
+  const { tests: allTests } = useAllTests()
+  const totalCount = allTests.length
   const hasMoreTests = totalCount > MAIN_PAGE_TEST_LIMIT
 
   return (

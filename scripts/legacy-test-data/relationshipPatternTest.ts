@@ -1,15 +1,12 @@
-import type { Question, TestCategoryId, TestResult } from '../types/test'
-import og from '../lib/og.json' with { type: 'json' }
-
-const meta = og.tests.find((test) => test.id === 'relationship-pattern-test')!
+import type { Question, TestCategoryId, TestResult } from '../../src/types/test'
 
 const RELATIONSHIP_CHAR = '/characters/pixel/relationship'
 
 export const relationshipPatternTest = {
-  id: meta.id,
-  title: meta.title,
-  description: meta.description,
-  category: meta.category as TestCategoryId,
+  id: 'relationship-pattern-test',
+  title: '당신이 평소에 사람을 대하는 방식 테스트',
+  description: '일상적인 상황 속에서 드러나는 나의 인간관계 패턴을 알아보세요.',
+  category: 'relationship' as TestCategoryId,
   scoringMode: 'pattern' as const,
   resultTemplate: 'relationship' as const,
   thumbnailCharacter: 'relationship/main',

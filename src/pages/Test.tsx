@@ -5,7 +5,7 @@ import PageLayout from '../components/PageLayout'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
 import type { AnswerSelection } from '../components/Question'
-import { getTest } from '../data'
+import { useTest } from '../lib/useTests'
 import {
   encodeSessionToSearchParams,
   saveTestSession,
@@ -17,7 +17,7 @@ import type { Gender, TestAnswers } from '../types/test'
 export default function Test() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
-  const test = slug ? getTest(slug) : undefined
+  const { test, loading } = useTest(slug)
 
   const [gender, setGender] = useState<Gender | undefined>()
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -41,6 +41,14 @@ export default function Test() {
     if (!test) return 0
     return test.questions.length
   }, [test])
+
+  if (loading) {
+    return (
+      <PageLayout backTo="/tests" backLabel="나가기">
+        <p className="py-12 text-center text-sm text-muted">불러오는 중...</p>
+      </PageLayout>
+    )
+  }
 
   if (!test || (!showGenderStep && !currentQuestion)) {
     return (

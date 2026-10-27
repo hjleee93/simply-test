@@ -1,9 +1,10 @@
 import { useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import { getTest } from '../data'
+import { useTest } from '../lib/useTests'
 import { trackPageView } from '../lib/analytics'
 import { buildQuizJsonLd, buildWebSiteJsonLd } from '../lib/jsonLd'
-import { getRouteMeta } from '../lib/routeMeta'
+import { getOgImagePath } from '../lib/ogImages'
+import { getDefaultRouteMeta, getStaticRouteMeta } from '../lib/routeMeta'
 import { DEFAULT_OG, SITE_NAME, getSiteOrigin, toAbsoluteUrl } from '../lib/site'
 
 export interface PageMetaProps {
@@ -117,23 +118,6 @@ export default function PageMeta({
   return null
 }
 
-function getRouteJsonLd(pathname: string): Record<string, unknown> | undefined {
-  const origin = getSiteOrigin()
-  if (!origin) return undefined
-
-  if (pathname === '/') {
-    return buildWebSiteJsonLd(origin)
-  }
-
-  const testDetailMatch = pathname.match(/^\/tests\/([^/]+)$/)
-  if (testDetailMatch) {
-    const test = getTest(testDetailMatch[1])
-    if (test) return buildQuizJsonLd(test, origin)
-  }
-
-  return undefined
-}
-
 function getCanonicalPath(pathname: string) {
   if (pathname.endsWith('/play') || pathname.endsWith('/result')) {
     return pathname.replace(/\/(play|result)$/, '')
@@ -141,14 +125,54 @@ function getCanonicalPath(pathname: string) {
   return pathname
 }
 
+const TEST_ROUTE_RE = /^\/tests\/([^/]+)(?:\/(play|result))?\/?$/
+
 export function RoutePageMeta() {
   const { pathname, search } = useLocation()
-  const meta = getRouteMeta(pathname)
-  const jsonLd = getRouteJsonLd(pathname)
+  const testRouteMatch = pathname.match(TEST_ROUTE_RE)
+  const testId = testRouteMatch?.[1]
+  const subpage = testRouteMatch?.[2]
+  const { test } = useTest(testId)
 
   useLayoutEffect(() => {
     trackPageView(`${pathname}${search}`)
   }, [pathname, search])
+
+  if (testId) {
+    const canonicalPath = `/tests/${testId}`
+    const origin = getSiteOrigin()
+
+    if (!test) {
+      return (
+        <PageMeta
+          title={DEFAULT_OG.title}
+          description={DEFAULT_OG.description}
+          imagePath={getOgImagePath(canonicalPath)}
+          canonicalPath={canonicalPath}
+          noindex
+        />
+      )
+    }
+
+    const titleSuffix = subpage === 'play' ? ' 진행 중' : subpage === 'result' ? ' 결과' : ''
+    const jsonLd = !subpage && origin ? buildQuizJsonLd(test, origin) : undefined
+
+    return (
+      <PageMeta
+        title={`${test.title}${titleSuffix} | ${SITE_NAME}`}
+        description={test.description}
+        imagePath={getOgImagePath(canonicalPath)}
+        type={subpage === 'result' ? 'article' : 'website'}
+        canonicalPath={canonicalPath}
+        noindex={Boolean(subpage)}
+        jsonLd={jsonLd}
+      />
+    )
+  }
+
+  const meta = getStaticRouteMeta(pathname) ?? getDefaultRouteMeta(pathname)
+  const origin = getSiteOrigin()
+  const jsonLd = pathname === '/' && origin ? buildWebSiteJsonLd(origin) : undefined
 
   return (
     <PageMeta

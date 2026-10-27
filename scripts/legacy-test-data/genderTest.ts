@@ -1,13 +1,10 @@
-import type { Question, TestCategoryId, TestResult } from '../types/test'
-import og from '../lib/og.json' with { type: 'json' }
-
-const meta = og.tests.find((test) => test.id === 'gender-fanatic-test')!
+import type { Question, TestCategoryId, TestResult } from '../../src/types/test'
 
 export const genderTest = {
-  id: meta.id,
-  title: meta.title,
-  description: meta.description,
-  category: meta.category as TestCategoryId,
+  id: 'gender-fanatic-test',
+  title: '나 혹시 남미새/여미새인가?',
+  description: '이성에 진심인 정도를 100%로 측정해드립니다.',
+  category: 'romance' as TestCategoryId,
   scoringMode: 'simple' as const,
   requiresGender: true,
   thumbnailCharacter: 'subtle',

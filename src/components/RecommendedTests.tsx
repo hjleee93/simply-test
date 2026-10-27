@@ -1,4 +1,4 @@
-import { getRecommendedTests } from '../data'
+import { useRecommendedTests } from '../lib/useTests'
 import TestListCard from './TestListCard'
 
 interface RecommendedTestsProps {
@@ -7,7 +7,7 @@ interface RecommendedTestsProps {
 }
 
 export default function RecommendedTests({ excludeTestId, className = '' }: RecommendedTestsProps) {
-  const tests = getRecommendedTests(excludeTestId)
+  const { tests } = useRecommendedTests(excludeTestId)
 
   if (tests.length === 0) return null
 

@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
-import { getTest } from '../data'
+import { useTest } from '../lib/useTests'
 import { ui } from '../lib/ui'
 
 function EmptyState({ message, onAction, actionLabel }: { message: string; onAction: () => void; actionLabel: string }) {
@@ -20,7 +20,15 @@ function EmptyState({ message, onAction, actionLabel }: { message: string; onAct
 export default function TestDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
-  const test = slug ? getTest(slug) : undefined
+  const { test, loading } = useTest(slug)
+
+  if (loading) {
+    return (
+      <PageLayout backTo="/tests" backLabel="목록">
+        <p className="py-12 text-center text-sm text-muted">불러오는 중...</p>
+      </PageLayout>
+    )
+  }
 
   if (!test) {
     return (

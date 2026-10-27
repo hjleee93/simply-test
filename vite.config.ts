@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
+import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 
 function getOgImagePath(pathname: string): string {
@@ -14,12 +15,13 @@ function getOgImagePath(pathname: string): string {
   return '/og/home.png'
 }
 
-type OgConfig = {
+type SiteOgConfig = {
   siteName: string
   home: { title: string; description: string }
   list: { title: string; description: string }
-  tests: { id: string; title: string; description: string }[]
 }
+
+type TestRouteSource = { id: string; title: string; description: string }
 
 type RouteOg = {
   path: string
@@ -29,12 +31,35 @@ type RouteOg = {
   indexable: boolean
 }
 
-function loadOgConfig(): OgConfig {
+function loadSiteOgConfig(): SiteOgConfig {
   const ogPath = fileURLToPath(new URL('./src/lib/og.json', import.meta.url))
-  return JSON.parse(fs.readFileSync(ogPath, 'utf8')) as OgConfig
+  return JSON.parse(fs.readFileSync(ogPath, 'utf8')) as SiteOgConfig
 }
 
-function getAllRouteOg(og: OgConfig, siteName: string): RouteOg[] {
+/** 테스트 콘텐츠는 Supabase에 있다. 빌드 시점 기준 이미 공개된(publish_at <= now) 테스트만
+ *  가져와서 정적 OG/sitemap을 만든다 — 미래에 공개될 테스트는 다음 빌드에서 반영된다. */
+async function loadPublishedTests(
+  supabaseUrl: string,
+  supabaseAnonKey: string,
+): Promise<TestRouteSource[]> {
+  if (!supabaseUrl || !supabaseAnonKey) return []
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const { data, error } = await supabase
+    .from('tests')
+    .select('id, title, description')
+    .lte('publish_at', new Date().toISOString())
+    .order('publish_at', { ascending: false })
+
+  if (error) {
+    console.warn(`[vite] Supabase에서 테스트 목록을 불러오지 못했어요: ${error.message}`)
+    return []
+  }
+
+  return data ?? []
+}
+
+function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: string): RouteOg[] {
   return [
     {
       path: '/',
@@ -50,7 +75,7 @@ function getAllRouteOg(og: OgConfig, siteName: string): RouteOg[] {
       type: 'website',
       indexable: true,
     },
-    ...og.tests.flatMap((test) => [
+    ...tests.flatMap((test) => [
       {
         path: `/tests/${test.id}`,
         title: `${test.title} | ${siteName}`,
@@ -173,9 +198,9 @@ function buildRobotsTxt(origin: string) {
   return `${lines.join('\n')}\n`
 }
 
-function injectOgMeta(siteUrl: string, og: OgConfig): Plugin {
+function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[]): Plugin {
   const origin = siteUrl.replace(/\/$/, '')
-  const routes = getAllRouteOg(og, og.siteName)
+  const routes = getAllRouteOg(og, tests, og.siteName)
   const homeMeta = routes[0] ?? {
     path: '/',
     title: og.home.title,
@@ -225,12 +250,13 @@ function injectOgMeta(siteUrl: string, og: OgConfig): Plugin {
   }
 }
 
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const siteUrl = env.VITE_SITE_URL ?? ''
-  const og = loadOgConfig()
+  const og = loadSiteOgConfig()
+  const tests = await loadPublishedTests(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
 
   return {
-    plugins: [react(), tailwindcss(), injectOgMeta(siteUrl, og)],
+    plugins: [react(), tailwindcss(), injectOgMeta(siteUrl, og, tests)],
   }
 })

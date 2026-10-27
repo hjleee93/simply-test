@@ -9,7 +9,7 @@ import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
 import RecommendedTests from '../components/RecommendedTests'
 import ResultCard from '../components/ResultCard'
-import { getTest } from '../data'
+import { useTest } from '../lib/useTests'
 import { applyGenderToResult, buildGenderInsights } from '../lib/gender'
 import { buildKkondaeInsights } from '../lib/kkondae'
 import { buildResultInsights } from '../lib/resultInsights'
@@ -31,7 +31,7 @@ export default function Result() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const location = useLocation()
-  const test = slug ? getTest(slug) : undefined
+  const { test, loading } = useTest(slug)
   const locationState = location.state as ResultLocationState | null
 
   const session = useMemo(() => {
@@ -55,6 +55,14 @@ export default function Result() {
       score: thresholdPercent,
     })
   }, [answers, test])
+
+  if (loading) {
+    return (
+      <PageLayout>
+        <p className="py-12 text-center text-sm text-muted">불러오는 중...</p>
+      </PageLayout>
+    )
+  }
 
   if (!test || !answers) {
     return (

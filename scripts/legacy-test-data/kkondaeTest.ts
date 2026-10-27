@@ -1,14 +1,11 @@
-import type { Question, TestCategoryId, TestResult } from '../types/test'
-import og from '../lib/og.json' with { type: 'json' }
-
-const meta = og.tests.find((test) => test.id === 'kkondae-test')!
+import type { Question, TestCategoryId, TestResult } from '../../src/types/test'
 const KKONDAE_CHAR = '/characters/pixel/kkondae'
 
 export const kkondaeTest = {
-  id: meta.id,
-  title: meta.title,
-  description: meta.description,
-  category: meta.category as TestCategoryId,
+  id: 'kkondae-test',
+  title: '내가 꼰대일 가능성 테스트',
+  description: '나는 꼰대가 아닐까? 직장 생활 속 상황으로 알아보는 나의 꼰대력 테스트',
+  category: 'workplace' as TestCategoryId,
   scoringMode: 'simple' as const,
   resultTemplate: 'kkondae' as const,
   minScorePerAnswer: 0,

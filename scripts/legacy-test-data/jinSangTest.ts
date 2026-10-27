@@ -1,14 +1,11 @@
-import type { Question, TestCategoryId, TestResult } from '../types/test'
-import og from '../lib/og.json' with { type: 'json' }
-
-const meta = og.tests.find((test) => test.id === 'jin-sang-test')!
+import type { Question, TestCategoryId, TestResult } from '../../src/types/test'
 const JINSANG_CHAR = '/characters/pixel/jinsang'
 
 export const jinSangTest = {
-  id: meta.id,
-  title: meta.title,
-  description: meta.description,
-  category: meta.category as TestCategoryId,
+  id: 'jin-sang-test',
+  title: '내가 진상일 가능성 테스트',
+  description: '나는 상식적인 사람일까, 아니면 은근히 진상일까?',
+  category: 'relationship' as TestCategoryId,
   scoringMode: 'simple' as const,
   resultTemplate: 'jinsang' as const,
   minScorePerAnswer: 0,

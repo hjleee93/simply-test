@@ -3,11 +3,37 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Resvg } from '@resvg/resvg-js'
 import satori from 'satori'
+import { createClient } from '@supabase/supabase-js'
+import { loadEnv } from 'vite'
 
 const root = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
 const publicDir = path.join(root, 'public')
 const outDir = path.join(publicDir, 'og')
 const ogConfig = JSON.parse(fs.readFileSync(path.join(root, 'src/lib/og.json'), 'utf8'))
+const env = loadEnv(process.env.NODE_ENV ?? 'production', root, '')
+
+/** 테스트 콘텐츠는 Supabase에 있다. 빌드 시점 기준 이미 공개된 테스트만 OG 이미지를 만든다. */
+async function loadPublishedTests() {
+  const supabaseUrl = env.VITE_SUPABASE_URL
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY
+  if (!supabaseUrl || !supabaseAnonKey) {
+    console.warn('Supabase 환경변수가 없어서 테스트 OG 이미지를 건너뜁니다.')
+    return []
+  }
+
+  const supabase = createClient(supabaseUrl, supabaseAnonKey)
+  const { data, error } = await supabase
+    .from('tests')
+    .select('id, title, description, character')
+    .lte('publish_at', new Date().toISOString())
+
+  if (error) {
+    console.error('Supabase에서 테스트를 불러오지 못했습니다:', error.message)
+    return []
+  }
+
+  return data ?? []
+}
 
 const fontRegular = fs.readFileSync(
   path.join(root, 'node_modules/@fontsource/noto-sans-kr/files/noto-sans-kr-korean-400-normal.woff'),
@@ -197,6 +223,8 @@ async function writeOgImage(filename, markup) {
 async function main() {
   fs.mkdirSync(outDir, { recursive: true })
 
+  const tests = await loadPublishedTests()
+
   const pages = [
     {
       filename: 'home.png',
@@ -210,7 +238,7 @@ async function main() {
       description: ogConfig.list.description,
       character: 'brand-sprout.png',
     },
-    ...ogConfig.tests.map((test) => ({
+    ...tests.map((test) => ({
       filename: `${test.id}.png`,
       title: test.title,
       description: test.description,

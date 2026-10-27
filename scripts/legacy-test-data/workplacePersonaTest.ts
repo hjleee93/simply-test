@@ -1,15 +1,12 @@
-import type { Question, TestCategoryId, TestResult } from '../types/test'
-import og from '../lib/og.json' with { type: 'json' }
-
-const meta = og.tests.find((test) => test.id === 'workplace-persona-test')!
+import type { Question, TestCategoryId, TestResult } from '../../src/types/test'
 
 const WORKPLACE_CHAR = '/characters/pixel/workplace'
 
 export const workplacePersonaTest = {
-  id: meta.id,
-  title: meta.title,
-  description: meta.description,
-  category: meta.category as TestCategoryId,
+  id: 'workplace-persona-test',
+  title: '회사에서 내 진짜 모습 테스트',
+  description: '나는 회사에서 어떤 인간으로 살아가고 있을까? 직장에서 실제로 겪는 상황으로 알아보는 나의 회사 자아 유형.',
+  category: 'workplace' as TestCategoryId,
   scoringMode: 'pattern' as const,
   resultTemplate: 'company' as const,
   thumbnailCharacter: 'workplace/survival',

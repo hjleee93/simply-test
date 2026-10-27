@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import PageLayout from '../components/PageLayout'
 import TestListCard from '../components/TestListCard'
-import { getAllTests } from '../data'
+import { useAllTests } from '../lib/useTests'
 import { cn } from '../lib/cn'
 import { TEST_CATEGORIES } from '../lib/testCategories'
 import { ui } from '../lib/ui'
@@ -10,7 +10,7 @@ import type { TestCategoryId } from '../types/test'
 type CategoryFilter = TestCategoryId | 'all'
 
 export default function TestList() {
-  const tests = getAllTests()
+  const { tests, loading } = useAllTests()
   const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all')
 
   const availableCategories = useMemo(
@@ -63,9 +63,13 @@ export default function TestList() {
       </div>
 
       <section className="space-y-4">
-        {filteredTests.map((test) => (
-          <TestListCard key={test.id} test={test} showQuestionCount />
-        ))}
+        {loading ? (
+          <p className="py-8 text-center text-sm text-muted">불러오는 중...</p>
+        ) : (
+          filteredTests.map((test) => (
+            <TestListCard key={test.id} test={test} showQuestionCount />
+          ))
+        )}
       </section>
     </PageLayout>
   )
