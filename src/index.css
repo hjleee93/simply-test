@@ -67,6 +67,20 @@
     image-rendering: pixelated;
   }
 
+  .halloween-page {
+    background-color: #10082b;
+    background-image:
+      radial-gradient(circle at 12% 12%, rgb(255 148 47 / 18%) 0 2px, transparent 3px),
+      radial-gradient(circle at 82% 22%, rgb(193 126 255 / 22%) 0 1.5px, transparent 2.5px),
+      radial-gradient(ellipse at 50% 0%, rgb(91 42 135 / 48%), transparent 58%),
+      linear-gradient(180deg, #10082b 0%, #1a0d38 48%, #10082b 100%);
+    background-size:
+      38px 38px,
+      31px 31px,
+      100% 100%,
+      100% 100%;
+  }
+
   .wiggle-hover:hover {
     animation: wiggle 0.35s steps(2, end);
   }

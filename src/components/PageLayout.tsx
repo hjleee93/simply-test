@@ -7,6 +7,7 @@ interface PageLayoutProps {
   children: ReactNode
   backTo?: string
   backLabel?: string
+  theme?: 'default' | 'halloween'
 }
 
 function InstagramIcon() {
@@ -27,10 +28,25 @@ function InstagramIcon() {
   )
 }
 
-export default function PageLayout({ children, backTo, backLabel }: PageLayoutProps) {
+export default function PageLayout({
+  children,
+  backTo,
+  backLabel,
+  theme = 'default',
+}: PageLayoutProps) {
+  const isHalloween = theme === 'halloween'
+
   return (
-    <div className="mx-auto flex min-h-svh max-w-[480px] flex-col">
-      <header className="sticky top-0 z-10 flex h-14 items-center bg-cream/90 px-5 backdrop-blur-sm">
+    <div
+      className={`mx-auto flex min-h-svh max-w-[480px] flex-col ${
+        isHalloween ? 'halloween-page' : ''
+      }`}
+    >
+      <header
+        className={`sticky top-0 z-10 flex h-14 items-center px-5 backdrop-blur-sm ${
+          isHalloween ? 'bg-[#10082b]/90' : 'bg-cream/90'
+        }`}
+      >
         {backTo ? (
           <Link
             className="rounded-md border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-ink transition-colors hover:bg-lemon"
@@ -43,17 +59,27 @@ export default function PageLayout({ children, backTo, backLabel }: PageLayoutPr
         )}
       </header>
       <main className="flex-1 px-5 pb-8 pt-1">{children}</main>
-      <footer className="mt-auto border-t-2 border-dashed border-lilac/70 px-5 pb-8 pt-5 text-center">
+      <footer
+        className={`mt-auto border-t-2 border-dashed px-5 pb-8 pt-5 text-center ${
+          isHalloween ? 'border-[#7346a8]' : 'border-lilac/70'
+        }`}
+      >
         <a
           href={INSTAGRAM_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-bold text-ink transition-colors hover:text-accent"
+          className={`inline-flex items-center gap-1.5 text-sm font-bold transition-colors hover:text-accent ${
+            isHalloween ? 'text-white' : 'text-ink'
+          }`}
         >
           <InstagramIcon />
           @{INSTAGRAM_HANDLE}
         </a>
-        <p className="mx-auto mt-3 max-w-[280px] text-[11px] leading-relaxed text-muted">
+        <p
+          className={`mx-auto mt-3 max-w-[280px] text-[11px] leading-relaxed ${
+            isHalloween ? 'text-[#c9b8e8]' : 'text-muted'
+          }`}
+        >
           본 사이트의 테스트 결과는 재미와 자기 이해를 위한 것이며, 전문적인 심리 상담을 대체할
           수 없습니다.
         </p>

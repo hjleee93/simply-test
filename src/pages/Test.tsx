@@ -101,10 +101,20 @@ export default function Test() {
     setCurrentIndex((index) => index - 1)
   }
 
+  const isHalloween = test.resultTemplate === 'halloween'
+
   return (
-    <PageLayout backTo={`/tests/${test.id}`} backLabel="나가기">
+    <PageLayout
+      backTo={`/tests/${test.id}`}
+      backLabel="나가기"
+      theme={isHalloween ? 'halloween' : 'default'}
+    >
       <div className="flex flex-col gap-5">
-        <ProgressBar current={progressCurrent} total={progressTotal} />
+        <ProgressBar
+          current={progressCurrent}
+          total={progressTotal}
+          theme={isHalloween ? 'halloween' : 'default'}
+        />
 
         {showGenderStep ? (
           <GenderSelector
@@ -119,11 +129,16 @@ export default function Test() {
               question={currentQuestion!}
               selectedAnswerId={selectedAnswerId}
               onSelect={handleSelect}
+              theme={isHalloween ? 'halloween' : 'default'}
             />
 
             <button
               type="button"
-              className={ui.btnGhost}
+              className={`${ui.btnGhost} ${
+                isHalloween
+                  ? '!border-[#70439a] !bg-[#211044] !text-[#d9c9ef] hover:!border-[#ff942f] hover:!text-white'
+                  : ''
+              }`}
               onClick={handlePrev}
               disabled={currentIndex === 0 && !requiresGender}
             >

@@ -204,7 +204,7 @@ export default function Result() {
   }
 
   return (
-    <PageLayout>
+    <PageLayout theme={resultTemplate === 'halloween' ? 'halloween' : 'default'}>
       <PageMeta
         title={pageTitle}
         description={pageDescription}
@@ -214,7 +214,11 @@ export default function Result() {
         canonicalPath={`/tests/${test.id}`}
       />
       {resultCard}
-      <RecommendedTests excludeTestId={test.id} className="mt-8" />
+      <RecommendedTests
+        excludeTestId={test.id}
+        className="mt-8"
+        theme={resultTemplate === 'halloween' ? 'halloween' : 'default'}
+      />
     </PageLayout>
   )
 }

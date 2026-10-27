@@ -39,41 +39,111 @@ export default function TestDetail() {
   }
 
   const estimatedMinutes = Math.max(1, Math.ceil(test.questions.length / 5))
+  const isHalloween = test.resultTemplate === 'halloween'
+  const thumbnailSrc = pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')
 
   return (
-    <PageLayout backTo="/tests" backLabel="목록">
-      <header className="mb-6 text-center">
-        <img
-          src={pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')}
-          alt=""
-          className="pixel-img mx-auto mb-3 h-24 w-24 object-contain"
-        />
-        <h1 className={ui.pageTitle}>{test.title}</h1>
-        <p className={`${ui.pageDesc} mt-2`}>{test.description}</p>
+    <PageLayout
+      backTo="/tests"
+      backLabel="목록"
+      theme={isHalloween ? 'halloween' : 'default'}
+    >
+      <header
+        className={
+          isHalloween
+            ? 'relative mb-6 overflow-hidden rounded-2xl border-[3px] border-[#ff942f] bg-[#0b0525] px-5 pb-6 pt-5 text-center shadow-[0_7px_0_#542275]'
+            : 'mb-6 text-center'
+        }
+      >
+        {isHalloween ? (
+          <>
+            <img
+              src={thumbnailSrc}
+              alt=""
+              aria-hidden
+              className="pixel-img absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-sm"
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,5,37,0.18),rgba(11,5,37,0.96))]" />
+          </>
+        ) : null}
+
+        <div className="relative">
+          <img
+            src={thumbnailSrc}
+            alt=""
+            className={`pixel-img mx-auto object-cover ${
+              isHalloween
+                ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
+                : 'mb-3 h-24 w-24 object-contain'
+            }`}
+          />
+          {isHalloween ? (
+            <span className="mb-3 inline-block rounded-full border border-[#ffb247] bg-[#ff942f]/20 px-3 py-1 text-xs font-bold text-[#ffd59a]">
+              🎃 HALLOWEEN SPECIAL
+            </span>
+          ) : null}
+          <h1 className={isHalloween ? 'text-[26px] font-bold leading-tight text-white' : ui.pageTitle}>
+            {test.title}
+          </h1>
+          <p className={isHalloween ? 'mt-2 text-[15px] leading-relaxed text-[#d9c9ef]' : `${ui.pageDesc} mt-2`}>
+            {test.description}
+          </p>
+        </div>
       </header>
 
-      <StickerCard className="mb-4 flex items-center justify-center gap-0 !p-4">
+      <StickerCard
+        className={`mb-4 flex items-center justify-center gap-0 !p-4 ${
+          isHalloween ? '!border-[#70439a] !bg-[#211044]' : ''
+        }`}
+      >
         {[
           { value: test.questions.length, label: '문항', emoji: '📝' },
           { value: estimatedMinutes, label: '분', emoji: '⏰' },
           { value: test.results.length, label: '결과', emoji: '🎭' },
         ].map((stat, index) => (
           <div key={stat.label} className="flex flex-1 items-center">
-            {index > 0 ? <div className="h-10 w-px bg-gray-200" /> : null}
+            {index > 0 ? (
+              <div className={`h-10 w-px ${isHalloween ? 'bg-[#70439a]' : 'bg-gray-200'}`} />
+            ) : null}
             <div className="flex flex-1 flex-col items-center gap-0.5">
               <span className="text-lg">{stat.emoji}</span>
-              <span className="text-xl font-extrabold text-ink">{stat.value}</span>
-              <span className="text-xs font-semibold text-muted">{stat.label}</span>
+              <span
+                className={`text-xl font-extrabold ${
+                  isHalloween ? 'text-[#ffb247]' : 'text-ink'
+                }`}
+              >
+                {stat.value}
+              </span>
+              <span
+                className={`text-xs font-semibold ${
+                  isHalloween ? 'text-[#d9c9ef]' : 'text-muted'
+                }`}
+              >
+                {stat.label}
+              </span>
             </div>
           </div>
         ))}
       </StickerCard>
 
-      <StickerCard soft className="mb-5 text-center text-sm leading-relaxed text-muted">
+      <StickerCard
+        soft
+        className={`mb-5 text-center text-sm leading-relaxed ${
+          isHalloween
+            ? '!border-[#ff942f] !bg-[#2a1450] !text-[#eadff7]'
+            : 'text-muted'
+        }`}
+      >
         정답 없어요~ 지금 기분 그대로 골라주세요 🫶
       </StickerCard>
 
-      <button type="button" className={`${ui.btnPrimary} wiggle-hover`} onClick={() => navigate(`/tests/${test.id}/play`)}>
+      <button
+        type="button"
+        className={`${ui.btnPrimary} wiggle-hover ${
+          isHalloween ? '!border-[#ffb247] !bg-[#f47721] hover:!bg-[#ff923f]' : ''
+        }`}
+        onClick={() => navigate(`/tests/${test.id}/play`)}
+      >
         시작하기! 🚀
       </button>
     </PageLayout>

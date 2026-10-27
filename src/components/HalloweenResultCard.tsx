@@ -46,16 +46,18 @@ export default function HalloweenResultCard({
         />
 
         <section className="text-center">
-          <p className="mb-1 text-sm font-bold text-muted">
+          <p className="mb-1 text-sm font-bold text-[#7346a8]">
             {result.emoji} 당신의 {resultLabel}
           </p>
-          <p className="text-[22px] font-extrabold leading-snug text-ink">
+          <p className="text-[22px] font-extrabold leading-snug text-[#2a1450]">
             당신은 「{result.title}」 재질입니다.
           </p>
-          <span className="mt-3 inline-block rounded-md border-2 border-ink bg-lemon px-3 py-1 text-sm font-bold text-ink">
+          <span className="mt-3 inline-block rounded-md border-2 border-[#2a1450] bg-[#ffb247] px-3 py-1 text-sm font-bold text-[#2a1450]">
             🎭 {result.keyword}
           </span>
-          <p className="mt-2 text-xs font-bold text-muted">빌런 일치도 {matchPercent}%</p>
+          <p className="mt-2 text-xs font-bold text-[#7346a8]">
+            빌런 일치도 {matchPercent}%
+          </p>
         </section>
 
         <div className="my-5 flex items-center justify-center gap-2 text-xs font-bold text-muted">
@@ -156,12 +158,19 @@ export default function HalloweenResultCard({
       <div className="mt-3 flex flex-col gap-2">
         <button
           type="button"
-          className={cn(ui.btnPrimary, 'wiggle-hover')}
+          className={cn(
+            ui.btnPrimary,
+            'wiggle-hover !border-[#ffb247] !bg-[#f47721] hover:!bg-[#ff923f]',
+          )}
           onClick={onRetry}
         >
           다시 해보기 🔄
         </button>
-        <button type="button" className={ui.btnSecondary} onClick={onHome}>
+        <button
+          type="button"
+          className={`${ui.btnSecondary} !border-[#70439a] !bg-[#211044] !text-[#eadff7] hover:!bg-[#32175a]`}
+          onClick={onHome}
+        >
           홈으로 🏠
         </button>
       </div>
