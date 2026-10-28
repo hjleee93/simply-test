@@ -2,39 +2,9 @@ import { Link } from 'react-router-dom'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import TestListCard from '../components/TestListCard'
+import { ChatIcon, ClockIcon, TargetIcon } from '../components/icons'
 import { MAIN_PAGE_TEST_LIMIT } from '../data'
 import { useAllTests, useFeaturedTests } from '../lib/useTests'
-
-function iconProps(className?: string) {
-  return { className, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2 } as const
-}
-
-function TargetIcon({ className }: { className?: string }) {
-  return (
-    <svg {...iconProps(className)} aria-hidden>
-      <circle cx="12" cy="12" r="8" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="12" cy="12" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  )
-}
-
-function ClockIcon({ className }: { className?: string }) {
-  return (
-    <svg {...iconProps(className)} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <circle cx="12" cy="12" r="8" />
-      <path d="M12 8v4l3 2" />
-    </svg>
-  )
-}
-
-function ChatIcon({ className }: { className?: string }) {
-  return (
-    <svg {...iconProps(className)} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-      <path d="M4 5h16v10H9l-4 3v-3H4z" />
-    </svg>
-  )
-}
 
 export default function Main() {
   const { tests: featuredTests } = useFeaturedTests()

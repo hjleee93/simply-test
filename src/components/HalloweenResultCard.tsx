@@ -1,5 +1,6 @@
 import { useRef } from 'react'
 import { cn } from '../lib/cn'
+import { CheckIcon, HomeIcon, RefreshIcon } from './icons'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
 import Logo from './Logo'
@@ -82,7 +83,7 @@ export default function HalloweenResultCard({
               <ul className="space-y-2">
                 {result.strengths.map((item) => (
                   <li key={item} className="flex gap-2 text-[15px] leading-snug text-ink">
-                    <span className="font-extrabold text-accent">✓</span>
+                    <CheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
                     <span>{item}</span>
                   </li>
                 ))}
@@ -158,20 +159,19 @@ export default function HalloweenResultCard({
       <div className="mt-3 flex flex-col gap-2">
         <button
           type="button"
-          className={cn(
-            ui.btnPrimary,
-            'wiggle-hover !border-[#ffb247] !bg-[#f47721] hover:!bg-[#ff923f]',
-          )}
+          className={cn(ui.btnPrimary, 'wiggle-hover !bg-[#f47721] hover:!bg-[#ff923f]')}
           onClick={onRetry}
         >
-          다시 해보기 🔄
+          <RefreshIcon className="h-[18px] w-[18px]" />
+          다시 해보기
         </button>
         <button
           type="button"
-          className={`${ui.btnSecondary} !border-[#70439a] !bg-[#211044] !text-[#eadff7] hover:!bg-[#32175a]`}
+          className={`${ui.btnSecondary} !bg-[#211044] !text-[#eadff7] hover:!bg-[#32175a]`}
           onClick={onHome}
         >
-          홈으로 🏠
+          <HomeIcon className="h-[18px] w-[18px]" />
+          홈으로
         </button>
       </div>
     </div>

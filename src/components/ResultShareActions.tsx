@@ -1,5 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { cn } from '../lib/cn'
+import { DownloadIcon, ShareIcon } from './icons'
 import {
   buildResultFilename,
   captureElementAsPng,
@@ -68,14 +69,14 @@ export default function ResultShareActions({
 
       if (needsManualImageSave()) {
         openPreview(blob)
-        setMessage('이미지를 길게 눌러 앨범에 저장하세요 📸')
+        setMessage('이미지를 길게 눌러 앨범에 저장하세요')
         return
       }
 
       downloadImage(blob, filename)
-      setMessage('저장 완료! 갤러리에서 확인해보세요 📸')
+      setMessage('저장 완료! 갤러리에서 확인해보세요')
     } catch {
-      setMessage('앗, 저장이 안 됐어요. 다시 눌러주세요 🥲')
+      setMessage('앗, 저장이 안 됐어요. 다시 눌러주세요')
     } finally {
       setIsSaving(false)
     }
@@ -107,7 +108,7 @@ export default function ResultShareActions({
       }
     } catch (error) {
       if (error instanceof DOMException && error.name === 'AbortError') return
-      setMessage('공유 실패… 저장 버튼 써주세요 🙏')
+      setMessage('공유 실패… 저장 버튼 써주세요')
     } finally {
       setIsSaving(false)
     }
@@ -140,7 +141,14 @@ export default function ResultShareActions({
           onClick={handleShare}
           disabled={isSaving}
         >
-          {isSaving ? '만드는 중…' : '자랑하기 📤'}
+          {isSaving ? (
+            '만드는 중…'
+          ) : (
+            <>
+              <ShareIcon className="h-[18px] w-[18px]" />
+              자랑하기
+            </>
+          )}
         </button>
         <button
           type="button"
@@ -148,7 +156,8 @@ export default function ResultShareActions({
           onClick={handleSave}
           disabled={isSaving}
         >
-          저장 📷
+          <DownloadIcon className="h-[18px] w-[18px]" />
+          저장
         </button>
       </div>
       {message ? <p className="text-center text-sm font-semibold text-muted">{message}</p> : null}

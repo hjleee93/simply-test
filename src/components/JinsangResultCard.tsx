@@ -1,5 +1,6 @@
-import { useRef } from 'react'
+import { useRef, type ComponentType } from 'react'
 import { cn } from '../lib/cn'
+import { AlertIcon, HomeIcon, LightbulbIcon, PinIcon, RefreshIcon } from './icons'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
 import Logo from './Logo'
@@ -16,10 +17,17 @@ interface JinsangResultCardProps {
   onHome: () => void
 }
 
-function SectionTitle({ emoji, children }: { emoji: string; children: string }) {
+function SectionTitle({
+  Icon,
+  children,
+}: {
+  Icon: ComponentType<{ className?: string }>
+  children: string
+}) {
   return (
-    <h3 className="mb-3 text-[15px] font-extrabold text-ink">
-      {emoji} {children}
+    <h3 className="mb-3 flex items-center gap-1.5 text-[15px] font-extrabold text-ink">
+      <Icon className="h-4 w-4 text-accent" />
+      {children}
     </h3>
   )
 }
@@ -49,15 +57,15 @@ export default function JinsangResultCard({
             <span className="text-[28px] font-bold text-accent">%</span>
           </p>
           <p className="mt-3 text-lg font-extrabold text-ink">{result.title}</p>
-          <span className="mt-2 inline-block rounded-md border-2 border-ink bg-lemon px-3 py-1 text-sm font-bold text-ink">
+          <span className="mt-2 inline-block rounded-full bg-lemon px-3 py-1 text-sm font-bold text-ink">
             {result.keyword}
           </span>
         </section>
 
-        <div className="my-5 flex items-center justify-center gap-2 text-xs font-bold text-muted">
-          <span className="h-px w-8 bg-gray-200" />
-          ✨ 결과 리포트 ✨
-          <span className="h-px w-8 bg-gray-200" />
+        <div className="my-5 flex items-center justify-center gap-3 text-xs font-bold text-muted">
+          <span className="h-px flex-1 bg-gray-200" />
+          결과 리포트
+          <span className="h-px flex-1 bg-gray-200" />
         </div>
 
         <StickerCard className="mb-4">
@@ -68,7 +76,7 @@ export default function JinsangResultCard({
 
         {result.characteristics && result.characteristics.length > 0 ? (
           <section className="mb-4">
-            <SectionTitle emoji="📌">진상 특징</SectionTitle>
+            <SectionTitle Icon={PinIcon}>진상 특징</SectionTitle>
             <StickerCard soft>
               <ul className="space-y-1.5 text-[15px] font-bold leading-relaxed text-ink">
                 {result.characteristics.map((item) => (
@@ -81,7 +89,7 @@ export default function JinsangResultCard({
 
         {result.warning ? (
           <section className="mb-4">
-            <SectionTitle emoji="⚠️">주의</SectionTitle>
+            <SectionTitle Icon={AlertIcon}>주의</SectionTitle>
             <StickerCard soft className="text-center">
               <p className="text-[15px] font-extrabold leading-relaxed text-ink">{result.warning}</p>
             </StickerCard>
@@ -90,7 +98,7 @@ export default function JinsangResultCard({
 
         {result.advice ? (
           <section className="mb-4">
-            <SectionTitle emoji="💡">한마디 조언</SectionTitle>
+            <SectionTitle Icon={LightbulbIcon}>한마디 조언</SectionTitle>
             <StickerCard>
               <p className="text-[15px] leading-relaxed text-ink">{result.advice}</p>
             </StickerCard>
@@ -115,10 +123,12 @@ export default function JinsangResultCard({
 
       <div className="mt-3 flex flex-col gap-2">
         <button type="button" className={cn(ui.btnPrimary, 'wiggle-hover')} onClick={onRetry}>
-          다시 해보기 🔄
+          <RefreshIcon className="h-[18px] w-[18px]" />
+          다시 해보기
         </button>
         <button type="button" className={ui.btnSecondary} onClick={onHome}>
-          홈으로 🏠
+          <HomeIcon className="h-[18px] w-[18px]" />
+          홈으로
         </button>
       </div>
     </div>

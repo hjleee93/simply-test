@@ -25,7 +25,7 @@ export default function ResultCharacter({ resultId, emoji, image }: ResultCharac
         }}
       />
       <div
-        className="hidden h-full w-full items-center justify-center rounded-lg border-[3px] border-ink bg-accent-soft text-6xl"
+        className="hidden h-full w-full items-center justify-center rounded-2xl bg-accent-soft text-6xl"
         aria-hidden
       >
         {emoji}

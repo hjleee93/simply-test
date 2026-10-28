@@ -21,6 +21,7 @@ import { getVisitorId } from '../lib/visitorId'
 import type { Gender, TestAnswers } from '../types/test'
 
 import { getOgImagePath } from '../lib/ogImages'
+import { AlertIcon } from '../components/icons'
 import { ui } from '../lib/ui'
 
 type ResultLocationState = {
@@ -69,7 +70,7 @@ export default function Result() {
     return (
       <PageLayout backTo="/tests" backLabel="목록">
         <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <p className="text-4xl">🫠</p>
+          <AlertIcon className="h-10 w-10 text-muted" />
           <p className="text-[15px] text-muted">결과가 사라졌어요…</p>
           <button type="button" className={ui.btnPrimary} onClick={() => navigate(`/tests/${test?.id ?? ''}/play`)}>
             다시 테스트하기
@@ -83,7 +84,7 @@ export default function Result() {
     return (
       <PageLayout backTo="/tests" backLabel="목록">
         <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <p className="text-4xl">🫠</p>
+          <AlertIcon className="h-10 w-10 text-muted" />
           <p className="text-[15px] text-muted">성별 정보가 없어요. 다시 테스트해주세요.</p>
           <button type="button" className={ui.btnPrimary} onClick={() => navigate(`/tests/${test.id}/play`)}>
             다시 테스트하기

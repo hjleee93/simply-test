@@ -6,8 +6,7 @@ interface CategoryBarProps {
 }
 
 export default function CategoryBar({ item }: CategoryBarProps) {
-  const filled = Math.min(10, Math.max(0, Math.round(item.percent / 10)))
-  const empty = 10 - filled
+  const percent = Math.min(100, Math.max(0, item.percent))
 
   return (
     <div className="space-y-1.5">
@@ -17,9 +16,8 @@ export default function CategoryBar({ item }: CategoryBarProps) {
         </span>
         <span className="font-bold text-accent">{item.percent}%</span>
       </div>
-      <div className="text-[16px] leading-none tracking-widest">
-        <span className="text-accent">{'■'.repeat(filled)}</span>
-        <span className="text-gray-200">{'□'.repeat(empty)}</span>
+      <div className="h-2 overflow-hidden rounded-full bg-gray-200">
+        <div className="h-full rounded-full bg-accent" style={{ width: `${percent}%` }} />
       </div>
     </div>
   )

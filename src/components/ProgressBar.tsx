@@ -6,18 +6,17 @@ interface ProgressBarProps {
 
 export default function ProgressBar({ current, total, theme = 'default' }: ProgressBarProps) {
   const percent = total > 0 ? Math.round((current / total) * 100) : 0
-  const filledBlocks = Math.round((percent / 100) * 10)
   const isHalloween = theme === 'halloween'
 
   return (
     <div
-      className={`rounded-lg border-[3px] px-4 py-3 ${
-        isHalloween ? 'border-[#ff942f] bg-[#211044]' : 'border-ink bg-white'
+      className={`rounded-2xl px-4 py-3.5 ${
+        isHalloween ? 'bg-[#211044]' : 'bg-white shadow-[0_2px_14px_-6px_rgba(31,21,53,0.14)]'
       }`}
     >
       <div
         className={`mb-2 flex justify-between text-xs font-bold ${
-          isHalloween ? 'text-[#e6d7f7]' : 'text-muted'
+          isHalloween ? 'text-[#b9a3cf]' : 'text-muted'
         }`}
       >
         <span>
@@ -25,23 +24,17 @@ export default function ProgressBar({ current, total, theme = 'default' }: Progr
         </span>
         <span>{percent}%</span>
       </div>
-      <div className="flex gap-1">
-        {Array.from({ length: 10 }, (_, i) => (
-          <div
-            key={i}
-            className={`h-4 flex-1 border-2 ${
-              isHalloween ? 'border-[#6f4396]' : 'border-ink'
-            } ${
-              i < filledBlocks
-                ? isHalloween
-                  ? 'bg-[#ff942f]'
-                  : 'bg-accent'
-                : isHalloween
-                  ? 'bg-[#39205b]'
-                  : 'bg-accent-soft'
-            }`}
-          />
-        ))}
+      <div
+        className={`h-2.5 overflow-hidden rounded-full ${
+          isHalloween ? 'bg-[#39205b]' : 'bg-accent-soft'
+        }`}
+      >
+        <div
+          className={`h-full rounded-full transition-[width] duration-300 ${
+            isHalloween ? 'bg-[#ff942f]' : 'bg-accent'
+          }`}
+          style={{ width: `${percent}%` }}
+        />
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import GenderSelector from '../components/GenderSelector'
+import { AlertIcon } from '../components/icons'
 import PageLayout from '../components/PageLayout'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
@@ -54,7 +55,7 @@ export default function Test() {
     return (
       <PageLayout backTo="/tests" backLabel="목록">
         <div className="flex flex-col items-center gap-4 py-12 text-center">
-          <p className="text-4xl">😵</p>
+          <AlertIcon className="h-10 w-10 text-muted" />
           <p className="text-[15px] text-muted">테스트를 찾을 수 없어요</p>
           <button type="button" className={ui.btnSecondary} onClick={() => navigate('/tests')}>
             목록으로

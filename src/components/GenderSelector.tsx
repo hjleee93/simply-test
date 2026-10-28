@@ -1,5 +1,6 @@
 import { cn } from '../lib/cn'
 import type { Gender } from '../types/test'
+import { FemaleIcon, MaleIcon } from './icons'
 import StickerCard from './StickerCard'
 
 interface GenderSelectorProps {
@@ -7,9 +8,9 @@ interface GenderSelectorProps {
   onSelect: (gender: Gender) => void
 }
 
-const OPTIONS: { value: Gender; emoji: string; label: string; desc: string }[] = [
-  { value: 'male', emoji: '👨', label: '남성', desc: '여미새 테스트' },
-  { value: 'female', emoji: '👩', label: '여성', desc: '남미새 테스트' },
+const OPTIONS: { value: Gender; Icon: typeof MaleIcon; label: string; desc: string }[] = [
+  { value: 'male', Icon: MaleIcon, label: '남성', desc: '여미새 테스트' },
+  { value: 'female', Icon: FemaleIcon, label: '여성', desc: '남미새 테스트' },
 ]
 
 export default function GenderSelector({ selected, onSelect }: GenderSelectorProps) {
@@ -27,14 +28,21 @@ export default function GenderSelector({ selected, onSelect }: GenderSelectorPro
             <button
               type="button"
               className={cn(
-                'flex w-full items-center gap-3 rounded-lg border-[3px] px-4 py-4 text-left transition-colors',
+                'flex w-full items-center gap-3 rounded-2xl px-4 py-4 text-left transition-[transform,background-color,box-shadow] duration-150',
                 selected === option.value
-                  ? 'border-ink bg-accent text-white'
-                  : 'border-ink bg-white hover:bg-cream-dark',
+                  ? 'bg-accent text-white shadow-[0_6px_16px_-6px_rgba(224,82,124,0.55)]'
+                  : 'bg-white text-ink shadow-[0_2px_10px_-5px_rgba(31,21,53,0.16)] hover:-translate-y-0.5',
               )}
               onClick={() => onSelect(option.value)}
             >
-              <span className="text-2xl">{option.emoji}</span>
+              <span
+                className={cn(
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+                  selected === option.value ? 'bg-white/20' : 'bg-accent-soft text-accent-hover',
+                )}
+              >
+                <option.Icon className="h-5 w-5" />
+              </span>
               <div>
                 <p className="text-[15px] font-bold">{option.label}</p>
                 <p

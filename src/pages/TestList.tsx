@@ -27,7 +27,6 @@ export default function TestList() {
   return (
     <PageLayout backTo="/" backLabel="홈">
       <header className="mb-6 text-center">
-        <p className="mb-2 text-3xl">📋</p>
         <h1 className={ui.pageTitle}>테스트 목록</h1>
         <p className={`${ui.pageDesc} mt-2`}>궁금한 거 골라보세요~</p>
       </header>
@@ -36,10 +35,10 @@ export default function TestList() {
         <button
           type="button"
           className={cn(
-            'rounded-full border-2 border-ink px-3.5 py-1.5 text-[13px] font-bold transition-colors',
+            'rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors',
             activeCategory === 'all'
               ? 'bg-ink text-white'
-              : 'bg-white text-ink hover:bg-cream-dark',
+              : 'bg-white text-ink shadow-[0_2px_8px_-4px_rgba(31,21,53,0.18)] hover:bg-cream-dark',
           )}
           onClick={() => setActiveCategory('all')}
         >
@@ -50,14 +49,14 @@ export default function TestList() {
             key={category.id}
             type="button"
             className={cn(
-              'rounded-full border-2 border-ink px-3.5 py-1.5 text-[13px] font-bold transition-colors',
+              'rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors',
               activeCategory === category.id
                 ? 'bg-ink text-white'
-                : 'bg-white text-ink hover:bg-cream-dark',
+                : 'bg-white text-ink shadow-[0_2px_8px_-4px_rgba(31,21,53,0.18)] hover:bg-cream-dark',
             )}
             onClick={() => setActiveCategory(category.id)}
           >
-            {category.emoji} {category.label}
+            {category.label}
           </button>
         ))}
       </div>

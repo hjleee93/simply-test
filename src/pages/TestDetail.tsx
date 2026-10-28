@@ -2,13 +2,14 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { pixelCharacterPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
+import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
 import { useTest } from '../lib/useTests'
 import { ui } from '../lib/ui'
 
 function EmptyState({ message, onAction, actionLabel }: { message: string; onAction: () => void; actionLabel: string }) {
   return (
     <div className="flex flex-col items-center gap-4 py-12 text-center">
-      <p className="text-4xl">😵</p>
+      <AlertIcon className="h-10 w-10 text-muted" />
       <p className="text-[15px] text-muted">{message}</p>
       <button type="button" className={ui.btnSecondary} onClick={onAction}>
         {actionLabel}
@@ -97,16 +98,18 @@ export default function TestDetail() {
         }`}
       >
         {[
-          { value: test.questions.length, label: '문항', emoji: '📝' },
-          { value: estimatedMinutes, label: '분', emoji: '⏰' },
-          { value: test.results.length, label: '결과', emoji: '🎭' },
+          { value: test.questions.length, label: '문항', Icon: DocumentIcon },
+          { value: estimatedMinutes, label: '분', Icon: ClockIcon },
+          { value: test.results.length, label: '결과', Icon: LayersIcon },
         ].map((stat, index) => (
           <div key={stat.label} className="flex flex-1 items-center">
             {index > 0 ? (
               <div className={`h-10 w-px ${isHalloween ? 'bg-[#70439a]' : 'bg-gray-200'}`} />
             ) : null}
             <div className="flex flex-1 flex-col items-center gap-0.5">
-              <span className="text-lg">{stat.emoji}</span>
+              <stat.Icon
+                className={`h-[18px] w-[18px] ${isHalloween ? 'text-[#ffb247]' : 'text-accent'}`}
+              />
               <span
                 className={`text-xl font-extrabold ${
                   isHalloween ? 'text-[#ffb247]' : 'text-ink'
@@ -134,17 +137,18 @@ export default function TestDetail() {
             : 'text-muted'
         }`}
       >
-        정답 없어요~ 지금 기분 그대로 골라주세요 🫶
+        정답 없어요~ 지금 기분 그대로 골라주세요
       </StickerCard>
 
       <button
         type="button"
         className={`${ui.btnPrimary} wiggle-hover ${
-          isHalloween ? '!border-[#ffb247] !bg-[#f47721] hover:!bg-[#ff923f]' : ''
+          isHalloween ? '!bg-[#f47721] hover:!bg-[#ff923f]' : ''
         }`}
         onClick={() => navigate(`/tests/${test.id}/play`)}
       >
-        시작하기! 🚀
+        시작하기
+        <span aria-hidden>→</span>
       </button>
     </PageLayout>
   )
