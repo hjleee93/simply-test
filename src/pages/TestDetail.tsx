@@ -62,7 +62,7 @@ export default function TestDetail() {
               src={thumbnailSrc}
               alt=""
               aria-hidden
-              className="pixel-img absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-sm"
+              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-sm"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,5,37,0.18),rgba(11,5,37,0.96))]" />
           </>
@@ -72,7 +72,7 @@ export default function TestDetail() {
           <img
             src={thumbnailSrc}
             alt=""
-            className={`pixel-img mx-auto object-cover ${
+            className={`mx-auto object-cover ${
               isHalloween
                 ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
                 : 'mb-3 h-24 w-24 object-contain'

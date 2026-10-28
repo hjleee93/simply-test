@@ -14,7 +14,7 @@ export default function ResultCharacter({ resultId, emoji, image }: ResultCharac
       <img
         src={src}
         alt=""
-        className="pixel-img h-full w-full object-contain"
+        className="h-full w-full object-contain"
         onError={(event) => {
           const target = event.currentTarget
           target.style.display = 'none'

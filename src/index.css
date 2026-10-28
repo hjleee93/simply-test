@@ -68,10 +68,6 @@
     background-size: 14px 14px;
   }
 
-  .pixel-img {
-    image-rendering: pixelated;
-  }
-
   .hero-stage {
     background-image:
       radial-gradient(ellipse 60% 55% at 50% 38%, rgb(240 206 134 / 55%), transparent 70%),
