@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { pixelCharacterPath } from '../lib/characters'
+import { resolveCharacterImage } from '../lib/characters'
 import { getCategoryMeta } from '../lib/testCategories'
 import type { TestDefinition } from '../types/test'
 import StickerCard from './StickerCard'
@@ -23,7 +23,7 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
         }`}
       >
         <img
-          src={pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')}
+          src={resolveCharacterImage(test.thumbnailCharacter ?? 'adapted')}
           alt=""
           className={`pixel-img h-14 w-14 shrink-0 ${
             isHalloween

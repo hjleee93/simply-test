@@ -253,8 +253,11 @@ export default function AdminTestEdit() {
                 setInput((prev) => ({ ...prev, thumbnailCharacter: e.target.value }))
               }
               className={fieldClassName()}
-              placeholder="main-hero"
+              placeholder="main-hero 또는 https://... 이미지 URL"
             />
+            <span className="mt-1 block text-xs font-normal text-muted">
+              pixel 캐릭터 id, /public 경로, 또는 http(s):// 이미지 URL을 입력할 수 있어요.
+            </span>
           </label>
 
           <label className="block text-sm font-bold text-ink">

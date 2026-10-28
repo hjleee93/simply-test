@@ -57,6 +57,19 @@ function toDataUrl(filePath) {
   return `data:image/${ext};base64,${buffer.toString('base64')}`
 }
 
+async function toDataUrlFromUrl(imageUrl) {
+  const response = await fetch(imageUrl)
+  if (!response.ok) throw new Error(`이미지를 가져오지 못했습니다 (${response.status}): ${imageUrl}`)
+  const contentType = response.headers.get('content-type') ?? 'image/png'
+  const buffer = Buffer.from(await response.arrayBuffer())
+  return `data:${contentType};base64,${buffer.toString('base64')}`
+}
+
+async function resolveCharacterSrc(character) {
+  if (/^https?:\/\//.test(character)) return toDataUrlFromUrl(character)
+  return toDataUrl(resolveCharacterPath(character))
+}
+
 function getTitleFontSize(title) {
   if (title.length <= 14) return 44
   if (title.length <= 22) return 38
@@ -70,8 +83,8 @@ function getDescriptionFontSize(description) {
   return 22
 }
 
-function buildMarkup({ title, description, characterPath, badge = 'Simply Test' }) {
-  const characterSrc = toDataUrl(resolveCharacterPath(characterPath))
+async function buildMarkup({ title, description, characterPath, badge = 'Simply Test' }) {
+  const characterSrc = await resolveCharacterSrc(characterPath)
   const titleSize = getTitleFontSize(title)
   const descriptionSize = getDescriptionFontSize(description)
 
@@ -249,7 +262,7 @@ async function main() {
   for (const page of pages) {
     await writeOgImage(
       page.filename,
-      buildMarkup({
+      await buildMarkup({
         title: page.title,
         description: page.description,
         characterPath: page.character,

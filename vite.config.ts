@@ -21,7 +21,24 @@ type SiteOgConfig = {
   list: { title: string; description: string }
 }
 
-type TestRouteSource = { id: string; title: string; description: string }
+type TestRouteSource = {
+  id: string
+  title: string
+  description: string
+  category: string
+  questionCount: number
+}
+
+/** src/lib/testCategories.ts 의 라벨과 반드시 같이 맞춰서 바꿔야 한다. */
+const CATEGORY_LABELS: Record<string, string> = {
+  workplace: '직장생활',
+  relationship: '인간관계',
+  romance: '연애',
+  self: '자아탐구',
+}
+
+/** src/data 의 MAIN_PAGE_TEST_LIMIT 과 같이 맞춰서 바꿔야 한다. */
+const HOME_FEATURED_LIMIT = 10
 
 type RouteOg = {
   path: string
@@ -47,7 +64,7 @@ async function loadPublishedTests(
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
   const { data, error } = await supabase
     .from('tests')
-    .select('id, title, description')
+    .select('id, title, description, category, questions')
     .lte('publish_at', new Date().toISOString())
     .order('publish_at', { ascending: false })
 
@@ -56,7 +73,13 @@ async function loadPublishedTests(
     return []
   }
 
-  return data ?? []
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    category: row.category,
+    questionCount: Array.isArray(row.questions) ? row.questions.length : 0,
+  }))
 }
 
 function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: string): RouteOg[] {
@@ -114,6 +137,69 @@ function escapeXml(value: string) {
     .replaceAll("'", '&apos;')
 }
 
+const escapeHtml = escapeXml
+
+/** 네이버 Yeti 등 JS를 거의 실행하지 않는 크롤러도 실제 텍스트를 읽을 수 있도록,
+ *  빌드 시점에 각 라우트의 정적 HTML에 실제 콘텐츠를 미리 그려 넣는다.
+ *  React는 createRoot().render() 로 #root 를 그대로 덮어쓰므로 하이드레이션 충돌은 없다. */
+function testLinkItem(test: TestRouteSource): string {
+  const label = CATEGORY_LABELS[test.category] ?? ''
+  return `<li class="mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_18px_-6px_rgba(31,21,53,0.12)] list-none">
+      <a href="/tests/${escapeAttr(test.id)}" class="block">
+        ${label ? `<span class="mb-1 inline-block text-[11px] font-bold text-accent">${escapeHtml(label)}</span>` : ''}
+        <p class="mb-1 text-[15px] font-extrabold text-ink">${escapeHtml(test.title)}</p>
+        <p class="text-sm leading-snug text-muted">${escapeHtml(test.description)}</p>
+      </a>
+    </li>`
+}
+
+function buildHomeContent(tests: TestRouteSource[]): string {
+  const featured = tests.slice(0, HOME_FEATURED_LIMIT)
+  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+    <h1 class="text-[26px] font-black leading-tight text-ink">나도 몰랐던 내 진짜 모습</h1>
+    <p class="mt-3 text-[15px] leading-relaxed text-muted">귀엽게 그려진 캐릭터가 당신의 숨겨진 성향을 알려줘요. 3분이면 끝나는 심리 테스트로 지금 바로 확인해보세요.</p>
+    <h2 class="mb-3 mt-8 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
+    <ul>${featured.map(testLinkItem).join('')}</ul>
+    <p class="mt-4 text-center"><a href="/tests" class="text-sm font-bold text-accent">전체 테스트 보기 (${tests.length}개) →</a></p>
+  </div>`
+}
+
+function buildListContent(tests: TestRouteSource[]): string {
+  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+    <h1 class="text-[26px] font-black leading-tight text-ink">테스트 목록</h1>
+    <p class="mt-2 text-[15px] leading-relaxed text-muted">궁금한 거 골라보세요~</p>
+    <ul class="mt-5">${tests.map(testLinkItem).join('')}</ul>
+  </div>`
+}
+
+function buildTestContent(test: TestRouteSource, allTests: TestRouteSource[]): string {
+  const label = CATEGORY_LABELS[test.category] ?? ''
+  const related = allTests.filter((other) => other.id !== test.id).slice(0, 3)
+  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+    ${label ? `<span class="inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[13px] font-bold text-accent-hover">${escapeHtml(label)}</span>` : ''}
+    <h1 class="mt-3 text-[26px] font-black leading-tight text-ink">${escapeHtml(test.title)}</h1>
+    <p class="mt-3 text-[15px] leading-relaxed text-muted">${escapeHtml(test.description)}</p>
+    <p class="mt-2 text-xs font-bold text-muted">${test.questionCount}문항</p>
+    <p class="mt-6"><a href="/tests/${escapeAttr(test.id)}/play" class="inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-accent px-5 text-base font-bold text-white">테스트 시작하기</a></p>
+    ${
+      related.length
+        ? `<h2 class="mb-3 mt-10 text-sm font-extrabold text-muted">다른 테스트도 해보세요</h2><ul>${related.map(testLinkItem).join('')}</ul>`
+        : ''
+    }
+  </div>`
+}
+
+function getRouteContent(routePath: string, tests: TestRouteSource[]): string {
+  if (routePath === '/') return buildHomeContent(tests)
+  if (routePath === '/tests') return buildListContent(tests)
+  const match = routePath.match(/^\/tests\/([^/]+)$/)
+  if (match) {
+    const test = tests.find((item) => item.id === match[1])
+    if (test) return buildTestContent(test, tests)
+  }
+  return ''
+}
+
 function toCanonicalUrl(origin: string, routePath: string) {
   if (!origin) return routePath
   return `${origin}${routePath === '/' ? '/' : routePath}`
@@ -141,6 +227,7 @@ function applyOgPlaceholders(
     type: string
     robots: string
   },
+  content = '',
 ) {
   let result = html
     .replaceAll('__OG_TITLE__', escapeAttr(meta.title))
@@ -149,6 +236,7 @@ function applyOgPlaceholders(
     .replaceAll('__OG_IMAGE__', meta.image)
     .replaceAll('__ROBOTS__', escapeAttr(meta.robots))
     .replaceAll('__CANONICAL_URL__', escapeAttr(meta.canonicalUrl))
+    .replace('__PRERENDER_CONTENT__', content)
 
   if (meta.url) {
     result = result.replaceAll('__OG_URL__', meta.url)
@@ -261,6 +349,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
   }
   let htmlTemplate = ''
   let outDir = 'dist'
+  let isBuild = false
 
   const toOg = (route: RouteOg) => {
     const imagePath = getOgImagePath(route.path)
@@ -279,10 +368,12 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
     name: 'inject-og-meta',
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir)
+      isBuild = config.command === 'build'
     },
     transformIndexHtml(html) {
       htmlTemplate = html
-      return applyOgPlaceholders(html, toOg(homeMeta))
+      const content = isBuild ? getRouteContent('/', tests) : ''
+      return applyOgPlaceholders(html, toOg(homeMeta), content)
     },
     closeBundle() {
       if (!htmlTemplate) return
@@ -292,7 +383,8 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
 
         const dest = path.join(outDir, route.path, 'index.html')
         fs.mkdirSync(path.dirname(dest), { recursive: true })
-        fs.writeFileSync(dest, applyOgPlaceholders(htmlTemplate, toOg(route)))
+        const content = getRouteContent(route.path, tests)
+        fs.writeFileSync(dest, applyOgPlaceholders(htmlTemplate, toOg(route), content))
       }
 
       fs.writeFileSync(path.join(outDir, 'sitemap.xml'), buildSitemapXml(origin, routes))

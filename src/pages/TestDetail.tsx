@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { pixelCharacterPath } from '../lib/characters'
+import { resolveCharacterImage } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import StickerCard from '../components/StickerCard'
 import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
@@ -41,7 +41,7 @@ export default function TestDetail() {
 
   const estimatedMinutes = Math.max(1, Math.ceil(test.questions.length / 5))
   const isHalloween = test.resultTemplate === 'halloween'
-  const thumbnailSrc = pixelCharacterPath(test.thumbnailCharacter ?? 'adapted')
+  const thumbnailSrc = resolveCharacterImage(test.thumbnailCharacter ?? 'adapted')
 
   return (
     <PageLayout

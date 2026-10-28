@@ -49,7 +49,7 @@ export type TestResult = {
   emoji: string
   description: string
   keyword: string
-  /** 결과 캐릭터 이미지 경로 (public 기준). 없으면 /characters/{id}.png 시도 후 emoji 폴백 */
+  /** 결과 캐릭터 이미지. public 기준 경로 또는 http(s):// 이미지 URL. 없으면 /characters/{id}.png 시도 후 emoji 폴백 */
   characterImage?: string
   characteristics?: string[]
   warning?: string
