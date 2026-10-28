@@ -50,13 +50,6 @@
     background-size: 14px 14px;
   }
 
-  @media (min-resolution: 2dppx) {
-    body {
-      -webkit-font-smoothing: none;
-      -moz-osx-font-smoothing: unset;
-    }
-  }
-
   #root {
     @apply min-h-svh;
   }

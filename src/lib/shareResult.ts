@@ -10,7 +10,7 @@ function isIos() {
 }
 
 function isInAppBrowser() {
-  return /KAKAOTALK|Instagram|FBAN|FBAV|FBIOS|Line\/|NAVER|everytime/i.test(
+  return /KAKAOTALK|Instagram|FBAN|FBAV|FBIOS|Line\/|NAVER|everytime|Barcelona/i.test(
     navigator.userAgent,
   )
 }
