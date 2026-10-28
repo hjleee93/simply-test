@@ -10,6 +10,24 @@ interface PageLayoutProps {
   theme?: 'default' | 'halloween'
 }
 
+function ListIcon() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 24 24"
+      className="h-4 w-4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="square"
+    >
+      <line x1="4" y1="7" x2="20" y2="7" />
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="17" x2="14" y2="17" />
+    </svg>
+  )
+}
+
 function InstagramIcon() {
   return (
     <svg
@@ -43,7 +61,7 @@ export default function PageLayout({
       }`}
     >
       <header
-        className={`sticky top-0 z-10 flex h-14 items-center px-5 backdrop-blur-sm ${
+        className={`sticky top-0 z-10 flex h-14 items-center justify-between px-5 backdrop-blur-sm ${
           isHalloween ? 'bg-[#10082b]/90' : 'bg-cream/90'
         }`}
       >
@@ -55,7 +73,18 @@ export default function PageLayout({
             ← {backLabel ?? '뒤로'}
           </Link>
         ) : (
-          <LogoLink className="wiggle-hover" />
+          <>
+            <LogoLink variant="full" className="wiggle-hover" />
+            <Link
+              to="/tests"
+              className={`inline-flex items-center gap-1.5 text-sm font-bold transition-colors ${
+                isHalloween ? 'text-white hover:text-[#ffb247]' : 'text-ink hover:text-accent'
+              }`}
+            >
+              <ListIcon />
+              전체 테스트
+            </Link>
+          </>
         )}
       </header>
       <main className="flex-1 px-5 pb-8 pt-1">{children}</main>

@@ -37,7 +37,7 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
               isHalloween ? 'text-[#ffb247]' : 'text-accent'
             }`}
           >
-            {category.emoji} {category.label}
+            {category.label}
           </span>
           <p
             className={`mb-1 text-[15px] font-extrabold ${
