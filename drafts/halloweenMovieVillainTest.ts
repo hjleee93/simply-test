@@ -7,7 +7,7 @@ const test: TestDefinition = {
   category: 'self',
   scoringMode: 'pattern',
   resultTemplate: 'halloween',
-  thumbnailCharacter: 'halloween-villain',
+  thumbnailCharacter: '/characters/halloween-villains/joker.png',
   resultLabel: '할로윈 영화 빌런',
 
   questions: [
@@ -332,6 +332,7 @@ const test: TestDefinition = {
       max: 0,
       title: '웃는 얼굴의 혼돈, 조커',
       emoji: '🃏',
+      characterImage: '/characters/halloween-villains/joker.png',
       keyword: '추천 코스튬 · 네온 광대',
       description:
         '당신은 예상 가능한 분위기를 견디지 못하는 혼돈의 엔터테이너입니다. 모두가 정해진 순서대로 움직일 때 엉뚱한 한마디로 판을 뒤집고, 어색한 순간조차 웃음거리로 바꿉니다. 관심을 받기 위해서라기보다 재미없는 세상을 참을 수 없어서 움직이는 편입니다.',
@@ -359,6 +360,7 @@ const test: TestDefinition = {
       max: 0,
       title: '패션이 곧 권력, 크루엘라',
       emoji: '🖤',
+      characterImage: '/characters/halloween-villains/cruella.png',
       keyword: '추천 코스튬 · 흑백 글램 디바',
       description:
         '당신에게 평범함은 가장 무서운 저주입니다. 어디에 있든 나만의 취향을 분명하게 보여주고, 중요한 순간에는 주인공 자리를 놓치지 않습니다. 남의 기준보다 내 미감과 확신을 믿으며, 제대로 마음먹은 날에는 등장만으로 분위기를 바꿉니다.',
@@ -386,6 +388,7 @@ const test: TestDefinition = {
       max: 0,
       title: '내가 곧 질서, 다스 베이더',
       emoji: '🌌',
+      characterImage: '/characters/halloween-villains/vader.png',
       keyword: '추천 코스튬 · 다크 스페이스 로드',
       description:
         '당신은 떠들지 않아도 존재감이 느껴지는 카리스마형 빌런입니다. 우왕좌왕하는 상황을 답답해하고, 누군가는 결정을 내려야 한다면 자연스럽게 그 역할을 맡습니다. 감정 표현은 절제하지만 책임감이 강하고 자기 사람은 조용히 지키는 편입니다.',
@@ -413,6 +416,7 @@ const test: TestDefinition = {
       max: 0,
       title: '신념 과몰입, 타노스',
       emoji: '💎',
+      characterImage: '/characters/halloween-villains/thanos.png',
       keyword: '추천 코스튬 · 코스믹 정복자',
       description:
         '당신은 목표가 생기면 감정보다 결과를 먼저 보는 신념형 빌런입니다. 복잡한 문제도 핵심만 남겨 정리하고, 모두가 망설일 때 결정을 내립니다. 스스로는 합리적이라고 생각하지만 너무 확신에 차 있을 때 주변 의견이 들리지 않을 수 있습니다.',
@@ -440,6 +444,7 @@ const test: TestDefinition = {
       max: 0,
       title: '배신마저 매력적인, 로키',
       emoji: '🐍',
+      characterImage: '/characters/halloween-villains/loki.png',
       keyword: '추천 코스튬 · 에메랄드 트릭스터',
       description:
         '당신은 힘으로 밀어붙이기보다 말과 센스로 판을 움직이는 책략가입니다. 상대가 원하는 것을 빠르게 파악하고, 불리한 상황도 재치 있게 빠져나갑니다. 진심과 장난의 경계가 묘해서 주변 사람들은 당신의 다음 행동을 늘 궁금해합니다.',
@@ -467,6 +472,7 @@ const test: TestDefinition = {
       max: 0,
       title: '상처를 잊지 않는, 말레피센트',
       emoji: '🪽',
+      characterImage: '/characters/halloween-villains/maleficent.png',
       keyword: '추천 코스튬 · 다크 페어리 퀸',
       description:
         '당신은 차가워 보이지만 마음 깊은 곳에는 강한 애정과 자존심을 품은 빌런입니다. 아무에게나 마음을 열지 않지만 한번 내 사람으로 받아들이면 누구보다 든든하게 지킵니다. 받은 호의도 상처도 오래 기억하며, 무시당했을 때 가장 강력해집니다.',
@@ -494,6 +500,7 @@ const test: TestDefinition = {
       max: 0,
       title: '사랑 앞에 급발진, 할리 퀸',
       emoji: '♦️',
+      characterImage: '/characters/halloween-villains/harley.png',
       keyword: '추천 코스튬 · 펑크 서커스 퀸',
       description:
         '당신은 마음이 움직이면 계산보다 행동이 먼저 나가는 본능형 빌런입니다. 좋아하는 사람과 재미있는 일에는 아낌없이 에너지를 쏟고, 망설이는 시간에 일단 시작합니다. 감정의 진폭은 크지만 넘어져도 웃으며 다시 달리는 회복력이 있습니다.',
@@ -521,6 +528,7 @@ const test: TestDefinition = {
       max: 0,
       title: '우아한 압박, 한니발 렉터',
       emoji: '🍷',
+      characterImage: '/characters/halloween-villains/hannibal.png',
       keyword: '추천 코스튬 · 클래식 고딕 젠틀맨',
       description:
         '당신은 목소리를 높이지 않고도 상대를 긴장시키는 관찰자형 빌런입니다. 말보다 표정과 행동을 읽고, 성급하게 속내를 보여주지 않습니다. 취향과 기준이 뚜렷하며 혼란스러운 자리에서도 끝까지 우아함을 유지하는 편입니다.',
