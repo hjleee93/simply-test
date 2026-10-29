@@ -45,10 +45,13 @@ const fontBold = fs.readFileSync(
 const WIDTH = 1200
 const HEIGHT = 630
 
+/** 캐릭터 이미지는 Cloudflare R2(cdn.simply-test.co.kr)에서 서빙한다 — public/characters 는 더 이상 레포에 없음 */
+const R2_PIXEL_CHARACTER_DIR = 'https://cdn.simply-test.co.kr/characters/pixel'
+
 function resolveCharacterPath(character) {
   if (character.startsWith('/')) return path.join(publicDir, character.slice(1))
   if (character.endsWith('.png')) return path.join(publicDir, character)
-  return path.join(publicDir, 'characters/pixel', `${character}.png`)
+  return null
 }
 
 function toDataUrl(filePath) {
@@ -67,7 +70,12 @@ async function toDataUrlFromUrl(imageUrl) {
 
 async function resolveCharacterSrc(character) {
   if (/^https?:\/\//.test(character)) return toDataUrlFromUrl(character)
-  return toDataUrl(resolveCharacterPath(character))
+
+  const localPath = resolveCharacterPath(character)
+  if (localPath) return toDataUrl(localPath)
+
+  // bare pixel 캐릭터 id (예: 'adapted', 'kkondae/main')
+  return toDataUrlFromUrl(`${R2_PIXEL_CHARACTER_DIR}/${character}.png`)
 }
 
 function getTitleFontSize(title) {

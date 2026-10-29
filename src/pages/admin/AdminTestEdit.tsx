@@ -256,7 +256,8 @@ export default function AdminTestEdit() {
               placeholder="main-hero 또는 https://... 이미지 URL"
             />
             <span className="mt-1 block text-xs font-normal text-muted">
-              pixel 캐릭터 id, /public 경로, 또는 http(s):// 이미지 URL을 입력할 수 있어요.
+              pixel 캐릭터 id(예: main-hero) 또는 http(s):// 이미지 URL을 입력할 수 있어요. 새 캐릭터 이미지는
+              Cloudflare R2(cdn.simply-test.co.kr)에 올리고 URL로 입력해주세요.
             </span>
           </label>
 
