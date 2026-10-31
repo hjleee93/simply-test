@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { resolveCharacterImage } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
+import RecommendedTests from '../components/RecommendedTests'
 import StickerCard from '../components/StickerCard'
 import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
 import { useTest } from '../lib/useTests'
@@ -62,6 +63,8 @@ export default function TestDetail() {
               src={thumbnailSrc}
               alt=""
               aria-hidden
+              width={160}
+              height={160}
               className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-sm"
             />
             <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,5,37,0.18),rgba(11,5,37,0.96))]" />
@@ -71,7 +74,9 @@ export default function TestDetail() {
         <div className="relative">
           <img
             src={thumbnailSrc}
-            alt=""
+            alt={`${test.title} 캐릭터`}
+            width={isHalloween ? 160 : 96}
+            height={isHalloween ? 160 : 96}
             className={`mx-auto object-cover ${
               isHalloween
                 ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
@@ -150,6 +155,12 @@ export default function TestDetail() {
         시작하기
         <span aria-hidden>→</span>
       </button>
+
+      <RecommendedTests
+        excludeTestId={test.id}
+        className="mt-10"
+        theme={isHalloween ? 'halloween' : 'default'}
+      />
     </PageLayout>
   )
 }

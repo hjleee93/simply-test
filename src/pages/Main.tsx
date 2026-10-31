@@ -19,6 +19,9 @@ export default function Main() {
           <img
             src={pixelCharacterPath('main_hero')}
             alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습"
+            width={240}
+            height={240}
+            fetchPriority="high"
             className="hero-float h-full w-auto object-contain drop-shadow-[0_18px_22px_rgba(31,21,53,0.18)]"
           />
         </div>

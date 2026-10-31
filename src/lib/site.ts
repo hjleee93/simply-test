@@ -1,6 +1,7 @@
 import og from './og.json' with { type: 'json' }
 
 export const SITE_NAME = og.siteName
+export const SITE_NAME_KO = '심플리테스트'
 export const INSTAGRAM_HANDLE = 'ssimplytest'
 export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`
 

@@ -24,7 +24,9 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
       >
         <img
           src={resolveCharacterImage(test.thumbnailCharacter ?? 'adapted')}
-          alt=""
+          alt={`${test.title} 썸네일`}
+          width={56}
+          height={56}
           className={`h-14 w-14 shrink-0 ${
             isHalloween
               ? 'rounded-lg border-2 border-[#ffb247] object-cover'

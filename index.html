@@ -2,15 +2,31 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#FBF3E6" />
+
+    <!-- Preconnect to external origins for faster resource loading -->
+    <link rel="preconnect" href="https://cdn.simply-test.co.kr" crossorigin />
+    <link rel="preconnect" href="https://yaibpmwngogryehwmlma.supabase.co" crossorigin />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+
+    <!-- Preload critical fonts -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-Bold.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/woff2/Pretendard-ExtraBold.woff2" as="font" type="font/woff2" crossorigin />
+
+    <!-- Non-blocking font stylesheet -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" /></noscript>
+
     <meta name="description" content="__OG_DESCRIPTION__" />
     <meta name="robots" content="__ROBOTS__" />
     <link rel="canonical" href="__CANONICAL_URL__" />
-    <meta property="og:site_name" content="Simply Test" />
+    <meta property="og:site_name" content="심플리테스트 | Simply Test" />
     <meta property="og:title" content="__OG_TITLE__" />
     <meta property="og:description" content="__OG_DESCRIPTION__" />
     <meta property="og:image" content="__OG_IMAGE__" />
