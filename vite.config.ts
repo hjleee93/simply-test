@@ -410,6 +410,36 @@ function buildRobotsTxt(origin: string) {
   return `${lines.join('\n')}\n`
 }
 
+function toRfc822(date: string): string {
+  return new Date(date).toUTCString()
+}
+
+function buildRssXml(origin: string, tests: TestRouteSource[]): string {
+  const items = tests.map((test) => `    <item>
+      <title>${escapeXml(test.title)}</title>
+      <link>${escapeXml(origin)}/tests/${escapeXml(test.id)}</link>
+      <description>${escapeXml(test.description)}</description>
+      <pubDate>${toRfc822(new Date().toISOString())}</pubDate>
+      <guid isPermaLink="true">${escapeXml(origin)}/tests/${escapeXml(test.id)}</guid>
+    </item>`)
+
+  const lastBuildDate = toRfc822(new Date().toISOString())
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>심플리테스트 | Simply Test</title>
+    <link>${escapeXml(origin)}</link>
+    <description>귀엽게 그려진 캐릭터가 당신의 숨겨진 성향을 알려주는 심리 테스트 모음</description>
+    <language>ko</language>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
+    <atom:link href="${escapeXml(origin)}/rss.xml" rel="self" type="application/rss+xml"/>
+${items.join('\n')}
+  </channel>
+</rss>
+`
+}
+
 function build404Html(origin: string, og: SiteOgConfig): string {
   const imagePath = '/og/home.png'
   return `<!doctype html>
@@ -562,6 +592,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
       }
 
       fs.writeFileSync(path.join(outDir, 'sitemap.xml'), buildSitemapXml(origin, routes))
+      fs.writeFileSync(path.join(outDir, 'rss.xml'), buildRssXml(origin, tests))
       fs.writeFileSync(path.join(outDir, 'robots.txt'), buildRobotsTxt(origin))
       fs.writeFileSync(path.join(outDir, '404.html'), build404Html(origin, og))
     },

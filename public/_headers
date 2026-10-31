@@ -35,9 +35,6 @@
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
 
-# Sitemap and robots - short cache
-/sitemap.xml
-  Cache-Control: public, max-age=3600
-
+# Robots - short cache (sitemap/rss headers set by Worker)
 /robots.txt
   Cache-Control: public, max-age=3600

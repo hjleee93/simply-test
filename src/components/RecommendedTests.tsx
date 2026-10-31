@@ -17,7 +17,7 @@ export default function RecommendedTests({
   if (!loading && tests.length === 0) return null
 
   return (
-    <section className={`min-h-[340px] ${className}`}>
+    <section className={`min-h-[584px] ${className}`}>
       <h2
         className={`mb-3 text-center text-sm font-extrabold ${
           theme === 'halloween' ? 'text-[#d9c9ef]' : 'text-muted'

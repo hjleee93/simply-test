@@ -1,5 +1,5 @@
 import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
+import { hydrateRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
 
@@ -9,8 +9,16 @@ if (pathname.length > 1 && pathname.endsWith('/')) {
   window.history.replaceState(window.history.state, '', normalized)
 }
 
-createRoot(document.getElementById('root')!).render(
+const root = document.getElementById('root')!
+
+hydrateRoot(root, (
   <StrictMode>
     <App />
-  </StrictMode>,
-)
+  </StrictMode>
+), {
+  onRecoverableError: (error) => {
+    if (import.meta.env.DEV) {
+      console.warn('Hydration mismatch (non-critical):', error)
+    }
+  },
+})
