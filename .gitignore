@@ -24,6 +24,7 @@ dist-ssr
 *.sw?
 
 .cursor
+.wrangler
 
 # 환경변수 / 비밀키 (커밋 금지)
 .env

@@ -1,11 +1,11 @@
 {
   "siteName": "Simply Test",
   "home": {
-    "title": "Simply Test | 귀여운 심리 테스트 모음",
-    "description": "귀여운 캐릭터와 함께하는 심리 테스트. 나도 몰랐던 내 성향을 확인해보세요."
+    "title": "심플리테스트 | Simply Test - 귀여운 심리 테스트 모음",
+    "description": "귀여운 캐릭터와 함께하는 심리 테스트. 나도 몰랐던 내 성향을 확인해보세요. 3분이면 끝나는 심리 테스트로 숨겨진 나를 발견하세요."
   },
   "list": {
-    "title": "테스트 목록 | Simply Test",
-    "description": "Simply Test에서 진행 중인 심리 테스트 목록을 확인해보세요."
+    "title": "테스트 목록 | 심플리테스트",
+    "description": "심플리테스트에서 진행 중인 심리 테스트 목록을 확인해보세요. 직장생활, 인간관계, 연애 등 다양한 주제의 테스트가 준비되어 있어요."
   }
 }

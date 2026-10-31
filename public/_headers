@@ -1,0 +1,27 @@
+# Cache headers for Cloudflare Pages/Workers
+
+# Hashed assets (JS, CSS) - immutable cache
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# OG images - cache for a week
+/og/*
+  Cache-Control: public, max-age=604800
+
+# Static images - cache for a day
+/*.png
+  Cache-Control: public, max-age=86400
+
+/*.svg
+  Cache-Control: public, max-age=86400
+
+# HTML pages - no cache (always revalidate)
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Sitemap and robots - short cache
+/sitemap.xml
+  Cache-Control: public, max-age=3600
+
+/robots.txt
+  Cache-Control: public, max-age=3600

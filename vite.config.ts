@@ -241,7 +241,7 @@ function applyOgPlaceholders(
   if (meta.url) {
     result = result.replaceAll('__OG_URL__', meta.url)
   } else {
-    result = result.replace(/    <meta property="og:url" content="__OG_URL__" \/>\n/, '')
+    result = result.replace(/ {4}<meta property="og:url" content="__OG_URL__" \/>\n/, '')
   }
 
   return result
@@ -275,8 +275,6 @@ function buildRobotsTxt(origin: string) {
   const lines = [
     'User-agent: *',
     'Allow: /',
-    'Disallow: /tests/*/play',
-    'Disallow: /tests/*/result',
     'Disallow: /admin',
     'Disallow: /admin/',
   ]
@@ -286,6 +284,53 @@ function buildRobotsTxt(origin: string) {
   }
 
   return `${lines.join('\n')}\n`
+}
+
+function build404Html(origin: string, og: SiteOgConfig): string {
+  const imagePath = '/og/home.png'
+  return `<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FBF3E6" />
+    <meta name="description" content="페이지를 찾을 수 없습니다." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="canonical" href="${origin}/" />
+    <meta property="og:site_name" content="${escapeAttr(og.siteName)}" />
+    <meta property="og:title" content="페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}" />
+    <meta property="og:description" content="페이지를 찾을 수 없습니다." />
+    <meta property="og:image" content="${origin}${imagePath}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}" />
+    <meta name="twitter:description" content="페이지를 찾을 수 없습니다." />
+    <meta name="twitter:image" content="${origin}${imagePath}" />
+    <title>페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}</title>
+    <style>
+      body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#fbf3e6;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+      .container{text-align:center;padding:2rem}
+      h1{font-size:1.5rem;color:#1f1535;margin-bottom:0.5rem}
+      p{color:#756884;margin-bottom:1.5rem}
+      a{display:inline-flex;align-items:center;justify-content:center;height:3rem;padding:0 1.5rem;background:#e0527c;color:#fff;border-radius:9999px;text-decoration:none;font-weight:700}
+      a:hover{background:#c8456b}
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>페이지를 찾을 수 없어요</h1>
+      <p>요청하신 페이지가 존재하지 않습니다.</p>
+      <a href="/">홈으로 돌아가기</a>
+    </div>
+  </body>
+</html>
+`
 }
 
 /** 로컬 개발에서만 미공개(publish_at 미래) 테스트까지 보여준다.
@@ -389,6 +434,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
 
       fs.writeFileSync(path.join(outDir, 'sitemap.xml'), buildSitemapXml(origin, routes))
       fs.writeFileSync(path.join(outDir, 'robots.txt'), buildRobotsTxt(origin))
+      fs.writeFileSync(path.join(outDir, '404.html'), build404Html(origin, og))
     },
   }
 }

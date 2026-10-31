@@ -23,7 +23,7 @@ export default function RecommendedTests({
           theme === 'halloween' ? 'text-[#d9c9ef]' : 'text-muted'
         }`}
       >
-        추천 심리 테스트
+        다른 테스트도 해보세요
       </h2>
       <div className="space-y-3">
         {tests.map((test) => (
