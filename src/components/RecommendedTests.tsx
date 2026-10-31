@@ -12,12 +12,12 @@ export default function RecommendedTests({
   className = '',
   theme = 'default',
 }: RecommendedTestsProps) {
-  const { tests } = useRecommendedTests(excludeTestId)
+  const { tests, loading } = useRecommendedTests(excludeTestId)
 
-  if (tests.length === 0) return null
+  if (!loading && tests.length === 0) return null
 
   return (
-    <section className={className}>
+    <section className={`min-h-[340px] ${className}`}>
       <h2
         className={`mb-3 text-center text-sm font-extrabold ${
           theme === 'halloween' ? 'text-[#d9c9ef]' : 'text-muted'

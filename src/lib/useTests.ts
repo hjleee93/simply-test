@@ -4,6 +4,8 @@ import {
   fetchFeaturedTests,
   fetchRecommendedTests,
   fetchTest,
+  getPreloadedFeaturedTests,
+  getPreloadedRecommendedTests,
   MAIN_PAGE_TEST_LIMIT,
   RECOMMENDED_TEST_LIMIT,
 } from '../data'
@@ -36,7 +38,11 @@ export function useAllTests(): ListState {
 }
 
 export function useFeaturedTests(limit = MAIN_PAGE_TEST_LIMIT): ListState {
-  const [state, setState] = useState<ListState>({ tests: [], loading: true })
+  const preloaded = getPreloadedFeaturedTests(limit)
+  const [state, setState] = useState<ListState>({
+    tests: preloaded,
+    loading: preloaded.length === 0,
+  })
 
   useEffect(() => {
     let active = true
@@ -55,7 +61,11 @@ export function useRecommendedTests(
   excludeTestId: string,
   limit = RECOMMENDED_TEST_LIMIT,
 ): ListState {
-  const [state, setState] = useState<ListState>({ tests: [], loading: true })
+  const preloaded = getPreloadedRecommendedTests(excludeTestId, limit)
+  const [state, setState] = useState<ListState>({
+    tests: preloaded,
+    loading: preloaded.length === 0,
+  })
 
   useEffect(() => {
     let active = true

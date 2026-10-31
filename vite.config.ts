@@ -27,6 +27,8 @@ type TestRouteSource = {
   description: string
   category: string
   questionCount: number
+  character: string
+  resultTemplate: string | null
 }
 
 /** src/lib/testCategories.ts 의 라벨과 반드시 같이 맞춰서 바꿔야 한다. */
@@ -145,7 +147,7 @@ async function loadPublishedTests(
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
   const { data, error } = await supabase
     .from('tests')
-    .select('id, title, description, category, questions')
+    .select('id, title, description, category, questions, character, result_template')
     .lte('publish_at', new Date().toISOString())
     .order('publish_at', { ascending: false })
 
@@ -160,6 +162,8 @@ async function loadPublishedTests(
     description: row.description,
     category: row.category,
     questionCount: Array.isArray(row.questions) ? row.questions.length : 0,
+    character: row.character ?? 'adapted',
+    resultTemplate: row.result_template ?? null,
   }))
 }
 
@@ -305,6 +309,27 @@ function getCanonicalPath(route: RouteOg) {
   return route.path
 }
 
+type InlineTestData = {
+  id: string
+  title: string
+  description: string
+  category: string
+  character: string
+  resultTemplate: string | null
+}
+
+function buildInlineDataScript(tests: TestRouteSource[]): string {
+  const inlineTests: InlineTestData[] = tests.map((t) => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    category: t.category,
+    character: t.character,
+    resultTemplate: t.resultTemplate,
+  }))
+  return `<script>window.__TESTS__=${JSON.stringify(inlineTests)}</script>`
+}
+
 function applyOgPlaceholders(
   html: string,
   meta: {
@@ -319,6 +344,7 @@ function applyOgPlaceholders(
     isHomePage?: boolean
   },
   content = '',
+  inlineData = '',
 ) {
   const heroPreload = meta.isHomePage
     ? '<!-- Preload hero image for LCP -->\n    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />'
@@ -334,6 +360,7 @@ function applyOgPlaceholders(
     .replace('__PRERENDER_CONTENT__', content)
     .replace('__JSON_LD__', meta.jsonLd)
     .replace('__HERO_PRELOAD__', heroPreload)
+    .replace('__INLINE_DATA__', inlineData)
 
   if (meta.url) {
     result = result.replaceAll('__OG_URL__', meta.url)
@@ -517,10 +544,13 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
     transformIndexHtml(html) {
       htmlTemplate = html
       const content = isBuild ? getRouteContent('/', tests) : ''
-      return applyOgPlaceholders(html, toOg(homeMeta), content)
+      const inlineData = isBuild ? buildInlineDataScript(tests) : ''
+      return applyOgPlaceholders(html, toOg(homeMeta), content, inlineData)
     },
     closeBundle() {
       if (!htmlTemplate) return
+
+      const inlineData = buildInlineDataScript(tests)
 
       for (const route of routes) {
         if (route.path === '/') continue
@@ -528,7 +558,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
         const dest = path.join(outDir, route.path, 'index.html')
         fs.mkdirSync(path.dirname(dest), { recursive: true })
         const content = getRouteContent(route.path, tests)
-        fs.writeFileSync(dest, applyOgPlaceholders(htmlTemplate, toOg(route), content))
+        fs.writeFileSync(dest, applyOgPlaceholders(htmlTemplate, toOg(route), content, inlineData))
       }
 
       fs.writeFileSync(path.join(outDir, 'sitemap.xml'), buildSitemapXml(origin, routes))

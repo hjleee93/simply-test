@@ -26,6 +26,21 @@ type TestRow = {
   results: TestResult[]
 }
 
+type InlineTestData = {
+  id: string
+  title: string
+  description: string
+  category: string
+  character: string
+  resultTemplate: string | null
+}
+
+declare global {
+  interface Window {
+    __TESTS__?: InlineTestData[]
+  }
+}
+
 function mapRow(row: TestRow): TestDefinition {
   return {
     id: row.id,
@@ -43,11 +58,41 @@ function mapRow(row: TestRow): TestDefinition {
   }
 }
 
+function mapInlineTest(data: InlineTestData): TestDefinition {
+  return {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    category: data.category as TestCategoryId,
+    questions: [],
+    results: [],
+    resultTemplate: (data.resultTemplate as TestResultTemplate | null) ?? undefined,
+    thumbnailCharacter: data.character,
+  }
+}
+
+function getPreloadedTests(): TestDefinition[] {
+  const inlineData = typeof window !== 'undefined' ? window.__TESTS__ : undefined
+  if (!inlineData || !Array.isArray(inlineData)) return []
+  return inlineData.map(mapInlineTest)
+}
+
+export function getPreloadedFeaturedTests(limit = MAIN_PAGE_TEST_LIMIT): TestDefinition[] {
+  return getPreloadedTests().slice(0, limit)
+}
+
+export function getPreloadedRecommendedTests(
+  excludeTestId: string,
+  limit = RECOMMENDED_TEST_LIMIT,
+): TestDefinition[] {
+  return getPreloadedTests()
+    .filter((t) => t.id !== excludeTestId)
+    .slice(0, limit)
+}
+
 let allTestsPromise: Promise<TestDefinition[]> | null = null
 
 async function loadAllTests(): Promise<TestDefinition[]> {
-  // 개발 서버는 Vite 미들웨어(`/__dev/tests`)로 미공개(publish_at 미래) 테스트까지 보여준다.
-  // 운영 빌드에는 이 분기가 포함되지 않으며, 콘텐츠는 항상 Supabase가 원본이다.
   if (import.meta.env.DEV) {
     try {
       const response = await fetch('/__dev/tests')
@@ -62,7 +107,7 @@ async function loadAllTests(): Promise<TestDefinition[]> {
     }
   }
 
-  if (!supabase) return []
+  if (!supabase) return getPreloadedTests()
 
   const { data, error } = await supabase
     .from('tests')
@@ -72,7 +117,7 @@ async function loadAllTests(): Promise<TestDefinition[]> {
 
   if (error) {
     console.error('Supabase에서 테스트를 불러오지 못했어요:', error.message)
-    return []
+    return getPreloadedTests()
   }
 
   return (data as TestRow[]).map(mapRow)

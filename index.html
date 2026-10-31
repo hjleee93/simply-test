@@ -15,6 +15,9 @@
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
     __HERO_PRELOAD__
+    <!-- RSS feed for Naver and feed readers -->
+    <link rel="alternate" type="application/rss+xml" title="심플리테스트 RSS" href="/rss.xml" />
+
     <!-- Non-blocking font stylesheet (dynamic subset with unicode-range) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'" />
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" /></noscript>
@@ -54,6 +57,7 @@
     </script>
   </head>
   <body>
+    __INLINE_DATA__
     <div id="root">__PRERENDER_CONTENT__</div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
