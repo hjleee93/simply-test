@@ -48,6 +48,87 @@ type RouteOg = {
   indexable: boolean
 }
 
+function buildWebSiteJsonLd(origin: string, siteName: string): object[] {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: siteName,
+      alternateName: '심플리테스트',
+      url: origin,
+      inLanguage: 'ko-KR',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: siteName,
+      alternateName: '심플리테스트',
+      url: origin,
+      logo: `${origin}/brand-logo.png`,
+    },
+  ]
+}
+
+function buildQuizJsonLd(test: TestRouteSource, origin: string): object[] {
+  return [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'Quiz',
+      name: test.title,
+      description: test.description,
+      url: `${origin}/tests/${test.id}`,
+      inLanguage: 'ko-KR',
+      numberOfQuestions: test.questionCount,
+      educationalLevel: 'general',
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        {
+          '@type': 'ListItem',
+          position: 1,
+          name: '홈',
+          item: origin,
+        },
+        {
+          '@type': 'ListItem',
+          position: 2,
+          name: '테스트 목록',
+          item: `${origin}/tests`,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
+          name: test.title,
+          item: `${origin}/tests/${test.id}`,
+        },
+      ],
+    },
+  ]
+}
+
+function getRouteJsonLd(routePath: string, origin: string, siteName: string, tests: TestRouteSource[]): string {
+  if (!origin) return ''
+  
+  let jsonLd: object[] | null = null
+  
+  if (routePath === '/') {
+    jsonLd = buildWebSiteJsonLd(origin, siteName)
+  } else {
+    const match = routePath.match(/^\/tests\/([^/]+)$/)
+    if (match) {
+      const test = tests.find((item) => item.id === match[1])
+      if (test) {
+        jsonLd = buildQuizJsonLd(test, origin)
+      }
+    }
+  }
+  
+  if (!jsonLd) return ''
+  return `<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`
+}
+
 function loadSiteOgConfig(): SiteOgConfig {
   const ogPath = fileURLToPath(new URL('./src/lib/og.json', import.meta.url))
   return JSON.parse(fs.readFileSync(ogPath, 'utf8')) as SiteOgConfig
@@ -226,6 +307,7 @@ function applyOgPlaceholders(
     canonicalUrl: string
     type: string
     robots: string
+    jsonLd: string
   },
   content = '',
 ) {
@@ -237,6 +319,7 @@ function applyOgPlaceholders(
     .replaceAll('__ROBOTS__', escapeAttr(meta.robots))
     .replaceAll('__CANONICAL_URL__', escapeAttr(meta.canonicalUrl))
     .replace('__PRERENDER_CONTENT__', content)
+    .replace('__JSON_LD__', meta.jsonLd)
 
   if (meta.url) {
     result = result.replaceAll('__OG_URL__', meta.url)
@@ -292,6 +375,7 @@ function build404Html(origin: string, og: SiteOgConfig): string {
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="192x192" href="/favicon-192.png" />
@@ -299,7 +383,6 @@ function build404Html(origin: string, og: SiteOgConfig): string {
     <meta name="theme-color" content="#FBF3E6" />
     <meta name="description" content="페이지를 찾을 수 없습니다." />
     <meta name="robots" content="noindex, nofollow" />
-    <link rel="canonical" href="${origin}/" />
     <meta property="og:site_name" content="${escapeAttr(og.siteName)}" />
     <meta property="og:title" content="페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}" />
     <meta property="og:description" content="페이지를 찾을 수 없습니다." />
@@ -406,6 +489,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
       canonicalUrl: toCanonicalUrl(origin, getCanonicalPath(route)),
       type: route.type,
       robots: getRobotsContent(route),
+      jsonLd: getRouteJsonLd(route.path, origin, og.siteName, tests),
     }
   }
 

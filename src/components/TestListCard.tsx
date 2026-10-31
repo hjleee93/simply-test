@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { resolveCharacterImage } from '../lib/characters'
+import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
 import { getCategoryMeta } from '../lib/testCategories'
 import type { TestDefinition } from '../types/test'
 import StickerCard from './StickerCard'
@@ -12,6 +12,8 @@ interface TestListCardProps {
 export default function TestListCard({ test, showQuestionCount = false }: TestListCardProps) {
   const category = getCategoryMeta(test.category)
   const isHalloween = test.resultTemplate === 'halloween'
+  const thumbnailChar = test.thumbnailCharacter ?? 'adapted'
+  const webpSrc = resolveCharacterWebp(thumbnailChar)
 
   return (
     <Link to={`/tests/${test.id}`} className="block wiggle-hover">
@@ -22,17 +24,20 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
             : ''
         }`}
       >
-        <img
-          src={resolveCharacterImage(test.thumbnailCharacter ?? 'adapted')}
-          alt={`${test.title} 썸네일`}
-          width={56}
-          height={56}
-          className={`h-14 w-14 shrink-0 ${
-            isHalloween
-              ? 'rounded-lg border-2 border-[#ffb247] object-cover'
-              : 'object-contain'
-          }`}
-        />
+        <picture className="shrink-0">
+          {webpSrc ? <source srcSet={webpSrc} type="image/webp" /> : null}
+          <img
+            src={resolveCharacterImage(thumbnailChar)}
+            alt={`${test.title} 썸네일`}
+            width={112}
+            height={112}
+            className={`h-14 w-14 ${
+              isHalloween
+                ? 'rounded-lg border-2 border-[#ffb247] object-cover'
+                : 'object-contain'
+            }`}
+          />
+        </picture>
         <div className="min-w-0 flex-1 text-left">
           <span
             className={`mb-1 inline-block text-[11px] font-bold ${

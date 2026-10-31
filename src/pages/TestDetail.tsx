@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
-import { resolveCharacterImage } from '../lib/characters'
+import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import RecommendedTests from '../components/RecommendedTests'
 import StickerCard from '../components/StickerCard'
@@ -42,7 +42,9 @@ export default function TestDetail() {
 
   const estimatedMinutes = Math.max(1, Math.ceil(test.questions.length / 5))
   const isHalloween = test.resultTemplate === 'halloween'
-  const thumbnailSrc = resolveCharacterImage(test.thumbnailCharacter ?? 'adapted')
+  const thumbnailChar = test.thumbnailCharacter ?? 'adapted'
+  const thumbnailSrc = resolveCharacterImage(thumbnailChar)
+  const thumbnailWebp = resolveCharacterWebp(thumbnailChar)
 
   return (
     <PageLayout
@@ -72,17 +74,20 @@ export default function TestDetail() {
         ) : null}
 
         <div className="relative">
-          <img
-            src={thumbnailSrc}
-            alt={`${test.title} 캐릭터`}
-            width={isHalloween ? 160 : 96}
-            height={isHalloween ? 160 : 96}
-            className={`mx-auto object-cover ${
-              isHalloween
-                ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
-                : 'mb-3 h-24 w-24 object-contain'
-            }`}
-          />
+          <picture>
+            {thumbnailWebp ? <source srcSet={thumbnailWebp} type="image/webp" /> : null}
+            <img
+              src={thumbnailSrc}
+              alt={`${test.title} 캐릭터`}
+              width={112}
+              height={112}
+              className={`mx-auto object-cover ${
+                isHalloween
+                  ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
+                  : 'mb-3 h-24 w-24 object-contain'
+              }`}
+            />
+          </picture>
           {isHalloween ? (
             <span className="mb-3 inline-block rounded-full border border-[#ffb247] bg-[#ff942f]/20 px-3 py-1 text-xs font-bold text-[#ffd59a]">
               🎃 HALLOWEEN SPECIAL
