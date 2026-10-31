@@ -14,14 +14,12 @@
     <link rel="preconnect" href="https://yaibpmwngogryehwmlma.supabase.co" crossorigin />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 
-    <!-- Preload critical fonts -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2" as="font" type="font/woff2" crossorigin />
-    <link rel="preload" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-ExtraBold.woff2" as="font" type="font/woff2" crossorigin />
+    <!-- Preload hero image for LCP -->
+    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />
 
-    <!-- Non-blocking font stylesheet -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/pretendard.min.css" media="print" onload="this.media='all'" />
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/pretendard.min.css" /></noscript>
+    <!-- Non-blocking font stylesheet (dynamic subset with unicode-range) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/variable/pretendardvariable-dynamic-subset.min.css" /></noscript>
 
     <meta name="description" content="__OG_DESCRIPTION__" />
     <meta name="robots" content="__ROBOTS__" />

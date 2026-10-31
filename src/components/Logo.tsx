@@ -13,13 +13,16 @@ interface LogoProps {
 export default function Logo({ className, iconClassName, showText = true, variant = 'mark' }: LogoProps) {
   if (variant === 'full') {
     return (
-      <img
-        src={brandLogoPath()}
-        alt="Simply Test 심리테스트"
-        width={135}
-        height={44}
-        className={cn('h-11 w-auto object-contain', className)}
-      />
+      <picture>
+        <source srcSet="/brand-logo.webp" type="image/webp" />
+        <img
+          src={brandLogoPath()}
+          alt="Simply Test 심리테스트"
+          width={900}
+          height={292}
+          className={cn('h-11 w-auto object-contain', className)}
+        />
+      </picture>
     )
   }
 

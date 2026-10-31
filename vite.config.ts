@@ -237,9 +237,17 @@ function testLinkItem(test: TestRouteSource): string {
 function buildHomeContent(tests: TestRouteSource[]): string {
   const featured = tests.slice(0, HOME_FEATURED_LIMIT)
   return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
-    <h1 class="text-[26px] font-black leading-tight text-ink">나도 몰랐던 내 진짜 모습</h1>
-    <p class="mt-3 text-[15px] leading-relaxed text-muted">귀엽게 그려진 캐릭터가 당신의 숨겨진 성향을 알려줘요. 3분이면 끝나는 심리 테스트로 지금 바로 확인해보세요.</p>
-    <h2 class="mb-3 mt-8 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
+    <div class="pb-10 pt-6 text-center">
+      <div class="mx-auto mb-2 flex h-60 items-center justify-center">
+        <picture>
+          <source srcset="/characters/pixel/main_hero.webp" type="image/webp" />
+          <img src="/characters/pixel/main_hero.png" alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습" width="1050" height="656" fetchpriority="high" class="h-full w-auto object-contain" />
+        </picture>
+      </div>
+      <h1 class="mt-5 text-[30px] font-black leading-[1.25] tracking-tight text-ink">나도 몰랐던<br />내 진짜 모습</h1>
+      <p class="mx-auto mt-3 max-w-[260px] text-[15px] leading-relaxed text-muted">귀엽게 그려진 캐릭터가<br />당신의 숨겨진 성향을 알려줘요</p>
+    </div>
+    <h2 class="mb-3 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
     <ul>${featured.map(testLinkItem).join('')}</ul>
     <p class="mt-4 text-center"><a href="/tests" class="text-sm font-bold text-accent">전체 테스트 보기 (${tests.length}개) →</a></p>
   </div>`

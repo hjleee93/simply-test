@@ -132,7 +132,7 @@ export function RoutePageMeta() {
   const testRouteMatch = pathname.match(TEST_ROUTE_RE)
   const testId = testRouteMatch?.[1]
   const subpage = testRouteMatch?.[2]
-  const { test } = useTest(testId)
+  const { test, loading } = useTest(testId)
 
   useLayoutEffect(() => {
     trackPageView(`${pathname}${search}`)
@@ -142,10 +142,14 @@ export function RoutePageMeta() {
     const canonicalPath = `/tests/${testId}`
     const origin = getSiteOrigin()
 
+    if (loading) {
+      return null
+    }
+
     if (!test) {
       return (
         <PageMeta
-          title={DEFAULT_OG.title}
+          title={`테스트를 찾을 수 없어요 | ${SITE_NAME}`}
           description={DEFAULT_OG.description}
           imagePath={getOgImagePath(canonicalPath)}
           canonicalPath={canonicalPath}
