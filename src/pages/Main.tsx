@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { pixelCharacterPath } from '../lib/characters'
+import { pixelCharacterPath, pixelCharacterWebpPath } from '../lib/characters'
 import PageLayout from '../components/PageLayout'
 import TestListCard from '../components/TestListCard'
 import { ChatIcon, ClockIcon, TargetIcon } from '../components/icons'
@@ -16,14 +16,17 @@ export default function Main() {
     <PageLayout>
       <section className="hero-enter pb-10 pt-6 text-center">
         <div className="hero-stage mx-auto mb-2 flex h-60 items-center justify-center">
-          <img
-            src={pixelCharacterPath('main_hero')}
-            alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습"
-            width={240}
-            height={240}
-            fetchPriority="high"
-            className="hero-float h-full w-auto object-contain drop-shadow-[0_18px_22px_rgba(31,21,53,0.18)]"
-          />
+          <picture>
+            <source srcSet={pixelCharacterWebpPath('main_hero')!} type="image/webp" />
+            <img
+              src={pixelCharacterPath('main_hero')}
+              alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습"
+              width={769}
+              height={480}
+              fetchPriority="high"
+              className="hero-float h-full w-auto object-contain drop-shadow-[0_18px_22px_rgba(31,21,53,0.18)]"
+            />
+          </picture>
         </div>
         <span className="inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[13px] font-bold text-accent-hover">
           심리 테스트

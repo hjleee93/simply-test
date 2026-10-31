@@ -16,6 +16,8 @@ export default function Logo({ className, iconClassName, showText = true, varian
       <img
         src={brandLogoPath()}
         alt="Simply Test 심리테스트"
+        width={135}
+        height={44}
         className={cn('h-11 w-auto object-contain', className)}
       />
     )
@@ -26,6 +28,8 @@ export default function Logo({ className, iconClassName, showText = true, varian
       <img
         src={brandCharacterPath()}
         alt=""
+        width={32}
+        height={32}
         className={cn('h-8 w-8 shrink-0 object-contain', iconClassName)}
       />
       {showText ? <span className="font-pixel text-ink">Simply Test</span> : null}
