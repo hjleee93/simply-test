@@ -48,7 +48,11 @@ export function resolveCharacterImage(value: string): string {
 }
 
 export function resolveCharacterWebp(value: string): string | null {
-  if (/^https?:\/\//.test(value) || value.startsWith('/')) return null
+  if (/^https?:\/\//.test(value)) return null
+  if (value.startsWith('/characters/') && value.endsWith('.png')) {
+    return value.replace(/\.png$/, '.webp')
+  }
+  if (value.startsWith('/')) return null
   return pixelCharacterWebpPath(value)
 }
 

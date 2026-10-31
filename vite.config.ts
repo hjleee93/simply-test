@@ -316,9 +316,14 @@ function applyOgPlaceholders(
     type: string
     robots: string
     jsonLd: string
+    isHomePage?: boolean
   },
   content = '',
 ) {
+  const heroPreload = meta.isHomePage
+    ? '<!-- Preload hero image for LCP -->\n    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />'
+    : ''
+
   let result = html
     .replaceAll('__OG_TITLE__', escapeAttr(meta.title))
     .replaceAll('__OG_DESCRIPTION__', escapeAttr(meta.description))
@@ -328,6 +333,7 @@ function applyOgPlaceholders(
     .replaceAll('__CANONICAL_URL__', escapeAttr(meta.canonicalUrl))
     .replace('__PRERENDER_CONTENT__', content)
     .replace('__JSON_LD__', meta.jsonLd)
+    .replace('__HERO_PRELOAD__', heroPreload)
 
   if (meta.url) {
     result = result.replaceAll('__OG_URL__', meta.url)
@@ -405,7 +411,7 @@ function build404Html(origin: string, og: SiteOgConfig): string {
     <meta name="twitter:image" content="${origin}${imagePath}" />
     <title>페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}</title>
     <style>
-      body{font-family:'Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#fbf3e6;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
+      body{font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#fbf3e6;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
       .container{text-align:center;padding:2rem}
       h1{font-size:1.5rem;color:#1f1535;margin-bottom:0.5rem}
       p{color:#756884;margin-bottom:1.5rem}
@@ -498,6 +504,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
       type: route.type,
       robots: getRobotsContent(route),
       jsonLd: getRouteJsonLd(route.path, origin, og.siteName, tests),
+      isHomePage: route.path === '/',
     }
   }
 

@@ -1,4 +1,6 @@
 # Cache headers for Cloudflare Pages/Workers
+# Note: Rules are additive; put specific paths first and avoid catch-all wildcards
+# that would match already-specified paths.
 
 # Hashed assets (JS, CSS) - immutable cache
 /assets/*
@@ -19,14 +21,14 @@
 /brand-logo.png
   Cache-Control: public, max-age=31536000, immutable
 
-# Static images - cache for a day
-/*.png
+# Favicon and static images in root - cache for a day
+/favicon*.png
   Cache-Control: public, max-age=86400
 
-/*.svg
+/favicon.ico
   Cache-Control: public, max-age=86400
 
-/*.webp
+/og-image.png
   Cache-Control: public, max-age=86400
 
 # HTML pages - no cache (always revalidate)

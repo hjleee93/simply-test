@@ -50,7 +50,7 @@ export default function Main() {
         </Link>
       </section>
 
-      <section className="mb-6">
+      <section className="mb-6 min-h-[1020px]">
         <h2 className="mb-3 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
         <div className="space-y-3">
           {featuredTests.map((test) => (

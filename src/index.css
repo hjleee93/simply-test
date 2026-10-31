@@ -12,7 +12,7 @@
 @theme {
   /* 본문/UI 전반 — Pretendard. 로고·배지에만 쓰는 NeoDunggeunmo(도트 폰트)는 브랜드 출신을
    * 알려주는 악센트로 남기고, 가독성이 필요한 모든 본문은 Pretendard로 */
-  --font-sans: 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-sans: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   --font-pixel: 'NeoDunggeunmo', monospace;
 
   /* 메인 히어로 일러스트(토끼·곰·강아지·고양이·여우)에서 뽑은 팔레트 */
