@@ -9,7 +9,10 @@
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page",
     "run_worker_first": ["/sitemap.xml", "/rss.xml"]
+  },
+  "vars": {
+    "SUPABASE_URL": "https://yaibpmwngogryehwmlma.supabase.co",
+    "SUPABASE_ANON_KEY": "sb_publishable_1F8NpPxZrqakL4ErYyE43Q_bn2esGOZ",
+    "SITE_URL": "https://simply-test.co.kr"
   }
-  // vars configured in Cloudflare dashboard or via wrangler secret:
-  // SUPABASE_URL, SUPABASE_ANON_KEY, SITE_URL
 }
