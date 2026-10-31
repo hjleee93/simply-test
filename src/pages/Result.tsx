@@ -18,6 +18,7 @@ import { getResult, getThresholdPercent, isSimpleScoring } from '../lib/scoring'
 import { resolveTestSession } from '../lib/testSession'
 import { saveTestResult } from '../lib/supabase'
 import { getVisitorId } from '../lib/visitorId'
+import { trackTestComplete } from '../lib/analytics'
 import type { Gender, TestAnswers } from '../types/test'
 
 import { getOgImagePath } from '../lib/ogImages'
@@ -49,6 +50,8 @@ export default function Result() {
 
     const result = getResult(test, answers)
     const thresholdPercent = getThresholdPercent(test, answers)
+
+    trackTestComplete(test.id, result.id)
 
     void saveTestResult({
       visitorId: getVisitorId(),
@@ -115,6 +118,7 @@ export default function Result() {
         thresholdPercent={thresholdPercent}
         insights={genderInsights}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -130,6 +134,7 @@ export default function Result() {
         thresholdPercent={thresholdPercent}
         insights={kkondaeInsights}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -143,6 +148,7 @@ export default function Result() {
         result={result}
         thresholdPercent={thresholdPercent}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -156,6 +162,7 @@ export default function Result() {
         result={result}
         matchPercent={thresholdPercent}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -169,6 +176,7 @@ export default function Result() {
         result={result}
         matchPercent={thresholdPercent}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -182,6 +190,7 @@ export default function Result() {
         result={result}
         matchPercent={thresholdPercent}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -197,6 +206,7 @@ export default function Result() {
         thresholdPercent={thresholdPercent}
         insights={insights}
         testTitle={test.title}
+        testId={test.id}
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
@@ -214,6 +224,7 @@ export default function Result() {
         noindex
         canonicalPath={`/tests/${test.id}`}
       />
+      <h1 className="sr-only">{result.title} — {test.title} 결과</h1>
       {resultCard}
       <RecommendedTests
         excludeTestId={test.id}

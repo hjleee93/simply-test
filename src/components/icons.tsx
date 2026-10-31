@@ -212,3 +212,12 @@ export function EyeIcon({ className }: IconProps) {
     </svg>
   )
 }
+
+export function LinkIcon({ className }: IconProps) {
+  return (
+    <svg {...base(className)} aria-hidden>
+      <path d="M10 14a3.5 3.5 0 0 0 5 0l3-3a3.54 3.54 0 0 0-5-5l-.5.5" />
+      <path d="M14 10a3.5 3.5 0 0 0-5 0l-3 3a3.54 3.54 0 0 0 5 5l.5-.5" />
+    </svg>
+  )
+}

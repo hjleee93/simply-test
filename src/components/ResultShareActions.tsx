@@ -1,13 +1,16 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { cn } from '../lib/cn'
-import { DownloadIcon, ShareIcon } from './icons'
+import { DownloadIcon, LinkIcon, ShareIcon } from './icons'
 import {
   buildResultFilename,
   captureElementAsPng,
+  copyLink,
   downloadImage,
   needsManualImageSave,
   shareImage,
+  shareLink,
 } from '../lib/shareResult'
+import { trackShare } from '../lib/analytics'
 import { ui } from '../lib/ui'
 
 interface ResultShareActionsProps {
@@ -16,6 +19,8 @@ interface ResultShareActionsProps {
   resultTitle: string
   shareText: string
   shareTitle?: string
+  testId: string
+  resultId?: string
 }
 
 export default function ResultShareActions({
@@ -24,6 +29,8 @@ export default function ResultShareActions({
   resultTitle,
   shareText,
   shareTitle = '테스트 결과',
+  testId,
+  resultId,
 }: ResultShareActionsProps) {
   const [isSaving, setIsSaving] = useState(false)
   const [message, setMessage] = useState<string | null>(null)
@@ -70,10 +77,12 @@ export default function ResultShareActions({
       if (needsManualImageSave()) {
         openPreview(blob)
         setMessage('이미지를 길게 눌러 앨범에 저장하세요')
+        trackShare('download', testId, resultId)
         return
       }
 
       downloadImage(blob, filename)
+      trackShare('download', testId, resultId)
       setMessage('저장 완료! 갤러리에서 확인해보세요')
     } catch {
       setMessage('앗, 저장이 안 됐어요. 다시 눌러주세요')
@@ -96,7 +105,9 @@ export default function ResultShareActions({
         text: shareText,
       })
 
-      if (!shared) {
+      if (shared) {
+        trackShare('web_share', testId, resultId)
+      } else {
         if (needsManualImageSave()) {
           openPreview(blob)
           setMessage('이미지를 길게 눌러 저장하거나, 아래 공유를 눌러주세요')
@@ -104,6 +115,7 @@ export default function ResultShareActions({
         }
 
         downloadImage(blob, filename)
+        trackShare('download', testId, resultId)
         setMessage('공유가 안 돼서 저장해드렸어요!')
       }
     } catch (error) {
@@ -111,6 +123,28 @@ export default function ResultShareActions({
       setMessage('공유 실패… 저장 버튼 써주세요')
     } finally {
       setIsSaving(false)
+    }
+  }
+
+  const handleCopyLink = async () => {
+    const url = window.location.href
+    const shared = await shareLink({
+      title: shareTitle,
+      text: shareText,
+      url,
+    })
+
+    if (shared) {
+      trackShare('web_share', testId, resultId)
+      return
+    }
+
+    const copied = await copyLink(url)
+    if (copied) {
+      trackShare('link_copy', testId, resultId)
+      setMessage('링크가 복사되었어요!')
+    } else {
+      setMessage('복사 실패… 주소창에서 복사해 주세요')
     }
   }
 
@@ -123,7 +157,9 @@ export default function ResultShareActions({
         title: shareTitle,
         text: shareText,
       })
-      if (!shared) {
+      if (shared) {
+        trackShare('web_share', testId, resultId)
+      } else {
         setMessage('이 브라우저에서는 길게 눌러 저장해야 해요')
       }
     } catch (error) {
@@ -134,7 +170,7 @@ export default function ResultShareActions({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-2">
         <button
           type="button"
           className={cn(ui.btnPrimary, 'wiggle-hover px-2 text-sm')}
@@ -149,6 +185,15 @@ export default function ResultShareActions({
               자랑하기
             </>
           )}
+        </button>
+        <button
+          type="button"
+          className={cn(ui.btnSecondary, 'px-2 text-sm')}
+          onClick={handleCopyLink}
+          disabled={isSaving}
+        >
+          <LinkIcon className="h-[18px] w-[18px]" />
+          링크
         </button>
         <button
           type="button"

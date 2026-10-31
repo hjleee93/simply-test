@@ -1,5 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
+import { trackTestStart } from '../lib/analytics'
 import PageLayout from '../components/PageLayout'
 import RecommendedTests from '../components/RecommendedTests'
 import StickerCard from '../components/StickerCard'
@@ -155,7 +156,10 @@ export default function TestDetail() {
         className={`${ui.btnPrimary} wiggle-hover ${
           isHalloween ? '!bg-[#f47721] hover:!bg-[#ff923f]' : ''
         }`}
-        onClick={() => navigate(`/tests/${test.id}/play`)}
+        onClick={() => {
+          trackTestStart(test.id)
+          navigate(`/tests/${test.id}/play`)
+        }}
       >
         시작하기
         <span aria-hidden>→</span>

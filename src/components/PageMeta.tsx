@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTest } from '../lib/useTests'
 import { trackPageView } from '../lib/analytics'
@@ -134,7 +134,7 @@ export function RoutePageMeta() {
   const subpage = testRouteMatch?.[2]
   const { test, loading } = useTest(testId)
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     trackPageView(`${pathname}${search}`)
   }, [pathname, search])
 

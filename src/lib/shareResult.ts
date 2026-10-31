@@ -106,3 +106,35 @@ export function buildResultFilename(thresholdPercent: number, resultTitle: strin
   const safeTitle = resultTitle.replace(/\s+/g, '-')
   return `simply-test-${thresholdPercent}%-${safeTitle}.png`
 }
+
+export async function copyLink(url: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(url)
+    return true
+  } catch {
+    const textarea = document.createElement('textarea')
+    textarea.value = url
+    textarea.style.cssText = 'position:fixed;left:-9999px'
+    document.body.appendChild(textarea)
+    textarea.select()
+    const result = document.execCommand('copy')
+    document.body.removeChild(textarea)
+    return result
+  }
+}
+
+export async function shareLink(options: {
+  title: string
+  text: string
+  url: string
+}): Promise<boolean> {
+  if (navigator.share) {
+    try {
+      await navigator.share(options)
+      return true
+    } catch (e) {
+      if (e instanceof DOMException && e.name === 'AbortError') return true
+    }
+  }
+  return false
+}

@@ -14,6 +14,7 @@ interface GenderResultCardProps {
   thresholdPercent: number
   insights: GenderInsight
   testTitle: string
+  testId: string
   resultLabel: string
   onRetry: () => void
   onHome: () => void
@@ -39,6 +40,7 @@ export default function GenderResultCard({
   thresholdPercent,
   insights,
   testTitle,
+  testId,
   resultLabel,
   onRetry,
   onHome,
@@ -115,6 +117,8 @@ export default function GenderResultCard({
           resultTitle={result.title}
           shareText={shareText}
           shareTitle={`${resultLabel} 테스트 결과`}
+          testId={testId}
+          resultId={result.id}
         />
       </div>
 

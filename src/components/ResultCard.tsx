@@ -15,6 +15,7 @@ interface ResultCardProps {
   thresholdPercent: number
   insights: ResultInsights
   testTitle: string
+  testId: string
   resultLabel?: string
   onRetry: () => void
   onHome: () => void
@@ -34,6 +35,7 @@ export default function ResultCard({
   thresholdPercent,
   insights,
   testTitle,
+  testId,
   resultLabel = '퇴사 임계점',
   onRetry,
   onHome,
@@ -115,6 +117,8 @@ export default function ResultCard({
           resultTitle={result.title}
           shareText={shareText}
           shareTitle={`${resultLabel} 테스트 결과`}
+          testId={testId}
+          resultId={result.id}
         />
       </div>
 

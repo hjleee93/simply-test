@@ -12,6 +12,7 @@ interface JinsangResultCardProps {
   result: TestResult
   thresholdPercent: number
   testTitle: string
+  testId: string
   resultLabel: string
   onRetry: () => void
   onHome: () => void
@@ -36,6 +37,7 @@ export default function JinsangResultCard({
   result,
   thresholdPercent,
   testTitle,
+  testId,
   resultLabel,
   onRetry,
   onHome,
@@ -118,6 +120,8 @@ export default function JinsangResultCard({
           resultTitle={result.title}
           shareText={shareText}
           shareTitle={`${resultLabel} 테스트 결과`}
+          testId={testId}
+          resultId={result.id}
         />
       </div>
 

@@ -12,6 +12,7 @@ interface RelationshipResultCardProps {
   result: TestResult
   matchPercent: number
   testTitle: string
+  testId: string
   resultLabel: string
   onRetry: () => void
   onHome: () => void
@@ -36,6 +37,7 @@ export default function RelationshipResultCard({
   result,
   matchPercent,
   testTitle,
+  testId,
   resultLabel,
   onRetry,
   onHome,
@@ -153,6 +155,8 @@ export default function RelationshipResultCard({
           resultTitle={result.title}
           shareText={shareText}
           shareTitle={`${resultLabel} 테스트 결과`}
+          testId={testId}
+          resultId={result.id}
         />
       </div>
 
