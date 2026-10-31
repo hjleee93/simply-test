@@ -31,6 +31,21 @@ type TestRouteSource = {
   resultTemplate: string | null
 }
 
+type FullTestData = {
+  id: string
+  title: string
+  description: string
+  category: string
+  character: string
+  scoringMode: string
+  resultTemplate: string | null
+  requiresGender: boolean
+  resultLabel: string | null
+  minScorePerAnswer: number | null
+  questions: unknown[]
+  results: unknown[]
+}
+
 /** src/lib/testCategories.ts 의 라벨과 반드시 같이 맞춰서 바꿔야 한다. */
 const CATEGORY_LABELS: Record<string, string> = {
   workplace: '직장생활',
@@ -141,30 +156,52 @@ function loadSiteOgConfig(): SiteOgConfig {
 async function loadPublishedTests(
   supabaseUrl: string,
   supabaseAnonKey: string,
-): Promise<TestRouteSource[]> {
-  if (!supabaseUrl || !supabaseAnonKey) return []
+): Promise<{ routes: TestRouteSource[]; fullTests: Map<string, FullTestData> }> {
+  if (!supabaseUrl || !supabaseAnonKey) return { routes: [], fullTests: new Map() }
 
   const supabase = createClient(supabaseUrl, supabaseAnonKey)
   const { data, error } = await supabase
     .from('tests')
-    .select('id, title, description, category, questions, character, result_template')
+    .select('*')
     .lte('publish_at', new Date().toISOString())
     .order('publish_at', { ascending: false })
 
   if (error) {
     console.warn(`[vite] Supabase에서 테스트 목록을 불러오지 못했어요: ${error.message}`)
-    return []
+    return { routes: [], fullTests: new Map() }
   }
 
-  return (data ?? []).map((row) => ({
-    id: row.id,
-    title: row.title,
-    description: row.description,
-    category: row.category,
-    questionCount: Array.isArray(row.questions) ? row.questions.length : 0,
-    character: row.character ?? 'adapted',
-    resultTemplate: row.result_template ?? null,
-  }))
+  const fullTests = new Map<string, FullTestData>()
+  const routes: TestRouteSource[] = []
+
+  for (const row of data ?? []) {
+    routes.push({
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      questionCount: Array.isArray(row.questions) ? row.questions.length : 0,
+      character: row.character ?? 'adapted',
+      resultTemplate: row.result_template ?? null,
+    })
+
+    fullTests.set(row.id, {
+      id: row.id,
+      title: row.title,
+      description: row.description,
+      category: row.category,
+      character: row.character ?? 'adapted',
+      scoringMode: row.scoring_mode ?? 'simple',
+      resultTemplate: row.result_template ?? null,
+      requiresGender: row.requires_gender ?? false,
+      resultLabel: row.result_label ?? null,
+      minScorePerAnswer: row.min_score_per_answer ?? null,
+      questions: row.questions ?? [],
+      results: row.results ?? [],
+    })
+  }
+
+  return { routes, fullTests }
 }
 
 function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: string): RouteOg[] {
@@ -307,27 +344,6 @@ function getCanonicalPath(route: RouteOg) {
     return route.path.replace(/\/(result|play)$/, '')
   }
   return route.path
-}
-
-type InlineTestData = {
-  id: string
-  title: string
-  description: string
-  category: string
-  character: string
-  resultTemplate: string | null
-}
-
-function buildInlineDataScript(tests: TestRouteSource[]): string {
-  const inlineTests: InlineTestData[] = tests.map((t) => ({
-    id: t.id,
-    title: t.title,
-    description: t.description,
-    category: t.category,
-    character: t.character,
-    resultTemplate: t.resultTemplate,
-  }))
-  return `<script>window.__TESTS__=${JSON.stringify(inlineTests)}</script>`
 }
 
 function applyOgPlaceholders(
@@ -536,7 +552,33 @@ function localUnpublishedTestsPreview(): Plugin {
   }
 }
 
-function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[]): Plugin {
+function getTestSlugFromPath(routePath: string): string | null {
+  const match = routePath.match(/^\/tests\/([^/]+)$/)
+  return match ? match[1] : null
+}
+
+function buildPageInlineScript(tests: TestRouteSource[], fullTests: Map<string, FullTestData>, routePath: string): string {
+  const testsJson = JSON.stringify(tests.map((t) => ({
+    id: t.id,
+    title: t.title,
+    description: t.description,
+    category: t.category,
+    character: t.character,
+    resultTemplate: t.resultTemplate,
+  })))
+
+  const testSlug = getTestSlugFromPath(routePath)
+  if (testSlug) {
+    const fullTest = fullTests.get(testSlug)
+    if (fullTest) {
+      return `<script>window.__TESTS__=${testsJson};window.__TEST__=${JSON.stringify(fullTest)}</script>`
+    }
+  }
+
+  return `<script>window.__TESTS__=${testsJson}</script>`
+}
+
+function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[], fullTests: Map<string, FullTestData>): Plugin {
   const origin = siteUrl.replace(/\/$/, '')
   const routes = getAllRouteOg(og, tests, og.siteName)
   const homeMeta = routes[0] ?? {
@@ -574,13 +616,11 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
     transformIndexHtml(html) {
       htmlTemplate = html
       const content = isBuild ? getRouteContent('/', tests) : ''
-      const inlineData = isBuild ? buildInlineDataScript(tests) : ''
+      const inlineData = isBuild ? buildPageInlineScript(tests, fullTests, '/') : ''
       return applyOgPlaceholders(html, toOg(homeMeta), content, inlineData)
     },
     closeBundle() {
       if (!htmlTemplate) return
-
-      const inlineData = buildInlineDataScript(tests)
 
       for (const route of routes) {
         if (route.path === '/') continue
@@ -588,6 +628,7 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
         const dest = path.join(outDir, route.path, 'index.html')
         fs.mkdirSync(path.dirname(dest), { recursive: true })
         const content = getRouteContent(route.path, tests)
+        const inlineData = buildPageInlineScript(tests, fullTests, route.path)
         fs.writeFileSync(dest, applyOgPlaceholders(htmlTemplate, toOg(route), content, inlineData))
       }
 
@@ -603,9 +644,9 @@ export default defineConfig(async ({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const siteUrl = env.VITE_SITE_URL ?? ''
   const og = loadSiteOgConfig()
-  const tests = await loadPublishedTests(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
+  const { routes: tests, fullTests } = await loadPublishedTests(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
 
   return {
-    plugins: [react(), tailwindcss(), localUnpublishedTestsPreview(), injectOgMeta(siteUrl, og, tests)],
+    plugins: [react(), tailwindcss(), localUnpublishedTestsPreview(), injectOgMeta(siteUrl, og, tests, fullTests)],
   }
 })

@@ -35,9 +35,25 @@ type InlineTestData = {
   resultTemplate: string | null
 }
 
+type FullInlineTestData = {
+  id: string
+  title: string
+  description: string
+  category: string
+  character: string
+  scoringMode: string
+  resultTemplate: string | null
+  requiresGender: boolean
+  resultLabel: string | null
+  minScorePerAnswer: number | null
+  questions: Question[]
+  results: TestResult[]
+}
+
 declare global {
   interface Window {
     __TESTS__?: InlineTestData[]
+    __TEST__?: FullInlineTestData
   }
 }
 
@@ -75,6 +91,34 @@ function getPreloadedTests(): TestDefinition[] {
   const inlineData = typeof window !== 'undefined' ? window.__TESTS__ : undefined
   if (!inlineData || !Array.isArray(inlineData)) return []
   return inlineData.map(mapInlineTest)
+}
+
+function mapFullInlineTest(data: FullInlineTestData): TestDefinition {
+  return {
+    id: data.id,
+    title: data.title,
+    description: data.description,
+    category: data.category as TestCategoryId,
+    questions: data.questions,
+    results: data.results,
+    scoringMode: data.scoringMode as TestScoringMode,
+    resultTemplate: (data.resultTemplate as TestResultTemplate | null) ?? undefined,
+    requiresGender: data.requiresGender,
+    thumbnailCharacter: data.character,
+    resultLabel: data.resultLabel ?? undefined,
+    minScorePerAnswer: data.minScorePerAnswer ?? undefined,
+  }
+}
+
+export function getPreloadedTest(id: string): TestDefinition | undefined {
+  if (typeof window === 'undefined') return undefined
+  
+  const fullTest = window.__TEST__
+  if (fullTest && fullTest.id === id) {
+    return mapFullInlineTest(fullTest)
+  }
+  
+  return undefined
 }
 
 export function getPreloadedFeaturedTests(limit = MAIN_PAGE_TEST_LIMIT): TestDefinition[] {

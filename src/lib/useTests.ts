@@ -6,6 +6,7 @@ import {
   fetchTest,
   getPreloadedFeaturedTests,
   getPreloadedRecommendedTests,
+  getPreloadedTest,
   MAIN_PAGE_TEST_LIMIT,
   RECOMMENDED_TEST_LIMIT,
 } from '../data'
@@ -81,11 +82,12 @@ export function useRecommendedTests(
 }
 
 export function useTest(id: string | undefined): TestState {
-  const [state, setState] = useState<{ id: string | undefined } & TestState>({
-    id: undefined,
-    test: undefined,
-    loading: Boolean(id),
-  })
+  const preloaded = id ? getPreloadedTest(id) : undefined
+  const [state, setState] = useState<{ id: string | undefined } & TestState>(() => ({
+    id: preloaded ? id : undefined,
+    test: preloaded,
+    loading: Boolean(id) && !preloaded,
+  }))
 
   useEffect(() => {
     if (!id) return
@@ -101,7 +103,12 @@ export function useTest(id: string | undefined): TestState {
 
   // id가 바뀐 직후, 아직 그 id에 대한 fetch 결과로 state가 갱신되지 않은 구간은
   // 렌더 중에 바로 "loading"으로 취급한다 (effect에서 동기 setState 호출을 피하기 위함).
+  // 단, 프리로드된 데이터가 있으면 그것을 사용한다.
   if (state.id !== id) {
+    const preloadedNow = id ? getPreloadedTest(id) : undefined
+    if (preloadedNow) {
+      return { test: preloadedNow, loading: false }
+    }
     return { test: undefined, loading: Boolean(id) }
   }
 
