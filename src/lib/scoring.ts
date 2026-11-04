@@ -133,6 +133,12 @@ function getRawScore(answers: TestAnswers): number {
   return calculateRawScore(answers)
 }
 
+/** 한 판에 일부만 낸 테스트는, 실제로 답한 문항 수로 퍼센트를 낸다. */
+function getScoredQuestionCount(test: TestDefinition, answers: TestAnswers): number {
+  const answered = test.questions.filter((question) => answers[question.id]).length
+  return answered > 0 ? answered : test.questions.length
+}
+
 export function calculateThresholdPercent(
   rawScore: number,
   questionCount: number,
@@ -157,7 +163,7 @@ export function getResult(
   const rawScore = getRawScore(answers)
   const percent = calculateThresholdPercent(
     rawScore,
-    test.questions.length,
+    getScoredQuestionCount(test, answers),
     test.minScorePerAnswer ?? 1,
   )
 
@@ -179,7 +185,7 @@ export function getThresholdPercent(
   const rawScore = getRawScore(answers)
   return calculateThresholdPercent(
     rawScore,
-    test.questions.length,
+    getScoredQuestionCount(test, answers),
     test.minScorePerAnswer ?? 1,
   )
 }

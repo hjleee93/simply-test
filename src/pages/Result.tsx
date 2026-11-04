@@ -5,6 +5,7 @@ import GenderResultCard from '../components/GenderResultCard'
 import HalloweenResultCard from '../components/HalloweenResultCard'
 import JinsangResultCard from '../components/JinsangResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
+import MemeResultCard from '../components/MemeResultCard'
 import RelationshipResultCard from '../components/RelationshipResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
@@ -196,6 +197,23 @@ export default function Result() {
         onRetry={() => navigate(`/tests/${test.id}/play`)}
       />
     )
+  } else if (resultTemplate === 'meme') {
+    const answeredCount = Object.keys(answers).length
+    const knownCount = Math.round((thresholdPercent / 100) * answeredCount)
+    pageTitle = `${answeredCount}문제 중 ${knownCount}문제 · ${result.title} | Simply Test`
+    pageDescription = `${test.title} 결과: ${answeredCount}문제 중 ${knownCount}문제. ${result.title}`
+    resultCard = (
+      <MemeResultCard
+        result={result}
+        thresholdPercent={thresholdPercent}
+        answeredCount={answeredCount}
+        testTitle={test.title}
+        testId={test.id}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
   } else {
     const insights = buildResultInsights(test, answers, result.description)
     pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
@@ -215,7 +233,15 @@ export default function Result() {
   }
 
   return (
-    <PageLayout theme={resultTemplate === 'halloween' ? 'halloween' : 'default'}>
+    <PageLayout
+      theme={
+        resultTemplate === 'halloween'
+          ? 'halloween'
+          : resultTemplate === 'meme'
+            ? 'meme'
+            : 'default'
+      }
+    >
       <PageMeta
         title={pageTitle}
         description={pageDescription}

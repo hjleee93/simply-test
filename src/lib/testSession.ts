@@ -3,6 +3,8 @@ import type { Gender, TestAnswers, TestDefinition } from '../types/test'
 export type TestSession = {
   answers: TestAnswers
   gender?: Gender
+  /** 한 판에 낸 문항. 없으면 테스트의 전체 문항 순서. */
+  questionIds?: number[]
 }
 
 const STORAGE_PREFIX = 'simply-test:result:'
@@ -39,16 +41,32 @@ export function loadTestSession(testId: string): TestSession | null {
   return readStorage(sessionStorage, testId) ?? readStorage(localStorage, testId)
 }
 
+function questionsForSession(test: TestDefinition, questionIds?: number[]) {
+  if (!questionIds?.length || questionIds.length === test.questions.length) {
+    return test.questions
+  }
+
+  const questions = questionIds.map((id) => test.questions.find((question) => question.id === id))
+  if (questions.some((question) => !question)) return null
+  return questions as TestDefinition['questions']
+}
+
 /** URL 쿼리로 답변을 직렬화 (인앱 브라우저 state 유실 대비) */
 export function encodeSessionToSearchParams(session: TestSession, test: TestDefinition): string {
   const params = new URLSearchParams()
-  const answerChars = test.questions
+  const questions = questionsForSession(test, session.questionIds)
+  if (!questions) return ''
+
+  const answerChars = questions
     .map((question) => session.answers[question.id]?.answerId ?? '')
     .join('')
 
-  if (answerChars.length !== test.questions.length) return ''
+  if (answerChars.length !== questions.length) return ''
 
   params.set('a', answerChars)
+  if (session.questionIds && session.questionIds.length !== test.questions.length) {
+    params.set('q', session.questionIds.join('.'))
+  }
   if (session.gender) {
     params.set('g', session.gender === 'male' ? 'm' : 'f')
   }
@@ -74,12 +92,18 @@ export function decodeSessionFromSearchParams(
 ): TestSession | null {
   const params = new URLSearchParams(search)
   const answerChars = params.get('a')
-  if (!answerChars || answerChars.length !== test.questions.length) return null
+  const questionIds = params
+    .get('q')
+    ?.split('.')
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id))
+  const questions = questionsForSession(test, questionIds)
+  if (!answerChars || !questions || answerChars.length !== questions.length) return null
 
   const answers: TestAnswers = {}
 
-  for (let index = 0; index < test.questions.length; index += 1) {
-    const question = test.questions[index]
+  for (let index = 0; index < questions.length; index += 1) {
+    const question = questions[index]
     const answerId = answerChars[index]
     const answer = question.answers.find((item) => item.id === answerId)
     if (!answer) return null
@@ -94,7 +118,11 @@ export function decodeSessionFromSearchParams(
   const gender: Gender | undefined =
     genderParam === 'm' ? 'male' : genderParam === 'f' ? 'female' : undefined
 
-  return { answers, gender }
+  return {
+    answers,
+    gender,
+    questionIds: questionIds?.length ? questionIds : undefined,
+  }
 }
 
 export function resolveTestSession(
@@ -103,7 +131,11 @@ export function resolveTestSession(
   search: string,
 ): TestSession | null {
   if (locationState?.answers) {
-    return { answers: locationState.answers, gender: locationState.gender }
+    return {
+      answers: locationState.answers,
+      gender: locationState.gender,
+      questionIds: locationState.questionIds,
+    }
   }
 
   const fromQuery = decodeSessionFromSearchParams(search, test)

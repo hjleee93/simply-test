@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import GenderSelector from '../components/GenderSelector'
 import { AlertIcon } from '../components/icons'
@@ -6,6 +6,7 @@ import PageLayout from '../components/PageLayout'
 import ProgressBar from '../components/ProgressBar'
 import Question from '../components/Question'
 import type { AnswerSelection } from '../components/Question'
+import { pickPlayQuestions } from '../lib/questionSample'
 import { useTest } from '../lib/useTests'
 import {
   encodeSessionToSearchParams,
@@ -13,7 +14,7 @@ import {
   type TestSession,
 } from '../lib/testSession'
 import { ui } from '../lib/ui'
-import type { Gender, TestAnswers } from '../types/test'
+import type { Gender, Question as QuestionType, TestAnswers } from '../types/test'
 
 export default function Test() {
   const { slug } = useParams<{ slug: string }>()
@@ -23,11 +24,25 @@ export default function Test() {
   const [gender, setGender] = useState<Gender | undefined>()
   const [currentIndex, setCurrentIndex] = useState(0)
   const [answers, setAnswers] = useState<TestAnswers>({})
+  const [playQuestions, setPlayQuestions] = useState<{
+    testId: string
+    questions: QuestionType[]
+  } | null>(null)
+
+  useEffect(() => {
+    if (!test) return
+    setPlayQuestions((current) => {
+      if (current?.testId === test.id) return current
+      return { testId: test.id, questions: pickPlayQuestions(test) }
+    })
+  }, [test])
 
   const requiresGender = test?.requiresGender ?? false
   const showGenderStep = requiresGender && !gender
+  const questions =
+    test && playQuestions?.testId === test.id ? playQuestions.questions : null
 
-  const currentQuestion = test?.questions[currentIndex]
+  const currentQuestion = questions?.[currentIndex]
   const selectedAnswerId = currentQuestion
     ? answers[currentQuestion.id]?.answerId
     : undefined
@@ -35,15 +50,12 @@ export default function Test() {
   const progressCurrent = useMemo(() => {
     if (!test) return 0
     if (showGenderStep) return 0
-    return Math.min(currentIndex + 1, test.questions.length)
-  }, [currentIndex, showGenderStep, test])
+    return Math.min(currentIndex + 1, questions?.length ?? 0)
+  }, [currentIndex, questions, showGenderStep, test])
 
-  const progressTotal = useMemo(() => {
-    if (!test) return 0
-    return test.questions.length
-  }, [test])
+  const progressTotal = questions?.length ?? 0
 
-  if (loading) {
+  if (loading || (test && !questions)) {
     return (
       <PageLayout backTo="/tests" backLabel="나가기">
         <p className="py-12 text-center text-sm text-muted">불러오는 중...</p>
@@ -74,9 +86,13 @@ export default function Test() {
     }
     setAnswers(nextAnswers)
 
-    const isLast = currentIndex === test.questions.length - 1
+    const isLast = currentIndex === (questions?.length ?? 0) - 1
     if (isLast) {
-      const session: TestSession = { answers: nextAnswers, gender }
+      const session: TestSession = {
+        answers: nextAnswers,
+        gender,
+        questionIds: questions?.map((question) => question.id),
+      }
       saveTestSession(test.id, session)
 
       const query = encodeSessionToSearchParams(session, test)
@@ -103,18 +119,20 @@ export default function Test() {
   }
 
   const isHalloween = test.resultTemplate === 'halloween'
+  const isMeme = test.resultTemplate === 'meme'
+  const pageTheme = isHalloween ? 'halloween' : isMeme ? 'meme' : 'default'
 
   return (
     <PageLayout
       backTo={`/tests/${test.id}`}
       backLabel="나가기"
-      theme={isHalloween ? 'halloween' : 'default'}
+      theme={pageTheme}
     >
       <div className="flex flex-col gap-5">
         <ProgressBar
           current={progressCurrent}
           total={progressTotal}
-          theme={isHalloween ? 'halloween' : 'default'}
+          theme={pageTheme}
         />
 
         {showGenderStep ? (
@@ -130,7 +148,8 @@ export default function Test() {
               question={currentQuestion!}
               selectedAnswerId={selectedAnswerId}
               onSelect={handleSelect}
-              theme={isHalloween ? 'halloween' : 'default'}
+              theme={pageTheme}
+              questionNumber={progressCurrent}
             />
 
             <button
@@ -138,12 +157,14 @@ export default function Test() {
               className={`${ui.btnGhost} ${
                 isHalloween
                   ? '!border-[#70439a] !bg-[#211044] !text-[#d9c9ef] hover:!border-[#ff942f] hover:!text-white'
-                  : ''
+                  : isMeme
+                    ? '!rounded-sm !border-ink/40 !text-ink hover:!border-ink hover:!bg-white'
+                    : ''
               }`}
               onClick={handlePrev}
               disabled={currentIndex === 0 && !requiresGender}
             >
-              ← 이전으로
+              ← 이전 문제
             </button>
           </>
         )}

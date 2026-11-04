@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
+import { getPlayQuestionCount } from '../lib/questionSample'
 import { getCategoryMeta } from '../lib/testCategories'
 import type { TestDefinition } from '../types/test'
 import StickerCard from './StickerCard'
@@ -12,6 +13,7 @@ interface TestListCardProps {
 export default function TestListCard({ test, showQuestionCount = false }: TestListCardProps) {
   const category = getCategoryMeta(test.category)
   const isHalloween = test.resultTemplate === 'halloween'
+  const isMeme = test.resultTemplate === 'meme'
   const thumbnailChar = test.thumbnailCharacter ?? 'adapted'
   const webpSrc = resolveCharacterWebp(thumbnailChar)
 
@@ -21,7 +23,9 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
         className={`flex items-center gap-3 !p-4 ${
           isHalloween
             ? '!border-[#ff942f] !bg-[#160b35] shadow-[0_5px_0_#542275]'
-            : ''
+            : isMeme
+              ? '!rounded-sm !border-2 !border-ink !bg-[#f7f3ea] !shadow-none'
+              : ''
         }`}
       >
         <picture className="shrink-0">
@@ -41,10 +45,10 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
         <div className="min-w-0 flex-1 text-left">
           <span
             className={`mb-1 inline-block text-[11px] font-bold ${
-              isHalloween ? 'text-[#ffb247]' : 'text-accent'
+              isHalloween ? 'text-[#ffb247]' : isMeme ? 'text-[#e11d48]' : 'text-accent'
             }`}
           >
-            {category.label}
+            {isMeme ? '올해 밈' : category.label}
           </span>
           <p
             className={`mb-1 text-[15px] font-extrabold ${
@@ -55,24 +59,27 @@ export default function TestListCard({ test, showQuestionCount = false }: TestLi
           </p>
           <p
             className={`text-sm leading-snug ${
-              isHalloween ? 'text-[#d9c9ef]' : 'text-muted'
+              isHalloween ? 'text-[#d9c9ef]' : isMeme ? 'text-[#5c564e]' : 'text-muted'
             }`}
           >
             {test.description}
           </p>
           {showQuestionCount ? (
             <span
-              className={`mt-2 inline-block rounded-md border px-2 py-0.5 text-xs font-bold ${
+              className={`mt-2 inline-block border px-2 py-0.5 text-xs font-bold ${
                 isHalloween
-                  ? 'border-[#ffb247] bg-[#ff942f]/20 text-[#ffd59a]'
-                  : 'border-ink bg-lemon text-ink'
+                  ? 'rounded-md border-[#ffb247] bg-[#ff942f]/20 text-[#ffd59a]'
+                  : isMeme
+                    ? 'rounded-sm border-ink bg-white text-ink'
+                    : 'rounded-md border-ink bg-lemon text-ink'
               }`}
             >
-              {test.questions.length}문항
+              {getPlayQuestionCount(test.id, test.questions.length)}
+              {isMeme ? '문제' : '문항'}
             </span>
           ) : null}
         </div>
-        <span className={`text-xl ${isHalloween ? 'text-[#ffb247]' : 'text-accent'}`}>→</span>
+        <span className={`text-xl ${isHalloween ? 'text-[#ffb247]' : isMeme ? 'text-ink' : 'text-accent'}`}>→</span>
       </StickerCard>
     </Link>
   )

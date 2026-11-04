@@ -12,6 +12,7 @@ export type TestResultTemplate =
   | 'relationship'
   | 'company'
   | 'halloween'
+  | 'meme'
 
 /** pattern 채점 모드에서 결과 유형을 식별하는 id. 테스트마다 다른 유형 집합을 쓸 수 있다. */
 export type PatternId = string
@@ -38,6 +39,8 @@ export type Answer = {
 export type Question = {
   id: number
   question: string
+  /** 시험지형 UI에서 크게 강조할 밈 이름/한 줄 */
+  highlight?: string
   answers: Answer[]
 }
 

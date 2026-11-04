@@ -20,7 +20,7 @@ const LOCAL_OPTIMIZED_CHARACTERS = new Set([
   'workplace/survival',
   'jinsang/main',
 ])
-const LOCAL_WEBP_FOLDERS = new Set(['halloween-villains', 'pepero-love'])
+const LOCAL_WEBP_FOLDERS = new Set(['halloween-villains', 'pepero-love', 'meme-check'])
 
 /** src/lib/characters.ts resolveCharacterImage 와 동일 — 빌드 시 og:image 용 */
 function resolveCharacterImage(value: string): string {
@@ -71,6 +71,17 @@ type FullTestData = {
   minScorePerAnswer: number | null
   questions: unknown[]
   results: unknown[]
+}
+
+/** src/lib/questionSample.ts 의 한 판 문항 수와 반드시 같이 맞춰서 바꿔야 한다. */
+const PLAY_QUESTION_COUNT: Record<string, number> = {
+  'meme-check-2026': 20,
+}
+
+function playQuestionCount(testId: string, questionCount: number): number {
+  const sample = PLAY_QUESTION_COUNT[testId]
+  if (!sample || questionCount === 0) return questionCount
+  return Math.min(sample, questionCount)
 }
 
 /** src/lib/testCategories.ts 의 라벨과 반드시 같이 맞춰서 바꿔야 한다. */
@@ -208,7 +219,10 @@ async function loadPublishedTests(
       title: row.title,
       description: row.description,
       category: row.category,
-      questionCount: Array.isArray(row.questions) ? row.questions.length : 0,
+      questionCount: playQuestionCount(
+        row.id,
+        Array.isArray(row.questions) ? row.questions.length : 0,
+      ),
       character: row.character ?? 'adapted',
       resultTemplate: row.result_template ?? null,
     })

@@ -27,6 +27,7 @@ const RESULT_TEMPLATES: Array<TestResultTemplate | ''> = [
   'relationship',
   'company',
   'halloween',
+  'meme',
 ]
 
 const SCORING_MODES: TestScoringMode[] = ['simple', 'category', 'pattern']

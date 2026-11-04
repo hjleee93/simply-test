@@ -1,3 +1,4 @@
+import { getPlayQuestionCount } from './questionSample'
 import type { TestDefinition } from '../types/test'
 import { SITE_NAME } from './site'
 
@@ -31,7 +32,7 @@ export function buildQuizJsonLd(test: TestDefinition, origin: string) {
       description: test.description,
       url: `${origin}/tests/${test.id}`,
       inLanguage: 'ko-KR',
-      numberOfQuestions: test.questions.length,
+      numberOfQuestions: getPlayQuestionCount(test.id, test.questions.length),
       educationalLevel: 'general',
     },
     {

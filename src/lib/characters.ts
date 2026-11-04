@@ -47,6 +47,7 @@ const CDN_CHARACTER_BASE = 'https://cdn.simply-test.co.kr/characters/'
 const LOCAL_WEBP_FOLDERS = new Set([
   'halloween-villains',
   'pepero-love',
+  'meme-check',
 ])
 
 function getCdnFolderName(cdnUrl: string): string | null {
