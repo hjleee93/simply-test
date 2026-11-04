@@ -61,13 +61,15 @@ export default function TestList() {
         ))}
       </div>
 
-      <section className="space-y-4">
+      <section>
         {loading ? (
           <p className="py-8 text-center text-sm text-muted">불러오는 중...</p>
         ) : (
-          filteredTests.map((test) => (
-            <TestListCard key={test.id} test={test} showQuestionCount />
-          ))
+          <div className="grid grid-cols-2 gap-3">
+            {filteredTests.map((test) => (
+              <TestListCard key={test.id} test={test} showQuestionCount compact />
+            ))}
+          </div>
         )}
       </section>
     </PageLayout>

@@ -50,11 +50,11 @@ export default function Main() {
         </Link>
       </section>
 
-      <section className="mb-6 min-h-[1020px]">
+      <section className="mb-6">
         <h2 className="mb-3 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
-        <div className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
           {featuredTests.map((test) => (
-            <TestListCard key={test.id} test={test} />
+            <TestListCard key={test.id} test={test} compact />
           ))}
         </div>
         {hasMoreTests ? (

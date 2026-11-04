@@ -74,7 +74,7 @@ export default function TestDetail() {
               alt={`${test.title} 캐릭터`}
               width={288}
               height={288}
-              className="mx-auto mb-3 h-28 w-28 object-contain"
+              className="mx-auto mb-3 object-contain"
             />
           </picture>
           <h1 className="text-[28px] font-black leading-tight text-ink">{test.title}</h1>
