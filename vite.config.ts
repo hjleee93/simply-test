@@ -6,13 +6,40 @@ import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 
-function getOgImagePath(pathname: string): string {
-  const normalized = pathname.replace(/\/$/, '') || '/'
-  if (normalized === '/') return '/og/home.png'
-  if (normalized === '/tests') return '/og/list.png'
-  const testMatch = normalized.match(/^\/tests\/([^/]+)/)
-  if (testMatch) return `/og/${testMatch[1]}.png`
-  return '/og/home.png'
+const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
+const PIXEL_CHARACTER_DIR = '/characters/pixel'
+const PIXEL_CHARACTER_CDN = 'https://cdn.simply-test.co.kr/characters/pixel'
+const CDN_CHARACTER_BASE = 'https://cdn.simply-test.co.kr/characters/'
+const LOCAL_OPTIMIZED_CHARACTERS = new Set([
+  'main_hero',
+  'adapted',
+  'steel',
+  'subtle',
+  'kkondae/main',
+  'relationship/main',
+  'workplace/survival',
+  'jinsang/main',
+])
+const LOCAL_WEBP_FOLDERS = new Set(['halloween-villains', 'pepero-love'])
+
+/** src/lib/characters.ts resolveCharacterImage 와 동일 — 빌드 시 og:image 용 */
+function resolveCharacterImage(value: string): string {
+  if (value.startsWith(CDN_CHARACTER_BASE) && value.endsWith('.png')) {
+    const folderName = value.slice(CDN_CHARACTER_BASE.length).split('/')[0]
+    if (folderName && LOCAL_WEBP_FOLDERS.has(folderName)) {
+      return value.replace(CDN_CHARACTER_BASE, '/characters/')
+    }
+    return value
+  }
+  if (/^https?:\/\//.test(value) || value.startsWith('/')) return value
+  if (LOCAL_OPTIMIZED_CHARACTERS.has(value)) return `${PIXEL_CHARACTER_DIR}/${value}.png`
+  return `${PIXEL_CHARACTER_CDN}/${value}.png`
+}
+
+function toAbsoluteImageUrl(origin: string, image: string): string {
+  if (/^https?:\/\//i.test(image)) return image
+  if (!origin) return image
+  return `${origin}${image.startsWith('/') ? image : `/${image}`}`
 }
 
 type SiteOgConfig = {
@@ -63,6 +90,7 @@ type RouteOg = {
   description: string
   type: string
   indexable: boolean
+  image: string
 }
 
 function buildWebSiteJsonLd(origin: string, siteName: string): object[] {
@@ -212,6 +240,7 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       description: og.home.description,
       type: 'website',
       indexable: true,
+      image: DEFAULT_OG_IMAGE,
     },
     {
       path: '/tests',
@@ -219,30 +248,37 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       description: og.list.description,
       type: 'website',
       indexable: true,
+      image: DEFAULT_OG_IMAGE,
     },
-    ...tests.flatMap((test) => [
-      {
-        path: `/tests/${test.id}`,
-        title: `${test.title} | ${siteName}`,
-        description: test.description,
-        type: 'website',
-        indexable: true,
-      },
-      {
-        path: `/tests/${test.id}/play`,
-        title: `${test.title} 진행 중 | ${siteName}`,
-        description: test.description,
-        type: 'website',
-        indexable: false,
-      },
-      {
-        path: `/tests/${test.id}/result`,
-        title: `${test.title} 결과 | ${siteName}`,
-        description: test.description,
-        type: 'article',
-        indexable: false,
-      },
-    ]),
+    ...tests.flatMap((test) => {
+      const image = resolveCharacterImage(test.character || 'adapted')
+      return [
+        {
+          path: `/tests/${test.id}`,
+          title: `${test.title} | ${siteName}`,
+          description: test.description,
+          type: 'website',
+          indexable: true,
+          image,
+        },
+        {
+          path: `/tests/${test.id}/play`,
+          title: `${test.title} 진행 중 | ${siteName}`,
+          description: test.description,
+          type: 'website',
+          indexable: false,
+          image,
+        },
+        {
+          path: `/tests/${test.id}/result`,
+          title: `${test.title} 결과 | ${siteName}`,
+          description: test.description,
+          type: 'article',
+          indexable: false,
+          image,
+        },
+      ]
+    }),
   ]
 }
 
@@ -457,7 +493,7 @@ ${items.join('\n')}
 }
 
 function build404Html(origin: string, og: SiteOgConfig): string {
-  const imagePath = '/og/home.png'
+  const imagePath = DEFAULT_OG_IMAGE
   return `<!doctype html>
 <html lang="ko">
   <head>
@@ -473,15 +509,13 @@ function build404Html(origin: string, og: SiteOgConfig): string {
     <meta property="og:site_name" content="${escapeAttr(og.siteName)}" />
     <meta property="og:title" content="페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}" />
     <meta property="og:description" content="페이지를 찾을 수 없습니다." />
-    <meta property="og:image" content="${origin}${imagePath}" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    <meta property="og:image" content="${toAbsoluteImageUrl(origin, imagePath)}" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="ko_KR" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}" />
     <meta name="twitter:description" content="페이지를 찾을 수 없습니다." />
-    <meta name="twitter:image" content="${origin}${imagePath}" />
+    <meta name="twitter:image" content="${toAbsoluteImageUrl(origin, imagePath)}" />
     <title>페이지를 찾을 수 없어요 | ${escapeAttr(og.siteName)}</title>
     <style>
       body{font-family:'Pretendard Variable','Pretendard','Apple SD Gothic Neo','Noto Sans KR',sans-serif;background:#fbf3e6;margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center}
@@ -587,17 +621,17 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
     description: og.home.description,
     type: 'website',
     indexable: true,
+    image: DEFAULT_OG_IMAGE,
   }
   let htmlTemplate = ''
   let outDir = 'dist'
   let isBuild = false
 
   const toOg = (route: RouteOg) => {
-    const imagePath = getOgImagePath(route.path)
     return {
       title: route.title,
       description: route.description,
-      image: origin ? `${origin}${imagePath}` : imagePath,
+      image: toAbsoluteImageUrl(origin, route.image),
       url: origin ? toCanonicalUrl(origin, route.path) : '',
       canonicalUrl: toCanonicalUrl(origin, getCanonicalPath(route)),
       type: route.type,

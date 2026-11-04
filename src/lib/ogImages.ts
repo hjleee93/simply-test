@@ -1,16 +1,13 @@
-export const OG_IMAGE_DIR = '/og'
+import { resolveCharacterImage } from './characters'
 
-export function getOgImageKeyFromPath(pathname: string): string {
-  const normalized = pathname.replace(/\/$/, '') || '/'
-  if (normalized === '/') return 'home'
-  if (normalized === '/tests') return 'list'
+/** 홈·목록 등 정적 페이지 기본 공유 이미지 (메인 히어로) */
+export const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
 
-  const testMatch = normalized.match(/^\/tests\/([^/]+)/)
-  if (testMatch) return testMatch[1]
-
-  return 'home'
+/** 테스트 thumbnailCharacter → og:image 에 쓸 경로/URL */
+export function getTestOgImage(character: string | undefined): string {
+  return resolveCharacterImage(character?.trim() || 'adapted')
 }
 
-export function getOgImagePath(pathname: string): string {
-  return `${OG_IMAGE_DIR}/${getOgImageKeyFromPath(pathname)}.png`
+export function getOgImagePath(_pathname?: string): string {
+  return DEFAULT_OG_IMAGE
 }

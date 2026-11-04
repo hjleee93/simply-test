@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { useTest } from '../lib/useTests'
 import { trackPageView } from '../lib/analytics'
 import { buildQuizJsonLd, buildWebSiteJsonLd } from '../lib/jsonLd'
-import { getOgImagePath } from '../lib/ogImages'
+import { getTestOgImage } from '../lib/ogImages'
 import { getDefaultRouteMeta, getStaticRouteMeta } from '../lib/routeMeta'
 import { DEFAULT_OG, SITE_NAME, getSiteOrigin, toAbsoluteUrl } from '../lib/site'
 
@@ -151,7 +151,7 @@ export function RoutePageMeta() {
         <PageMeta
           title={`테스트를 찾을 수 없어요 | ${SITE_NAME}`}
           description={DEFAULT_OG.description}
-          imagePath={getOgImagePath(canonicalPath)}
+          imagePath={DEFAULT_OG.imagePath}
           canonicalPath={canonicalPath}
           noindex
         />
@@ -165,7 +165,7 @@ export function RoutePageMeta() {
       <PageMeta
         title={`${test.title}${titleSuffix} | ${SITE_NAME}`}
         description={test.description}
-        imagePath={getOgImagePath(canonicalPath)}
+        imagePath={getTestOgImage(test.thumbnailCharacter)}
         type={subpage === 'result' ? 'article' : 'website'}
         canonicalPath={canonicalPath}
         noindex={Boolean(subpage)}

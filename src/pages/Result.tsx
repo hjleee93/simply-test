@@ -21,7 +21,7 @@ import { getVisitorId } from '../lib/visitorId'
 import { trackTestComplete } from '../lib/analytics'
 import type { Gender, TestAnswers } from '../types/test'
 
-import { getOgImagePath } from '../lib/ogImages'
+import { getTestOgImage } from '../lib/ogImages'
 import { AlertIcon } from '../components/icons'
 import { ui } from '../lib/ui'
 
@@ -219,7 +219,7 @@ export default function Result() {
       <PageMeta
         title={pageTitle}
         description={pageDescription}
-        imagePath={getOgImagePath(`/tests/${test.id}`)}
+        imagePath={getTestOgImage(test.thumbnailCharacter)}
         type="article"
         noindex
         canonicalPath={`/tests/${test.id}`}

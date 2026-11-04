@@ -8,7 +8,7 @@ export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`
 export const DEFAULT_OG = {
   title: og.home.title,
   description: og.home.description,
-  imagePath: '/og-image.png',
+  imagePath: '/characters/pixel/main_hero.png',
   type: 'website',
   locale: 'ko_KR',
 } as const
@@ -21,6 +21,7 @@ export function getSiteOrigin(): string {
 }
 
 export function toAbsoluteUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path
   const origin = getSiteOrigin()
   if (!origin) return path
   return `${origin}${path.startsWith('/') ? path : `/${path}`}`
