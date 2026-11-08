@@ -25,3 +25,11 @@ export async function saveTestResult(payload: {
 
   if (error) console.error('Supabase save failed:', error.message)
 }
+
+export async function incrementTestView(testSlug: string) {
+  if (!supabase) return
+
+  const { error } = await supabase.rpc('increment_test_view', { test_slug: testSlug })
+
+  if (error) console.error('Supabase view count failed:', error.message)
+}

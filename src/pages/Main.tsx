@@ -45,7 +45,7 @@ export default function Main() {
           to="/tests"
           className="mx-auto mt-8 flex h-14 w-full max-w-[280px] items-center justify-center gap-1.5 rounded-full bg-accent px-6 text-base font-bold text-white shadow-[0_10px_24px_-6px_rgba(224,82,124,0.5)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-accent-hover active:translate-y-0"
         >
-          테스트 하러 가기
+          전체 테스트 보기
           <span aria-hidden>→</span>
         </Link>
       </section>

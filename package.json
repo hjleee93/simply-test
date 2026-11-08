@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "seed:tests": "tsx scripts/seed-tests.ts",
-    "upload:test": "tsx scripts/upload-test.ts"
+    "upload:test": "tsx scripts/upload-test.ts",
+    "upload:instagram": "tsx scripts/upload-instagram.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

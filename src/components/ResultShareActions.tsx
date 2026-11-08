@@ -1,6 +1,6 @@
 import { useEffect, useState, type RefObject } from 'react'
 import { cn } from '../lib/cn'
-import { DownloadIcon, LinkIcon, ShareIcon } from './icons'
+import { DownloadIcon, KakaoIcon, LinkIcon, ShareIcon } from './icons'
 import {
   buildResultFilename,
   captureElementAsPng,
@@ -10,6 +10,7 @@ import {
   shareImage,
   shareLink,
 } from '../lib/shareResult'
+import { isKakaoShareEnabled, shareToKakao } from '../lib/kakaoShare'
 import { trackShare } from '../lib/analytics'
 import { ui } from '../lib/ui'
 
@@ -148,6 +149,29 @@ export default function ResultShareActions({
     }
   }
 
+  const handleKakaoShare = async () => {
+    setMessage(null)
+
+    try {
+      const imageUrl =
+        document.querySelector('meta[property="og:image"]')?.getAttribute('content') ?? ''
+      const shared = await shareToKakao({
+        title: shareTitle,
+        description: shareText,
+        imageUrl,
+        url: window.location.href,
+      })
+
+      if (shared) {
+        trackShare('kakao', testId, resultId)
+      } else {
+        setMessage('카카오톡 공유를 사용할 수 없어요')
+      }
+    } catch {
+      setMessage('카카오톡 공유 실패… 다시 눌러주세요')
+    }
+  }
+
   const handlePreviewShare = async () => {
     if (!previewBlob) return
 
@@ -168,9 +192,11 @@ export default function ResultShareActions({
     }
   }
 
+  const kakaoEnabled = isKakaoShareEnabled()
+
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-3 gap-2">
+      <div className={cn('grid gap-2', kakaoEnabled ? 'grid-cols-4' : 'grid-cols-3')}>
         <button
           type="button"
           className={cn(ui.btnPrimary, 'wiggle-hover px-2 text-sm')}
@@ -186,6 +212,17 @@ export default function ResultShareActions({
             </>
           )}
         </button>
+        {kakaoEnabled ? (
+          <button
+            type="button"
+            className="inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-[#FEE500] px-2 text-sm font-bold text-[#391b1b] shadow-[0_2px_12px_-4px_rgba(31,21,53,0.16)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            onClick={handleKakaoShare}
+            disabled={isSaving}
+          >
+            <KakaoIcon className="h-[18px] w-[18px]" />
+            카톡
+          </button>
+        ) : null}
         <button
           type="button"
           className={cn(ui.btnSecondary, 'px-2 text-sm')}

@@ -38,7 +38,7 @@ export function trackTestComplete(testId: string, resultId: string) {
   window.clarity?.('set', 'test_action', 'complete')
 }
 
-export type ShareMethod = 'web_share' | 'link_copy' | 'download'
+export type ShareMethod = 'web_share' | 'link_copy' | 'download' | 'kakao'
 
 export function trackShare(method: ShareMethod, testId: string, resultId?: string) {
   window.gtag?.('event', 'share', {

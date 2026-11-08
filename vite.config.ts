@@ -347,7 +347,6 @@ function buildHomeContent(tests: TestRouteSource[]): string {
 function buildListContent(tests: TestRouteSource[]): string {
   return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
     <h1 class="text-[26px] font-black leading-tight text-ink">테스트 목록</h1>
-    <p class="mt-2 text-[15px] leading-relaxed text-muted">궁금한 거 골라보세요~</p>
     <ul class="mt-5">${tests.map(testLinkItem).join('')}</ul>
   </div>`
 }

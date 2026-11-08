@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
 import { getPlayQuestionCount } from '../lib/questionSample'
@@ -7,6 +8,7 @@ import RecommendedTests from '../components/RecommendedTests'
 import StickerCard from '../components/StickerCard'
 import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
 import { useTest } from '../lib/useTests'
+import { incrementTestView } from '../lib/supabase'
 import { ui } from '../lib/ui'
 
 function EmptyState({ message, onAction, actionLabel }: { message: string; onAction: () => void; actionLabel: string }) {
@@ -25,6 +27,11 @@ export default function TestDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { test, loading } = useTest(slug)
+
+  useEffect(() => {
+    if (!test) return
+    void incrementTestView(test.id)
+  }, [test])
 
   if (loading) {
     return (

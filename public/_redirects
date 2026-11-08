@@ -1,0 +1,5 @@
+# admin 라우트는 SEO 프리렌더 대상이 아니라서 dist에 실제 파일이 없다.
+# 커스텀 404.html이 있으면 Cloudflare Pages가 SPA 기본 폴백을 하지 않으므로,
+# 이 경로들만 명시적으로 index.html로 리라이트해서 React Router가 처리하게 한다.
+/admin/*  /index.html  200
+/admin  /index.html  200

@@ -213,6 +213,17 @@ export function EyeIcon({ className }: IconProps) {
   )
 }
 
+export function KakaoIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} aria-hidden>
+      <path
+        fill="currentColor"
+        d="M12 4.5c-5 0-9 3.2-9 7.1 0 2.5 1.6 4.7 4.1 6l-1 3.7a.4.4 0 0 0 .6.5l4.3-2.9c.3 0 .7.1 1 .1 5 0 9-3.2 9-7.1s-4-7.1-9-7.1z"
+      />
+    </svg>
+  )
+}
+
 export function LinkIcon({ className }: IconProps) {
   return (
     <svg {...base(className)} aria-hidden>
