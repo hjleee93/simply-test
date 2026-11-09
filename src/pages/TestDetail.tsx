@@ -134,11 +134,7 @@ export default function TestDetail() {
                 alt={`${test.title} 캐릭터`}
                 width={288}
                 height={288}
-                className={`mx-auto object-cover ${
-                  isHalloween
-                    ? 'mb-4 h-40 w-40 rounded-xl border-2 border-[#ffb247] shadow-[0_0_28px_rgba(255,148,47,0.35)]'
-                    : 'mb-3 h-24 w-24 object-contain'
-                }`}
+                className='mx-auto object-cover '
               />
             </picture>
             {isHalloween ? (
