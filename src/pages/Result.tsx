@@ -1,4 +1,4 @@
-import { useEffect, useMemo, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import CompanyResultCard from '../components/CompanyResultCard'
 import GenderResultCard from '../components/GenderResultCard'
@@ -46,11 +46,17 @@ export default function Result() {
   const answers = session?.answers
   const gender = session?.gender
 
+  const savedKeyRef = useRef<string | null>(null)
+
   useEffect(() => {
     if (!test || !answers) return
 
     const result = getResult(test, answers)
     const thresholdPercent = getThresholdPercent(test, answers)
+
+    const savedKey = `${test.id}:${result.id}:${thresholdPercent}`
+    if (savedKeyRef.current === savedKey) return
+    savedKeyRef.current = savedKey
 
     trackTestComplete(test.id, result.id)
 
