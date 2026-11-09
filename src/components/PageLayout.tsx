@@ -56,15 +56,10 @@ export default function PageLayout({
   const isMeme = theme === 'meme'
 
   return (
-    <div
-      className={`mx-auto flex min-h-svh max-w-[480px] flex-col ${
-        isHalloween ? 'halloween-page' : isMeme ? 'meme-page' : ''
-      }`}
-    >
+    <div className={`min-h-svh ${isHalloween ? 'halloween-page' : isMeme ? 'meme-page' : ''}`}>
+      <div className="mx-auto flex min-h-svh w-full max-w-[720px] flex-col">
       <header
-        className={`sticky top-0 z-10 flex h-14 items-center justify-between px-5 backdrop-blur-sm ${
-          isHalloween ? 'bg-[#10082b]/90' : isMeme ? 'bg-[#ece8e1]/92' : 'bg-cream/90'
-        }`}
+        className={`sticky top-0 z-10 flex h-14 items-center justify-between px-5`}
       >
         {backTo ? (
           <Link
@@ -120,6 +115,7 @@ export default function PageLayout({
           수 없습니다.
         </p>
       </footer>
+      </div>
     </div>
   )
 }

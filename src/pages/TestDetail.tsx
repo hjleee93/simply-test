@@ -6,6 +6,7 @@ import { trackTestStart } from '../lib/analytics'
 import PageLayout from '../components/PageLayout'
 import RecommendedTests from '../components/RecommendedTests'
 import StickerCard from '../components/StickerCard'
+import TestShareActions from '../components/TestShareActions'
 import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
 import { useTest } from '../lib/useTests'
 import { incrementTestView } from '../lib/supabase'
@@ -225,6 +226,10 @@ export default function TestDetail() {
         {isMeme ? '문제 풀기' : '시작하기'}
         <span aria-hidden>→</span>
       </button>
+
+      <div className="mt-4">
+        <TestShareActions testId={test.id} title={test.title} description={test.description} />
+      </div>
 
       <RecommendedTests
         excludeTestId={test.id}

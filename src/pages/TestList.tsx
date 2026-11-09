@@ -65,7 +65,7 @@ export default function TestList() {
         {loading ? (
           <p className="py-8 text-center text-sm text-muted">불러오는 중...</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 min-[480px]:grid-cols-3">
             {filteredTests.map((test) => (
               <TestListCard key={test.id} test={test} showQuestionCount compact />
             ))}

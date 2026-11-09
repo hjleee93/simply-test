@@ -1,5 +1,8 @@
 # admin 라우트는 SEO 프리렌더 대상이 아니라서 dist에 실제 파일이 없다.
-# 커스텀 404.html이 있으면 Cloudflare Pages가 SPA 기본 폴백을 하지 않으므로,
-# 이 경로들만 명시적으로 index.html로 리라이트해서 React Router가 처리하게 한다.
-/admin/*  /index.html  200
-/admin  /index.html  200
+# not_found_handling: "404-page" 때문에 매칭되는 파일이 없으면 Workers Assets가
+# SPA 폴백 없이 404.html을 그대로 서빙하므로, 이 경로들만 명시적으로 SPA 셸(/)로
+# 리라이트해서 React Router가 처리하게 한다.
+# 목적지는 "/index.html"이 아니라 "/"여야 한다 — html_handling: "drop-trailing-slash"
+# 때문에 "/index.html"은 다시 "/"로 정규화되려다 Cloudflare가 무한루프로 보고 거부한다.
+/admin/*  /  200
+/admin  /  200

@@ -327,7 +327,7 @@ function testLinkItem(test: TestRouteSource): string {
 
 function buildHomeContent(tests: TestRouteSource[]): string {
   const featured = tests.slice(0, HOME_FEATURED_LIMIT)
-  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+  return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
     <div class="pb-10 pt-6 text-center">
       <div class="mx-auto mb-2 flex h-60 items-center justify-center">
         <picture>
@@ -345,7 +345,7 @@ function buildHomeContent(tests: TestRouteSource[]): string {
 }
 
 function buildListContent(tests: TestRouteSource[]): string {
-  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+  return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
     <h1 class="text-[26px] font-black leading-tight text-ink">테스트 목록</h1>
     <ul class="mt-5">${tests.map(testLinkItem).join('')}</ul>
   </div>`
@@ -354,7 +354,7 @@ function buildListContent(tests: TestRouteSource[]): string {
 function buildTestContent(test: TestRouteSource, allTests: TestRouteSource[]): string {
   const label = CATEGORY_LABELS[test.category] ?? ''
   const related = allTests.filter((other) => other.id !== test.id).slice(0, 3)
-  return `<div class="mx-auto max-w-[480px] px-5 pb-8 pt-6">
+  return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
     ${label ? `<span class="inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[13px] font-bold text-accent-hover">${escapeHtml(label)}</span>` : ''}
     <h1 class="mt-3 text-[26px] font-black leading-tight text-ink">${escapeHtml(test.title)}</h1>
     <p class="mt-3 text-[15px] leading-relaxed text-muted">${escapeHtml(test.description)}</p>
