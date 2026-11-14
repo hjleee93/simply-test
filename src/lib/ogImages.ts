@@ -1,3 +1,4 @@
+import { withAssetVersion } from './assetVersions'
 import { resolveCharacterImage } from './characters'
 import { TEST_OG_IMAGES, type TestOgImageMeta } from './testOgOverrides'
 
@@ -14,7 +15,12 @@ export function getTestOgImageMeta(
 ): TestOgImageMeta {
   if (testId) {
     const override = TEST_OG_IMAGES[testId]
-    if (override) return override
+    if (override) {
+      return {
+        ...override,
+        image: withAssetVersion(override.image, testId),
+      }
+    }
   }
   return { image: resolveCharacterImage(character?.trim() || 'adapted') }
 }
@@ -25,5 +31,5 @@ export function getTestOgImage(character: string | undefined, testId?: string): 
 }
 
 export function getOgImagePath(_pathname?: string): string {
-  return DEFAULT_OG_IMAGE
+  return withAssetVersion(DEFAULT_OG_IMAGE)
 }

@@ -1,3 +1,5 @@
+import { withAssetVersion } from './assetVersions'
+
 /** 도트 스타일 캐릭터 경로 — 최적화된 로컬 이미지 사용 */
 export const PIXEL_CHARACTER_DIR = '/characters/pixel'
 
@@ -23,17 +25,15 @@ const LOCAL_OPTIMIZED_CHARACTERS = new Set([
 ])
 
 export function pixelCharacterPath(id: string): string {
-  if (LOCAL_OPTIMIZED_CHARACTERS.has(id)) {
-    return `${PIXEL_CHARACTER_DIR}/${id}.png`
-  }
-  return `${PIXEL_CHARACTER_CDN}/${id}.png`
+  const path = LOCAL_OPTIMIZED_CHARACTERS.has(id)
+    ? `${PIXEL_CHARACTER_DIR}/${id}.png`
+    : `${PIXEL_CHARACTER_CDN}/${id}.png`
+  return withAssetVersion(path)
 }
 
 export function pixelCharacterWebpPath(id: string): string | null {
-  if (LOCAL_OPTIMIZED_CHARACTERS.has(id)) {
-    return `${PIXEL_CHARACTER_DIR}/${id}.webp`
-  }
-  return null
+  if (!LOCAL_OPTIMIZED_CHARACTERS.has(id)) return null
+  return withAssetVersion(`${PIXEL_CHARACTER_DIR}/${id}.webp`)
 }
 
 /** CDN base URL for character images */
@@ -65,19 +65,22 @@ function getCdnFolderName(cdnUrl: string): string | null {
  * - pixel 캐릭터 id → 로컬에 있으면 WebP 경로, 없으면 null
  */
 export function resolveCharacterWebp(value: string): string | null {
-  if (value.startsWith(CDN_CHARACTER_BASE) && value.endsWith('.png')) {
-    const folderName = getCdnFolderName(value)
+  const bare = value.split(/[?#]/)[0] ?? value
+  if (bare.startsWith(CDN_CHARACTER_BASE) && bare.endsWith('.png')) {
+    const folderName = getCdnFolderName(bare)
     if (folderName && LOCAL_WEBP_FOLDERS.has(folderName)) {
-      return value.replace(CDN_CHARACTER_BASE, '/characters/').replace(/\.png$/, '.webp')
+      return withAssetVersion(
+        bare.replace(CDN_CHARACTER_BASE, '/characters/').replace(/\.png$/, '.webp'),
+      )
     }
     return null
   }
-  if (/^https?:\/\//.test(value)) return null
-  if (value.startsWith('/characters/') && value.endsWith('.png')) {
-    return value.replace(/\.png$/, '.webp')
+  if (/^https?:\/\//.test(bare)) return null
+  if (bare.startsWith('/characters/') && bare.endsWith('.png')) {
+    return withAssetVersion(bare.replace(/\.png$/, '.webp'))
   }
-  if (value.startsWith('/')) return null
-  return pixelCharacterWebpPath(value)
+  if (bare.startsWith('/')) return null
+  return pixelCharacterWebpPath(bare)
 }
 
 /**
@@ -86,17 +89,21 @@ export function resolveCharacterWebp(value: string): string | null {
  * - http(s):// 외부 URL → 그대로 사용
  * - / 로 시작하는 절대 경로 → 그대로 사용
  * - 그 외 pixel 캐릭터 id → 로컬 또는 CDN 경로
+ * 결과에 ?v= 캐시 버스팅을 붙인다 (src/lib/assetVersions.ts).
  */
 export function resolveCharacterImage(value: string): string {
-  if (value.startsWith(CDN_CHARACTER_BASE) && value.endsWith('.png')) {
-    const folderName = getCdnFolderName(value)
+  const bare = value.split(/[?#]/)[0] ?? value
+  if (bare.startsWith(CDN_CHARACTER_BASE) && bare.endsWith('.png')) {
+    const folderName = getCdnFolderName(bare)
     if (folderName && LOCAL_WEBP_FOLDERS.has(folderName)) {
-      return value.replace(CDN_CHARACTER_BASE, '/characters/')
+      return withAssetVersion(bare.replace(CDN_CHARACTER_BASE, '/characters/'))
     }
-    return value
+    return withAssetVersion(bare)
   }
-  if (/^https?:\/\//.test(value) || value.startsWith('/')) return value
-  return pixelCharacterPath(value)
+  if (/^https?:\/\//.test(bare) || bare.startsWith('/')) {
+    return withAssetVersion(bare)
+  }
+  return pixelCharacterPath(bare)
 }
 
 export function brandCharacterPath(): string {

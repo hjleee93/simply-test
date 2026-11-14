@@ -5,9 +5,10 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { withAssetVersion } from './src/lib/assetVersions.ts'
 import { TEST_OG_IMAGES } from './src/lib/testOgOverrides.ts'
 
-const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
+const DEFAULT_OG_IMAGE = withAssetVersion('/characters/pixel/main_hero.png')
 const PIXEL_CHARACTER_DIR = '/characters/pixel'
 const PIXEL_CHARACTER_CDN = 'https://cdn.simply-test.co.kr/characters/pixel'
 const CDN_CHARACTER_BASE = 'https://cdn.simply-test.co.kr/characters/'
@@ -25,23 +26,28 @@ const LOCAL_WEBP_FOLDERS = new Set(['halloween-villains', 'pepero-love', 'meme-c
 
 /** src/lib/characters.ts resolveCharacterImage 와 동일 — 빌드 시 og:image 용 */
 function resolveCharacterImage(value: string): string {
-  if (value.startsWith(CDN_CHARACTER_BASE) && value.endsWith('.png')) {
-    const folderName = value.slice(CDN_CHARACTER_BASE.length).split('/')[0]
+  const bare = value.split(/[?#]/)[0] ?? value
+  if (bare.startsWith(CDN_CHARACTER_BASE) && bare.endsWith('.png')) {
+    const folderName = bare.slice(CDN_CHARACTER_BASE.length).split('/')[0]
     if (folderName && LOCAL_WEBP_FOLDERS.has(folderName)) {
-      return value.replace(CDN_CHARACTER_BASE, '/characters/')
+      return withAssetVersion(bare.replace(CDN_CHARACTER_BASE, '/characters/'))
     }
-    return value
+    return withAssetVersion(bare)
   }
-  if (/^https?:\/\//.test(value) || value.startsWith('/')) return value
-  if (LOCAL_OPTIMIZED_CHARACTERS.has(value)) return `${PIXEL_CHARACTER_DIR}/${value}.png`
-  return `${PIXEL_CHARACTER_CDN}/${value}.png`
+  if (/^https?:\/\//.test(bare) || bare.startsWith('/')) return withAssetVersion(bare)
+  if (LOCAL_OPTIMIZED_CHARACTERS.has(bare)) {
+    return withAssetVersion(`${PIXEL_CHARACTER_DIR}/${bare}.png`)
+  }
+  return withAssetVersion(`${PIXEL_CHARACTER_CDN}/${bare}.png`)
 }
 
 /** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — 빌드 시 전용 OG 우선 */
 function getTestOgImageMeta(character: string | undefined, testId?: string) {
   if (testId) {
     const override = TEST_OG_IMAGES[testId]
-    if (override) return override
+    if (override) {
+      return { ...override, image: withAssetVersion(override.image, testId) }
+    }
   }
   return { image: resolveCharacterImage(character?.trim() || 'adapted') }
 }
@@ -346,12 +352,14 @@ function testLinkItem(test: TestRouteSource): string {
 
 function buildHomeContent(tests: TestRouteSource[]): string {
   const featured = tests.slice(0, HOME_FEATURED_LIMIT)
+  const heroPng = escapeAttr(withAssetVersion('/characters/pixel/main_hero.png'))
+  const heroWebp = escapeAttr(withAssetVersion('/characters/pixel/main_hero.webp'))
   return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
     <div class="pb-10 pt-6 text-center">
       <div class="mx-auto mb-2 flex h-60 items-center justify-center">
         <picture>
-          <source srcset="/characters/pixel/main_hero.webp" type="image/webp" />
-          <img src="/characters/pixel/main_hero.png" alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습" width="1050" height="656" fetchpriority="high" class="h-full w-auto object-contain" />
+          <source srcset="${heroWebp}" type="image/webp" />
+          <img src="${heroPng}" alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습" width="1050" height="656" fetchpriority="high" class="h-full w-auto object-contain" />
         </picture>
       </div>
       <h1 class="mt-5 text-[30px] font-black leading-[1.25] tracking-tight text-ink">나도 몰랐던<br />내 진짜 모습</h1>
@@ -434,7 +442,7 @@ function applyOgPlaceholders(
   inlineData = '',
 ) {
   const heroPreload = meta.isHomePage
-    ? '<!-- Preload hero image for LCP -->\n    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />'
+    ? `<!-- Preload hero image for LCP -->\n    <link rel="preload" href="${escapeAttr(withAssetVersion('/characters/pixel/main_hero.webp'))}" as="image" type="image/webp" fetchpriority="high" />`
     : ''
 
   const ogImageExtras =

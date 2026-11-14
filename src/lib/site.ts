@@ -1,3 +1,4 @@
+import { withAssetVersion } from './assetVersions'
 import og from './og.json' with { type: 'json' }
 
 export const SITE_NAME = og.siteName
@@ -8,7 +9,7 @@ export const INSTAGRAM_URL = `https://www.instagram.com/${INSTAGRAM_HANDLE}/`
 export const DEFAULT_OG = {
   title: og.home.title,
   description: og.home.description,
-  imagePath: '/characters/pixel/main_hero.png',
+  imagePath: withAssetVersion('/characters/pixel/main_hero.png'),
   type: 'website',
   locale: 'ko_KR',
 } as const
