@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { useTest } from '../lib/useTests'
 import { trackPageView } from '../lib/analytics'
 import { buildQuizJsonLd, buildWebSiteJsonLd } from '../lib/jsonLd'
-import { getTestOgImage } from '../lib/ogImages'
+import { getTestOgImageMeta } from '../lib/ogImages'
 import { getDefaultRouteMeta, getStaticRouteMeta } from '../lib/routeMeta'
 import { DEFAULT_OG, SITE_NAME, getSiteOrigin, toAbsoluteUrl } from '../lib/site'
 
@@ -11,6 +11,9 @@ export interface PageMetaProps {
   title?: string
   description?: string
   imagePath?: string
+  imageWidth?: number
+  imageHeight?: number
+  imageAlt?: string
   url?: string
   canonicalPath?: string
   type?: string
@@ -71,6 +74,9 @@ export default function PageMeta({
   title = DEFAULT_OG.title,
   description = DEFAULT_OG.description,
   imagePath = DEFAULT_OG.imagePath,
+  imageWidth,
+  imageHeight,
+  imageAlt,
   url,
   canonicalPath,
   type = DEFAULT_OG.type,
@@ -91,6 +97,13 @@ export default function PageMeta({
     upsertMeta('property', 'og:title', title)
     upsertMeta('property', 'og:description', description)
     upsertMeta('property', 'og:image', imageUrl)
+    if (imageWidth != null && imageHeight != null) {
+      upsertMeta('property', 'og:image:width', String(imageWidth))
+      upsertMeta('property', 'og:image:height', String(imageHeight))
+    } else {
+      document.head.querySelector('meta[property="og:image:width"]')?.remove()
+      document.head.querySelector('meta[property="og:image:height"]')?.remove()
+    }
     upsertMeta('property', 'og:type', type)
     upsertMeta('property', 'og:locale', DEFAULT_OG.locale)
     if (pageUrl) upsertMeta('property', 'og:url', pageUrl)
@@ -99,6 +112,11 @@ export default function PageMeta({
     upsertMeta('name', 'twitter:title', title)
     upsertMeta('name', 'twitter:description', description)
     upsertMeta('name', 'twitter:image', imageUrl)
+    if (imageAlt) {
+      upsertMeta('name', 'twitter:image:alt', imageAlt)
+    } else {
+      document.head.querySelector('meta[name="twitter:image:alt"]')?.remove()
+    }
 
     upsertLink('canonical', canonicalUrl)
 
@@ -113,7 +131,19 @@ export default function PageMeta({
     } else {
       removeJsonLd()
     }
-  }, [title, description, imagePath, url, canonicalPath, type, noindex, jsonLd])
+  }, [
+    title,
+    description,
+    imagePath,
+    imageWidth,
+    imageHeight,
+    imageAlt,
+    url,
+    canonicalPath,
+    type,
+    noindex,
+    jsonLd,
+  ])
 
   return null
 }
@@ -160,12 +190,16 @@ export function RoutePageMeta() {
 
     const titleSuffix = subpage === 'play' ? ' 진행 중' : subpage === 'result' ? ' 결과' : ''
     const jsonLd = !subpage && origin ? buildQuizJsonLd(test, origin) : undefined
+    const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id)
 
     return (
       <PageMeta
         title={`${test.title}${titleSuffix} | ${SITE_NAME}`}
         description={test.description}
-        imagePath={getTestOgImage(test.thumbnailCharacter)}
+        imagePath={ogImage.image}
+        imageWidth={ogImage.width}
+        imageHeight={ogImage.height}
+        imageAlt={ogImage.alt}
         type={subpage === 'result' ? 'article' : 'website'}
         canonicalPath={canonicalPath}
         noindex={Boolean(subpage)}
