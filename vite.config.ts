@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { TEST_OG_IMAGES } from './src/lib/testOgOverrides.ts'
 
 const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
 const PIXEL_CHARACTER_DIR = '/characters/pixel'
@@ -34,6 +35,15 @@ function resolveCharacterImage(value: string): string {
   if (/^https?:\/\//.test(value) || value.startsWith('/')) return value
   if (LOCAL_OPTIMIZED_CHARACTERS.has(value)) return `${PIXEL_CHARACTER_DIR}/${value}.png`
   return `${PIXEL_CHARACTER_CDN}/${value}.png`
+}
+
+/** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — 빌드 시 전용 OG 우선 */
+function getTestOgImageMeta(character: string | undefined, testId?: string) {
+  if (testId) {
+    const override = TEST_OG_IMAGES[testId]
+    if (override) return override
+  }
+  return { image: resolveCharacterImage(character?.trim() || 'adapted') }
 }
 
 function toAbsoluteImageUrl(origin: string, image: string): string {
@@ -102,6 +112,9 @@ type RouteOg = {
   type: string
   indexable: boolean
   image: string
+  imageWidth?: number
+  imageHeight?: number
+  imageAlt?: string
 }
 
 function buildWebSiteJsonLd(origin: string, siteName: string): object[] {
@@ -265,7 +278,13 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       image: DEFAULT_OG_IMAGE,
     },
     ...tests.flatMap((test) => {
-      const image = resolveCharacterImage(test.character || 'adapted')
+      const ogImage = getTestOgImageMeta(test.character || 'adapted', test.id)
+      const imageMeta = {
+        image: ogImage.image,
+        imageWidth: ogImage.width,
+        imageHeight: ogImage.height,
+        imageAlt: ogImage.alt,
+      }
       return [
         {
           path: `/tests/${test.id}`,
@@ -273,7 +292,7 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
           description: test.description,
           type: 'website',
           indexable: true,
-          image,
+          ...imageMeta,
         },
         {
           path: `/tests/${test.id}/play`,
@@ -281,7 +300,7 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
           description: test.description,
           type: 'website',
           indexable: false,
-          image,
+          ...imageMeta,
         },
         {
           path: `/tests/${test.id}/result`,
@@ -289,7 +308,7 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
           description: test.description,
           type: 'article',
           indexable: false,
-          image,
+          ...imageMeta,
         },
       ]
     }),
@@ -401,6 +420,9 @@ function applyOgPlaceholders(
     title: string
     description: string
     image: string
+    imageWidth?: number
+    imageHeight?: number
+    imageAlt?: string
     url: string
     canonicalUrl: string
     type: string
@@ -415,11 +437,26 @@ function applyOgPlaceholders(
     ? '<!-- Preload hero image for LCP -->\n    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />'
     : ''
 
+  const ogImageExtras =
+    meta.imageWidth != null && meta.imageHeight != null
+      ? `\n    <meta property="og:image:width" content="${meta.imageWidth}" />\n    <meta property="og:image:height" content="${meta.imageHeight}" />`
+      : ''
+  const twitterImageAlt = meta.imageAlt
+    ? `\n    <meta name="twitter:image:alt" content="${escapeAttr(meta.imageAlt)}" />`
+    : ''
+
   let result = html
     .replaceAll('__OG_TITLE__', escapeAttr(meta.title))
     .replaceAll('__OG_DESCRIPTION__', escapeAttr(meta.description))
     .replaceAll('__OG_TYPE__', escapeAttr(meta.type))
-    .replaceAll('__OG_IMAGE__', meta.image)
+    .replaceAll(
+      '    <meta property="og:image" content="__OG_IMAGE__" />',
+      `    <meta property="og:image" content="${meta.image}" />${ogImageExtras}`,
+    )
+    .replaceAll(
+      '    <meta name="twitter:image" content="__OG_IMAGE__" />',
+      `    <meta name="twitter:image" content="${meta.image}" />${twitterImageAlt}`,
+    )
     .replaceAll('__ROBOTS__', escapeAttr(meta.robots))
     .replaceAll('__CANONICAL_URL__', escapeAttr(meta.canonicalUrl))
     .replace('__PRERENDER_CONTENT__', content)
@@ -645,6 +682,9 @@ function injectOgMeta(siteUrl: string, og: SiteOgConfig, tests: TestRouteSource[
       title: route.title,
       description: route.description,
       image: toAbsoluteImageUrl(origin, route.image),
+      imageWidth: route.imageWidth,
+      imageHeight: route.imageHeight,
+      imageAlt: route.imageAlt,
       url: origin ? toCanonicalUrl(origin, route.path) : '',
       canonicalUrl: toCanonicalUrl(origin, getCanonicalPath(route)),
       type: route.type,

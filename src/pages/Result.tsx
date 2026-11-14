@@ -22,7 +22,7 @@ import { getVisitorId } from '../lib/visitorId'
 import { trackTestComplete } from '../lib/analytics'
 import type { Gender, TestAnswers } from '../types/test'
 
-import { getTestOgImage } from '../lib/ogImages'
+import { getTestOgImageMeta } from '../lib/ogImages'
 import { AlertIcon } from '../components/icons'
 import { ui } from '../lib/ui'
 
@@ -238,6 +238,8 @@ export default function Result() {
     )
   }
 
+  const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id)
+
   return (
     <PageLayout
       theme={
@@ -251,7 +253,10 @@ export default function Result() {
       <PageMeta
         title={pageTitle}
         description={pageDescription}
-        imagePath={getTestOgImage(test.thumbnailCharacter)}
+        imagePath={ogImage.image}
+        imageWidth={ogImage.width}
+        imageHeight={ogImage.height}
+        imageAlt={ogImage.alt}
         type="article"
         noindex
         canonicalPath={`/tests/${test.id}`}
