@@ -7,7 +7,7 @@
  *
  * --file 은 TestDefinition 객체를 default export 하는 .ts 파일 (scripts/test-draft.example.ts 참고).
  * --publish-at 을 생략하면 지금 바로 공개된다. 미래 시각을 주면 그 시각부터 자동 공개된다
- * (코드 재배포 불필요 — 단 OG/sitemap 등 정적 SEO 자산은 다음 빌드에서 반영됨).
+ * (코드 재배포 불필요 — sitemap은 워커가 갱신. OG 이미지는 관리자 og_image 또는 이 파일의 ogImage).
  */
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -68,6 +68,13 @@ async function main() {
       description: test.description,
       category: test.category,
       character: test.thumbnailCharacter ?? 'adapted',
+      ...(test.ogImage !== undefined
+        ? {
+            og_image: test.ogImage.trim() || null,
+            og_image_width: test.ogImageWidth ?? null,
+            og_image_height: test.ogImageHeight ?? null,
+          }
+        : {}),
       scoring_mode: test.scoringMode ?? 'simple',
       result_template: test.resultTemplate ?? null,
       requires_gender: test.requiresGender ?? false,

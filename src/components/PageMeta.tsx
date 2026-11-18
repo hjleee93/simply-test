@@ -190,7 +190,12 @@ export function RoutePageMeta() {
 
     const titleSuffix = subpage === 'play' ? ' 진행 중' : subpage === 'result' ? ' 결과' : ''
     const jsonLd = !subpage && origin ? buildQuizJsonLd(test, origin) : undefined
-    const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id)
+    const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id, {
+      image: test.ogImage,
+      width: test.ogImageWidth,
+      height: test.ogImageHeight,
+      alt: test.title,
+    })
 
     return (
       <PageMeta

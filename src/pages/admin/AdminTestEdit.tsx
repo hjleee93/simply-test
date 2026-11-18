@@ -39,6 +39,9 @@ function emptyInput(): AdminTestInput {
     description: '',
     category: 'self',
     thumbnailCharacter: 'adapted',
+    ogImage: '',
+    ogImageWidth: null,
+    ogImageHeight: null,
     scoringMode: 'simple',
     resultTemplate: '',
     requiresGender: false,
@@ -61,6 +64,21 @@ function fieldClassName() {
   return 'mt-1 w-full rounded-md border-2 border-ink px-3 py-2 text-sm'
 }
 
+function previewOgImage(value: string): string | null {
+  const trimmed = value.trim()
+  if (/^https?:\/\//i.test(trimmed)) return trimmed
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//') && !/[\s"<>]/.test(trimmed)) {
+    return trimmed
+  }
+  return null
+}
+
+function parseOptionalDimension(value: string): number | null | undefined {
+  if (value === '') return null
+  if (!/^\d+$/.test(value)) return undefined
+  return Number(value)
+}
+
 export default function AdminTestEdit() {
   const { id } = useParams<{ id: string }>()
   const isNew = id === 'new'
@@ -72,6 +90,8 @@ export default function AdminTestEdit() {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+
+  const ogPreview = previewOgImage(input.ogImage)
 
   const title = useMemo(
     () => (isNew ? '새 테스트' : `편집 · ${input.title || id}`),
@@ -94,6 +114,9 @@ export default function AdminTestEdit() {
           description: row.description,
           category: row.category as TestCategoryId,
           thumbnailCharacter: row.character,
+          ogImage: row.og_image ?? '',
+          ogImageWidth: row.og_image_width,
+          ogImageHeight: row.og_image_height,
           scoringMode: row.scoring_mode as TestScoringMode,
           resultTemplate: (row.result_template as TestResultTemplate | null) ?? '',
           requiresGender: row.requires_gender,
@@ -261,6 +284,59 @@ export default function AdminTestEdit() {
               Cloudflare R2(cdn.simply-test.co.kr)에 올리고 URL로 입력해주세요.
             </span>
           </label>
+
+          <div className="sm:col-span-2">
+            <label className="block text-sm font-bold text-ink">
+              OG 이미지
+              <input
+                value={input.ogImage}
+                onChange={(e) => setInput((prev) => ({ ...prev, ogImage: e.target.value }))}
+                className={fieldClassName()}
+                placeholder="https://cdn.simply-test.co.kr/.../og_1200x630.jpg"
+              />
+              <span className="mt-1 block text-xs font-normal text-muted">
+                카카오·페이스북 공유 미리보기 이미지예요. 비우면 썸네일을 그대로 써요. 저장하면 다시 배포하지
+                않아도 반영돼요. 권장 크기는 1200×630이에요.
+              </span>
+            </label>
+            <div className="mt-3 grid grid-cols-2 gap-3">
+              <label className="block text-sm font-bold text-ink">
+                가로(px)
+                <input
+                  inputMode="numeric"
+                  value={input.ogImageWidth ?? ''}
+                  onChange={(e) => {
+                    const next = parseOptionalDimension(e.target.value)
+                    if (next === undefined) return
+                    setInput((prev) => ({ ...prev, ogImageWidth: next }))
+                  }}
+                  className={fieldClassName()}
+                  placeholder="1200"
+                />
+              </label>
+              <label className="block text-sm font-bold text-ink">
+                세로(px)
+                <input
+                  inputMode="numeric"
+                  value={input.ogImageHeight ?? ''}
+                  onChange={(e) => {
+                    const next = parseOptionalDimension(e.target.value)
+                    if (next === undefined) return
+                    setInput((prev) => ({ ...prev, ogImageHeight: next }))
+                  }}
+                  className={fieldClassName()}
+                  placeholder="630"
+                />
+              </label>
+            </div>
+            {ogPreview ? (
+              <img
+                src={ogPreview}
+                alt="OG 이미지 미리보기"
+                className="mt-3 h-32 w-auto max-w-full rounded-md border border-ink/20 object-contain"
+              />
+            ) : null}
+          </div>
 
           <label className="block text-sm font-bold text-ink">
             scoringMode

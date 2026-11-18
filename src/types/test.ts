@@ -75,6 +75,10 @@ export type TestDefinition = {
   resultTemplate?: TestResultTemplate
   requiresGender?: boolean
   thumbnailCharacter?: string
+  /** 공유용 og:image. 비어 있으면 thumbnailCharacter로 폴백 */
+  ogImage?: string
+  ogImageWidth?: number
+  ogImageHeight?: number
   resultLabel?: string
   /** 문항당 최소 점수. 기본 1(1~4점), 꼰대 테스트처럼 0점부터면 0 */
   minScorePerAnswer?: number

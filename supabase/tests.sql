@@ -8,8 +8,12 @@ create table if not exists public.tests (
   description text not null,
   category text not null,
   -- 썸네일·인트로 캐릭터 이미지 id (예: 'steel', 'kkondae/main'). public/characters/pixel/{character}.png
-  -- 전용 OG/트위터 공유 이미지는 src/lib/testOgOverrides.ts 에서 테스트 id별로 지정 (없으면 character 폴백)
   character text not null,
+  -- 공유용 og:image. http(s) URL 또는 사이트 경로. 비어 있으면 character 썸네일로 폴백.
+  -- 관리자에서 바꾸면 워커가 HTML에 반영하므로 재배포가 필요 없다.
+  og_image text,
+  og_image_width integer,
+  og_image_height integer,
   scoring_mode text not null default 'simple',
   result_template text,
   requires_gender boolean not null default false,
@@ -36,3 +40,16 @@ create policy "Published tests are readable by anyone"
   for select
   to anon
   using (publish_at <= now());
+
+alter table public.tests add column if not exists og_image text;
+alter table public.tests add column if not exists og_image_width integer;
+alter table public.tests add column if not exists og_image_height integer;
+
+-- 코드에만 있던 꼰대 테스트 공유 이미지를 관리자 값으로 옮긴다. 이미 값이 있으면 덮어쓰지 않는다.
+update public.tests
+set
+  og_image = 'https://cdn.simply-test.co.kr/characters/pixel/kkondae/og_1200x630.jpg',
+  og_image_width = 1200,
+  og_image_height = 630
+where id = 'kkondae-test'
+  and og_image is null;

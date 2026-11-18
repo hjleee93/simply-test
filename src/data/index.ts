@@ -22,6 +22,9 @@ type TestRow = {
   requires_gender: boolean
   result_label: string | null
   min_score_per_answer: number | null
+  og_image?: string | null
+  og_image_width?: number | null
+  og_image_height?: number | null
   questions: Question[]
   results: TestResult[]
 }
@@ -46,6 +49,9 @@ type FullInlineTestData = {
   requiresGender: boolean
   resultLabel: string | null
   minScorePerAnswer: number | null
+  ogImage?: string | null
+  ogImageWidth?: number | null
+  ogImageHeight?: number | null
   questions: Question[]
   results: TestResult[]
 }
@@ -69,6 +75,9 @@ function mapRow(row: TestRow): TestDefinition {
     resultTemplate: (row.result_template as TestResultTemplate | null) ?? undefined,
     requiresGender: row.requires_gender,
     thumbnailCharacter: row.character,
+    ogImage: row.og_image ?? undefined,
+    ogImageWidth: row.og_image_width ?? undefined,
+    ogImageHeight: row.og_image_height ?? undefined,
     resultLabel: row.result_label ?? undefined,
     minScorePerAnswer: row.min_score_per_answer ?? undefined,
   }
@@ -105,6 +114,9 @@ function mapFullInlineTest(data: FullInlineTestData): TestDefinition {
     resultTemplate: (data.resultTemplate as TestResultTemplate | null) ?? undefined,
     requiresGender: data.requiresGender,
     thumbnailCharacter: data.character,
+    ogImage: data.ogImage ?? undefined,
+    ogImageWidth: data.ogImageWidth ?? undefined,
+    ogImageHeight: data.ogImageHeight ?? undefined,
     resultLabel: data.resultLabel ?? undefined,
     minScorePerAnswer: data.minScorePerAnswer ?? undefined,
   }

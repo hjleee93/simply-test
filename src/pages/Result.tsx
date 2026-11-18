@@ -238,7 +238,12 @@ export default function Result() {
     )
   }
 
-  const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id)
+  const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id, {
+    image: test.ogImage,
+    width: test.ogImageWidth,
+    height: test.ogImageHeight,
+    alt: test.title,
+  })
 
   return (
     <PageLayout

@@ -5,7 +5,6 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
-import { TEST_OG_IMAGES } from './src/lib/testOgOverrides.ts'
 
 const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
 const PIXEL_CHARACTER_DIR = '/characters/pixel'
@@ -37,11 +36,24 @@ function resolveCharacterImage(value: string): string {
   return `${PIXEL_CHARACTER_CDN}/${value}.png`
 }
 
-/** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — 빌드 시 전용 OG 우선 */
-function getTestOgImageMeta(character: string | undefined, testId?: string) {
-  if (testId) {
-    const override = TEST_OG_IMAGES[testId]
-    if (override) return override
+/** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — 관리자 og_image, 없으면 character */
+function getTestOgImageMeta(
+  character: string | undefined,
+  custom?: { image?: string | null; width?: number | null; height?: number | null },
+) {
+  const image = custom?.image?.trim()
+  if (image) {
+    const meta: { image: string; width?: number; height?: number; alt?: string } = { image }
+    if (
+      typeof custom?.width === 'number' &&
+      typeof custom?.height === 'number' &&
+      custom.width > 0 &&
+      custom.height > 0
+    ) {
+      meta.width = custom.width
+      meta.height = custom.height
+    }
+    return meta
   }
   return { image: resolveCharacterImage(character?.trim() || 'adapted') }
 }
@@ -65,6 +77,9 @@ type TestRouteSource = {
   category: string
   questionCount: number
   character: string
+  ogImage: string | null
+  ogImageWidth: number | null
+  ogImageHeight: number | null
   resultTemplate: string | null
 }
 
@@ -79,6 +94,9 @@ type FullTestData = {
   requiresGender: boolean
   resultLabel: string | null
   minScorePerAnswer: number | null
+  ogImage: string | null
+  ogImageWidth: number | null
+  ogImageHeight: number | null
   questions: unknown[]
   results: unknown[]
 }
@@ -204,7 +222,7 @@ function loadSiteOgConfig(): SiteOgConfig {
 }
 
 /** 테스트 콘텐츠는 Supabase에 있다. 빌드 시점 기준 이미 공개된(publish_at <= now) 테스트만
- *  가져와서 정적 OG/sitemap을 만든다 — 미래에 공개될 테스트는 다음 빌드에서 반영된다. */
+ *  정적 HTML로 만든다. 그 뒤에 공개된 테스트는 워커가 홈 셸로 열어 404를 피한다. */
 async function loadPublishedTests(
   supabaseUrl: string,
   supabaseAnonKey: string,
@@ -237,6 +255,9 @@ async function loadPublishedTests(
         Array.isArray(row.questions) ? row.questions.length : 0,
       ),
       character: row.character ?? 'adapted',
+      ogImage: typeof row.og_image === 'string' ? row.og_image : null,
+      ogImageWidth: typeof row.og_image_width === 'number' ? row.og_image_width : null,
+      ogImageHeight: typeof row.og_image_height === 'number' ? row.og_image_height : null,
       resultTemplate: row.result_template ?? null,
     })
 
@@ -251,6 +272,9 @@ async function loadPublishedTests(
       requiresGender: row.requires_gender ?? false,
       resultLabel: row.result_label ?? null,
       minScorePerAnswer: row.min_score_per_answer ?? null,
+      ogImage: typeof row.og_image === 'string' ? row.og_image : null,
+      ogImageWidth: typeof row.og_image_width === 'number' ? row.og_image_width : null,
+      ogImageHeight: typeof row.og_image_height === 'number' ? row.og_image_height : null,
       questions: row.questions ?? [],
       results: row.results ?? [],
     })
@@ -278,12 +302,16 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       image: DEFAULT_OG_IMAGE,
     },
     ...tests.flatMap((test) => {
-      const ogImage = getTestOgImageMeta(test.character || 'adapted', test.id)
+      const ogImage = getTestOgImageMeta(test.character || 'adapted', {
+        image: test.ogImage,
+        width: test.ogImageWidth,
+        height: test.ogImageHeight,
+      })
       const imageMeta = {
         image: ogImage.image,
         imageWidth: ogImage.width,
         imageHeight: ogImage.height,
-        imageAlt: ogImage.alt,
+        imageAlt: ogImage.alt ?? test.title,
       }
       return [
         {

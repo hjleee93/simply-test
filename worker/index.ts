@@ -1,4 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
+import { getTestOgImageMeta } from '../src/lib/ogImages'
+import {
+  adaptShellHtml,
+  patchOgImageTags,
+  patchPageMeta,
+  testIdFromPath,
+  testPageKind,
+  testPageTitle,
+} from './ogMeta'
+import ogConfig from '../src/lib/og.json'
 
 interface Env {
   SUPABASE_URL: string
@@ -93,6 +103,145 @@ ${items.join('\n')}
 `
 }
 
+interface TestOgRow {
+  id: string
+  title: string
+  description: string
+  character: string
+  og_image: string | null
+  og_image_width: number | null
+  og_image_height: number | null
+}
+
+function toAbsoluteImageUrl(origin: string, image: string): string {
+  if (/^https?:\/\//i.test(image)) return image
+  if (!origin) return image
+  return `${origin}${image.startsWith('/') ? image : `/${image}`}`
+}
+
+async function fetchTestOg(env: Env, testId: string): Promise<TestOgRow | null> {
+  if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) return null
+
+  const supabase = createClient(env.SUPABASE_URL, env.SUPABASE_ANON_KEY)
+  const { data, error } = await supabase
+    .from('tests')
+    .select('id, title, description, character, og_image, og_image_width, og_image_height')
+    .eq('id', testId)
+    .lte('publish_at', new Date().toISOString())
+    .maybeSingle()
+
+  if (error) throw error
+  return data
+}
+
+function htmlResponse(html: string, status: number, source?: Headers): Response {
+  const headers = new Headers(source)
+  headers.delete('content-length')
+  headers.delete('content-encoding')
+  headers.set('Content-Type', 'text/html; charset=utf-8')
+  headers.set('Cache-Control', 'public, max-age=60')
+  return new Response(html, { status, headers })
+}
+
+async function cancelBody(response: Response) {
+  try {
+    await response.body?.cancel()
+  } catch {
+    // 이미 읽힌 본문은 무시한다.
+  }
+}
+
+/** 마지막 배포 이후 공개된 테스트는 정적 파일이 없다. 홈 셸을 그 주소로 열어 준다. */
+async function handleMissingTestPage(
+  request: Request,
+  env: Env,
+  testId: string,
+  missing: Response,
+): Promise<Response> {
+  let row: TestOgRow | null
+  try {
+    row = await fetchTestOg(env, testId)
+  } catch (err) {
+    console.error('Published test lookup failed:', err)
+    return missing
+  }
+  if (!row) return missing
+
+  const shellUrl = new URL('/', request.url)
+  const shell = await env.ASSETS.fetch(new Request(shellUrl))
+  if (!shell.ok) {
+    await cancelBody(shell)
+    return missing
+  }
+
+  await cancelBody(missing)
+  const url = new URL(request.url)
+  const origin = (env.SITE_URL || url.origin).replace(/\/$/, '')
+  const kind = testPageKind(url.pathname)
+  const canonicalPath = `/tests/${row.id}`
+  const og = getTestOgImageMeta(row.character, row.id, {
+    image: row.og_image,
+    width: row.og_image_width,
+    height: row.og_image_height,
+    alt: row.title,
+  })
+  const title = testPageTitle(row.title, kind, ogConfig.siteName)
+  const html = patchPageMeta(
+    adaptShellHtml(
+      await shell.text(),
+      `<main><h1>${escapeXml(row.title)}</h1><p>${escapeXml(row.description)}</p></main>`,
+    ),
+    {
+      title,
+      description: row.description,
+      canonicalUrl: `${origin}${canonicalPath}`,
+      pageUrl: `${origin}${url.pathname}`,
+      robots: kind === 'detail' ? 'index, follow' : 'noindex, nofollow',
+      type: kind === 'result' ? 'article' : 'website',
+      image: toAbsoluteImageUrl(origin, og.image),
+      width: og.width,
+      height: og.height,
+      alt: og.alt,
+    },
+  )
+  return htmlResponse(html, 200)
+}
+
+async function handleTestHtml(request: Request, env: Env, testId: string): Promise<Response> {
+  const assetResponse = await env.ASSETS.fetch(request)
+  const contentType = assetResponse.headers.get('content-type') ?? ''
+  if (!assetResponse.ok) {
+    if (!contentType.includes('text/html')) return assetResponse
+    return handleMissingTestPage(request, env, testId, assetResponse)
+  }
+  if (!contentType.includes('text/html')) return assetResponse
+
+  let row: TestOgRow | null
+  try {
+    row = await fetchTestOg(env, testId)
+  } catch (err) {
+    console.error('OG image lookup failed:', err)
+    return assetResponse
+  }
+  if (!row) return assetResponse
+
+  const origin = (env.SITE_URL || 'https://simply-test.co.kr').replace(/\/$/, '')
+  const og = getTestOgImageMeta(row.character, row.id, {
+    image: row.og_image,
+    width: row.og_image_width,
+    height: row.og_image_height,
+    alt: row.title,
+  })
+  const html = patchOgImageTags(await assetResponse.text(), {
+    image: toAbsoluteImageUrl(origin, og.image),
+    width: og.width,
+    height: og.height,
+    alt: og.alt,
+  })
+
+  return htmlResponse(html, assetResponse.status, assetResponse.headers)
+}
+
 async function fetchPublishedTests(env: Env): Promise<TestRow[]> {
   if (!env.SUPABASE_URL || !env.SUPABASE_ANON_KEY) {
     throw new Error('Supabase configuration missing')
@@ -172,6 +321,11 @@ export default {
 
     if (pathname === '/rss.xml') {
       return handleRss(request, env)
+    }
+
+    const testId = request.method === 'GET' ? testIdFromPath(pathname) : null
+    if (testId) {
+      return handleTestHtml(request, env, testId)
     }
 
     return env.ASSETS.fetch(request)
