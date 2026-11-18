@@ -22,6 +22,9 @@ type TestRow = {
   requires_gender: boolean
   result_label: string | null
   min_score_per_answer: number | null
+  og_image?: string | null
+  og_image_width?: number | null
+  og_image_height?: number | null
   questions: Question[]
   results: TestResult[]
 }
@@ -33,6 +36,9 @@ type InlineTestData = {
   category: string
   character: string
   resultTemplate: string | null
+  ogImage?: string | null
+  ogImageWidth?: number | null
+  ogImageHeight?: number | null
 }
 
 type FullInlineTestData = {
@@ -46,6 +52,9 @@ type FullInlineTestData = {
   requiresGender: boolean
   resultLabel: string | null
   minScorePerAnswer: number | null
+  ogImage?: string | null
+  ogImageWidth?: number | null
+  ogImageHeight?: number | null
   questions: Question[]
   results: TestResult[]
 }
@@ -54,6 +63,24 @@ declare global {
   interface Window {
     __TESTS__?: InlineTestData[]
     __TEST__?: FullInlineTestData
+  }
+}
+
+function mapOgFields(row: {
+  og_image?: string | null
+  og_image_width?: number | null
+  og_image_height?: number | null
+  ogImage?: string | null
+  ogImageWidth?: number | null
+  ogImageHeight?: number | null
+}): Pick<TestDefinition, 'ogImage' | 'ogImageWidth' | 'ogImageHeight'> {
+  const ogImage = (row.og_image ?? row.ogImage)?.trim() || undefined
+  const ogImageWidth = row.og_image_width ?? row.ogImageWidth ?? undefined
+  const ogImageHeight = row.og_image_height ?? row.ogImageHeight ?? undefined
+  return {
+    ogImage,
+    ogImageWidth: ogImageWidth ?? undefined,
+    ogImageHeight: ogImageHeight ?? undefined,
   }
 }
 
@@ -71,6 +98,7 @@ function mapRow(row: TestRow): TestDefinition {
     thumbnailCharacter: row.character,
     resultLabel: row.result_label ?? undefined,
     minScorePerAnswer: row.min_score_per_answer ?? undefined,
+    ...mapOgFields(row),
   }
 }
 
@@ -84,6 +112,7 @@ function mapInlineTest(data: InlineTestData): TestDefinition {
     results: [],
     resultTemplate: (data.resultTemplate as TestResultTemplate | null) ?? undefined,
     thumbnailCharacter: data.character,
+    ...mapOgFields(data),
   }
 }
 
@@ -107,6 +136,7 @@ function mapFullInlineTest(data: FullInlineTestData): TestDefinition {
     thumbnailCharacter: data.character,
     resultLabel: data.resultLabel ?? undefined,
     minScorePerAnswer: data.minScorePerAnswer ?? undefined,
+    ...mapOgFields(data),
   }
 }
 

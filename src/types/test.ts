@@ -78,6 +78,10 @@ export type TestDefinition = {
   resultLabel?: string
   /** 문항당 최소 점수. 기본 1(1~4점), 꼰대 테스트처럼 0점부터면 0 */
   minScorePerAnswer?: number
+  /** Supabase tests.og_image — 전용 공유 이미지 URL (없으면 character/코드 오버라이드 폴백) */
+  ogImage?: string
+  ogImageWidth?: number
+  ogImageHeight?: number
 }
 
 export type SelectedAnswer = {

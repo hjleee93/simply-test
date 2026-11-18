@@ -8,8 +8,11 @@ create table if not exists public.tests (
   description text not null,
   category text not null,
   -- 썸네일·인트로 캐릭터 이미지 id (예: 'steel', 'kkondae/main'). public/characters/pixel/{character}.png
-  -- 전용 OG/트위터 공유 이미지는 src/lib/testOgOverrides.ts 에서 테스트 id별로 지정 (없으면 character 폴백)
   character text not null,
+  -- 전용 OG/트위터 공유 이미지 (있으면 프리렌더·PageMeta가 이걸 쓰고, 없으면 testOgOverrides → character 폴백)
+  og_image text,
+  og_image_width integer,
+  og_image_height integer,
   scoring_mode text not null default 'simple',
   result_template text,
   requires_gender boolean not null default false,

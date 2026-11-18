@@ -104,6 +104,11 @@ export default function PageMeta({
       document.head.querySelector('meta[property="og:image:width"]')?.remove()
       document.head.querySelector('meta[property="og:image:height"]')?.remove()
     }
+    if (imageAlt) {
+      upsertMeta('property', 'og:image:alt', imageAlt)
+    } else {
+      document.head.querySelector('meta[property="og:image:alt"]')?.remove()
+    }
     upsertMeta('property', 'og:type', type)
     upsertMeta('property', 'og:locale', DEFAULT_OG.locale)
     if (pageUrl) upsertMeta('property', 'og:url', pageUrl)
@@ -190,7 +195,14 @@ export function RoutePageMeta() {
 
     const titleSuffix = subpage === 'play' ? ' 진행 중' : subpage === 'result' ? ' 결과' : ''
     const jsonLd = !subpage && origin ? buildQuizJsonLd(test, origin) : undefined
-    const ogImage = getTestOgImageMeta(test.thumbnailCharacter, test.id)
+    const ogImage = getTestOgImageMeta({
+      character: test.thumbnailCharacter,
+      testId: test.id,
+      title: test.title,
+      ogImage: test.ogImage,
+      ogImageWidth: test.ogImageWidth,
+      ogImageHeight: test.ogImageHeight,
+    })
 
     return (
       <PageMeta

@@ -37,13 +37,35 @@ function resolveCharacterImage(value: string): string {
   return `${PIXEL_CHARACTER_CDN}/${value}.png`
 }
 
-/** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — 빌드 시 전용 OG 우선 */
-function getTestOgImageMeta(character: string | undefined, testId?: string) {
-  if (testId) {
-    const override = TEST_OG_IMAGES[testId]
-    if (override) return override
+/** src/lib/ogImages.ts getTestOgImageMeta 와 동일 — DB og_image > 코드 오버라이드 > character */
+function getTestOgImageMeta(source: {
+  character?: string | null
+  testId?: string
+  title?: string | null
+  ogImage?: string | null
+  ogImageWidth?: number | null
+  ogImageHeight?: number | null
+}) {
+  const alt = source.title?.trim() || undefined
+  const dbImage = source.ogImage?.trim()
+  if (dbImage) {
+    return {
+      image: dbImage,
+      width: source.ogImageWidth ?? undefined,
+      height: source.ogImageHeight ?? undefined,
+      alt,
+    }
   }
-  return { image: resolveCharacterImage(character?.trim() || 'adapted') }
+  if (source.testId) {
+    const override = TEST_OG_IMAGES[source.testId]
+    if (override) {
+      return { ...override, alt: alt ?? override.alt }
+    }
+  }
+  return {
+    image: resolveCharacterImage(source.character?.trim() || 'adapted'),
+    alt,
+  }
 }
 
 function toAbsoluteImageUrl(origin: string, image: string): string {
@@ -66,6 +88,9 @@ type TestRouteSource = {
   questionCount: number
   character: string
   resultTemplate: string | null
+  ogImage: string | null
+  ogImageWidth: number | null
+  ogImageHeight: number | null
 }
 
 type FullTestData = {
@@ -79,6 +104,9 @@ type FullTestData = {
   requiresGender: boolean
   resultLabel: string | null
   minScorePerAnswer: number | null
+  ogImage: string | null
+  ogImageWidth: number | null
+  ogImageHeight: number | null
   questions: unknown[]
   results: unknown[]
 }
@@ -227,6 +255,10 @@ async function loadPublishedTests(
   const routes: TestRouteSource[] = []
 
   for (const row of data ?? []) {
+    const ogImage = typeof row.og_image === 'string' ? row.og_image.trim() || null : null
+    const ogImageWidth = typeof row.og_image_width === 'number' ? row.og_image_width : null
+    const ogImageHeight = typeof row.og_image_height === 'number' ? row.og_image_height : null
+
     routes.push({
       id: row.id,
       title: row.title,
@@ -238,6 +270,9 @@ async function loadPublishedTests(
       ),
       character: row.character ?? 'adapted',
       resultTemplate: row.result_template ?? null,
+      ogImage,
+      ogImageWidth,
+      ogImageHeight,
     })
 
     fullTests.set(row.id, {
@@ -251,6 +286,9 @@ async function loadPublishedTests(
       requiresGender: row.requires_gender ?? false,
       resultLabel: row.result_label ?? null,
       minScorePerAnswer: row.min_score_per_answer ?? null,
+      ogImage,
+      ogImageWidth,
+      ogImageHeight,
       questions: row.questions ?? [],
       results: row.results ?? [],
     })
@@ -278,7 +316,14 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       image: DEFAULT_OG_IMAGE,
     },
     ...tests.flatMap((test) => {
-      const ogImage = getTestOgImageMeta(test.character || 'adapted', test.id)
+      const ogImage = getTestOgImageMeta({
+        character: test.character || 'adapted',
+        testId: test.id,
+        title: test.title,
+        ogImage: test.ogImage,
+        ogImageWidth: test.ogImageWidth,
+        ogImageHeight: test.ogImageHeight,
+      })
       const imageMeta = {
         image: ogImage.image,
         imageWidth: ogImage.width,
@@ -437,10 +482,17 @@ function applyOgPlaceholders(
     ? '<!-- Preload hero image for LCP -->\n    <link rel="preload" href="/characters/pixel/main_hero.webp" as="image" type="image/webp" fetchpriority="high" />'
     : ''
 
-  const ogImageExtras =
+  const ogImageExtras = [
     meta.imageWidth != null && meta.imageHeight != null
-      ? `\n    <meta property="og:image:width" content="${meta.imageWidth}" />\n    <meta property="og:image:height" content="${meta.imageHeight}" />`
-      : ''
+      ? `<meta property="og:image:width" content="${meta.imageWidth}" />\n    <meta property="og:image:height" content="${meta.imageHeight}" />`
+      : '',
+    meta.imageAlt
+      ? `<meta property="og:image:alt" content="${escapeAttr(meta.imageAlt)}" />`
+      : '',
+  ]
+    .filter(Boolean)
+    .map((line) => `\n    ${line}`)
+    .join('')
   const twitterImageAlt = meta.imageAlt
     ? `\n    <meta name="twitter:image:alt" content="${escapeAttr(meta.imageAlt)}" />`
     : ''
@@ -649,6 +701,9 @@ function buildPageInlineScript(tests: TestRouteSource[], fullTests: Map<string, 
     category: t.category,
     character: t.character,
     resultTemplate: t.resultTemplate,
+    ogImage: t.ogImage,
+    ogImageWidth: t.ogImageWidth,
+    ogImageHeight: t.ogImageHeight,
   })))
 
   const testSlug = getTestSlugFromPath(routePath)
