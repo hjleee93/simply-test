@@ -17,17 +17,21 @@ export default function RecommendedTests({
   if (!loading && tests.length === 0) return null
 
   return (
-    <section className={`min-h-[584px] ${className}`}>
+    <section className={`min-h-[420px] ${className}`}>
       <h2
-        className={`mb-3 text-center text-sm font-extrabold ${
+        className={`text-[13px] font-bold ${
           theme === 'halloween' ? 'text-[#d9c9ef]' : 'text-muted'
         }`}
       >
-        다른 테스트도 해보세요
+        다른 테스트
       </h2>
-      <div className="space-y-3">
+      <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-6">
         {tests.map((test) => (
-          <TestListCard key={test.id} test={test} />
+          <TestListCard
+            key={test.id}
+            test={test}
+            tone={theme === 'halloween' ? 'onDark' : 'default'}
+          />
         ))}
       </div>
     </section>

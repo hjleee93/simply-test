@@ -29,11 +29,7 @@ export default function ProgressBar({ current, total, theme = 'default' }: Progr
   }
 
   return (
-    <div
-      className={`rounded-2xl px-4 py-3.5 ${
-        isHalloween ? 'bg-[#211044]' : 'bg-white shadow-[0_2px_14px_-6px_rgba(31,21,53,0.14)]'
-      }`}
-    >
+    <div>
       <div
         className={`mb-2 flex justify-between text-xs font-bold ${
           isHalloween ? 'text-[#b9a3cf]' : 'text-muted'
@@ -45,12 +41,10 @@ export default function ProgressBar({ current, total, theme = 'default' }: Progr
         <span>{percent}%</span>
       </div>
       <div
-        className={`h-2.5 overflow-hidden rounded-full ${
-          isHalloween ? 'bg-[#39205b]' : 'bg-accent-soft'
-        }`}
+        className={`h-1 overflow-hidden ${isHalloween ? 'bg-[#39205b]' : 'bg-cream-dark'}`}
       >
         <div
-          className={`h-full rounded-full transition-[width] duration-300 ${
+          className={`h-full transition-[width] duration-300 ${
             isHalloween ? 'bg-[#ff942f]' : 'bg-accent'
           }`}
           style={{ width: `${percent}%` }}

@@ -163,7 +163,7 @@ export default function HalloweenResultCard({
       <div className="mt-3 flex flex-col gap-2">
         <button
           type="button"
-          className={cn(ui.btnPrimary, 'wiggle-hover !bg-[#f47721] hover:!bg-[#ff923f]')}
+          className={cn(ui.btnPrimary, ' !bg-[#f47721] hover:!bg-[#ff923f]')}
           onClick={onRetry}
         >
           <RefreshIcon className="h-[18px] w-[18px]" />

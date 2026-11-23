@@ -156,9 +156,9 @@ export default function Test() {
               type="button"
               className={`${ui.btnGhost} ${
                 isHalloween
-                  ? '!border-[#70439a] !bg-[#211044] !text-[#d9c9ef] hover:!border-[#ff942f] hover:!text-white'
+                  ? 'w-full justify-center rounded-md border !border-[#70439a] !bg-[#211044] !text-[#d9c9ef] hover:!border-[#ff942f] hover:!text-white'
                   : isMeme
-                    ? '!rounded-sm !border-ink/40 !text-ink hover:!border-ink hover:!bg-white'
+                    ? 'w-full justify-center !rounded-sm border !border-ink/40 !text-ink hover:!border-ink hover:!bg-white'
                     : ''
               }`}
               onClick={handlePrev}

@@ -1,6 +1,5 @@
 import { cn } from '../lib/cn'
 import type { PatternScoreMap, Question as QuestionType, ScoreMap } from '../types/test'
-import StickerCard from './StickerCard'
 
 export type AnswerSelection = {
   scores?: ScoreMap
@@ -74,12 +73,12 @@ export default function Question({
                 <button
                   type="button"
                   className={cn(
-                    'flex h-[5.5rem] w-full flex-col items-center justify-center rounded-sm border-2 border-ink text-[17px] font-black transition-[transform,background-color] duration-150',
+                    'flex h-[5.5rem] w-full flex-col items-center justify-center rounded-sm border-2 border-ink text-[17px] font-black transition-colors',
                     selected
                       ? isKnow
                         ? 'bg-[#1d4ed8] text-white'
                         : 'bg-[#e11d48] text-white'
-                      : 'bg-white text-ink hover:-translate-y-0.5',
+                      : 'bg-white text-ink',
                   )}
                   onClick={() => select(answer)}
                 >
@@ -96,34 +95,27 @@ export default function Question({
 
   return (
     <div>
-      <StickerCard
-        soft
-        className={`mb-4 !p-4 ${
-          isHalloween ? '!border-[#ff942f] !bg-[#2a1450]' : ''
+      <h2
+        className={`mb-4 text-[18px] font-bold leading-snug ${
+          isHalloween ? 'text-white' : 'text-ink'
         }`}
       >
-        <h2
-          className={`text-center text-[18px] font-bold leading-snug ${
-            isHalloween ? 'text-white' : 'text-ink'
-          }`}
-        >
-          {question.question}
-        </h2>
-      </StickerCard>
-      <ul className="flex flex-col gap-2.5">
+        {question.question}
+      </h2>
+      <ul className="flex flex-col gap-2">
         {question.answers.map((answer) => (
           <li key={answer.id}>
             <button
               type="button"
               className={cn(
-                'w-full rounded-2xl px-4 py-4 text-left text-[15px] font-bold leading-snug transition-[transform,background-color,box-shadow] duration-150',
+                'w-full rounded-md border px-4 py-3.5 text-left text-[15px] font-bold leading-snug transition-colors',
                 selectedAnswerId === answer.id
                   ? isHalloween
-                    ? 'bg-[#f47721] text-white shadow-[0_6px_16px_-6px_rgba(244,119,33,0.6)]'
-                    : 'bg-accent text-white shadow-[0_6px_16px_-6px_rgba(224,82,124,0.55)]'
+                    ? 'border-[#f47721] bg-[#f47721] text-white'
+                    : 'border-accent bg-accent text-white'
                   : isHalloween
-                    ? 'bg-[#211044] text-[#eadff7] hover:bg-[#32175a]'
-                    : 'bg-white text-ink shadow-[0_2px_10px_-5px_rgba(31,21,53,0.16)] hover:-translate-y-0.5 hover:shadow-[0_6px_16px_-6px_rgba(31,21,53,0.18)]',
+                    ? 'border-[#70439a] bg-[#211044] text-[#eadff7] hover:border-[#ff942f]'
+                    : 'border-ink/10 bg-white text-ink hover:border-ink/30',
               )}
               onClick={() => select(answer)}
             >

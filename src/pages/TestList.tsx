@@ -26,19 +26,16 @@ export default function TestList() {
 
   return (
     <PageLayout backTo="/" backLabel="홈">
-      <header className="mb-6 text-center">
-        <h1 className={ui.pageTitle}>테스트 목록</h1>
-        <p className={`${ui.pageDesc} mt-2`}>궁금한 거 골라보세요~</p>
+      <header className="mb-4">
+        <h1 className={ui.pageTitle}>테스트</h1>
       </header>
 
-      <div className="mb-5 flex flex-wrap justify-center gap-2">
+      <div className="mb-2 flex gap-4 overflow-x-auto text-sm font-bold">
         <button
           type="button"
           className={cn(
-            'rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors',
-            activeCategory === 'all'
-              ? 'bg-ink text-white'
-              : 'bg-white text-ink shadow-[0_2px_8px_-4px_rgba(31,21,53,0.18)] hover:bg-cream-dark',
+            'shrink-0 border-b-2 pb-1',
+            activeCategory === 'all' ? 'border-ink text-ink' : 'border-transparent text-muted',
           )}
           onClick={() => setActiveCategory('all')}
         >
@@ -49,10 +46,8 @@ export default function TestList() {
             key={category.id}
             type="button"
             className={cn(
-              'rounded-full px-3.5 py-1.5 text-[13px] font-bold transition-colors',
-              activeCategory === category.id
-                ? 'bg-ink text-white'
-                : 'bg-white text-ink shadow-[0_2px_8px_-4px_rgba(31,21,53,0.18)] hover:bg-cream-dark',
+              'shrink-0 border-b-2 pb-1',
+              activeCategory === category.id ? 'border-ink text-ink' : 'border-transparent text-muted',
             )}
             onClick={() => setActiveCategory(category.id)}
           >
@@ -63,11 +58,13 @@ export default function TestList() {
 
       <section>
         {loading ? (
-          <p className="py-8 text-center text-sm text-muted">불러오는 중...</p>
+          <p className="py-8 text-sm text-muted">불러오는 중...</p>
+        ) : filteredTests.length === 0 ? (
+          <p className="py-8 text-sm text-muted">이 분류에는 테스트가 없어요.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-3 min-[480px]:grid-cols-3">
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-6">
             {filteredTests.map((test) => (
-              <TestListCard key={test.id} test={test} showQuestionCount compact />
+              <TestListCard key={test.id} test={test} />
             ))}
           </div>
         )}

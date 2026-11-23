@@ -5,9 +5,8 @@ import { getPlayQuestionCount } from '../lib/questionSample'
 import { trackTestStart } from '../lib/analytics'
 import PageLayout from '../components/PageLayout'
 import RecommendedTests from '../components/RecommendedTests'
-import StickerCard from '../components/StickerCard'
 import TestShareActions from '../components/TestShareActions'
-import { AlertIcon, ClockIcon, DocumentIcon, LayersIcon } from '../components/icons'
+import { AlertIcon } from '../components/icons'
 import { useTest } from '../lib/useTests'
 import { incrementTestView } from '../lib/supabase'
 import { ui } from '../lib/ui'
@@ -108,8 +107,8 @@ export default function TestDetail() {
         <header
           className={
             isHalloween
-              ? 'relative mb-6 overflow-hidden rounded-2xl border-[3px] border-[#ff942f] bg-[#0b0525] px-5 pb-6 pt-5 text-center shadow-[0_7px_0_#542275]'
-              : 'mb-6 text-center'
+              ? 'relative mb-6 overflow-hidden rounded-md border border-[#ff942f] bg-[#0b0525] px-4 pb-5 pt-4 text-center'
+              : 'mb-5'
           }
         >
           {isHalloween ? (
@@ -127,87 +126,51 @@ export default function TestDetail() {
           ) : null}
 
           <div className="relative">
-            <picture>
-              {thumbnailWebp ? <source srcSet={thumbnailWebp} type="image/webp" /> : null}
-              <img
-                src={thumbnailSrc}
-                alt={`${test.title} 캐릭터`}
-                width={288}
-                height={288}
-                className='mx-auto object-cover '
-              />
-            </picture>
+            {isHalloween ? (
+              <picture>
+                {thumbnailWebp ? <source srcSet={thumbnailWebp} type="image/webp" /> : null}
+                <img
+                  src={thumbnailSrc}
+                  alt={`${test.title} 캐릭터`}
+                  width={288}
+                  height={288}
+                  className="mx-auto mb-3 h-36 w-36 object-contain"
+                />
+              </picture>
+            ) : (
+              <div className="mb-4 flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-md bg-white">
+                <picture className="h-full w-full">
+                  {thumbnailWebp ? <source srcSet={thumbnailWebp} type="image/webp" /> : null}
+                  <img
+                    src={thumbnailSrc}
+                    alt={`${test.title} 캐릭터`}
+                    width={288}
+                    height={288}
+                    className="h-full w-full object-contain"
+                  />
+                </picture>
+              </div>
+            )}
             {isHalloween ? (
               <span className="mb-3 inline-block rounded-full border border-[#ffb247] bg-[#ff942f]/20 px-3 py-1 text-xs font-bold text-[#ffd59a]">
                 🎃 HALLOWEEN SPECIAL
               </span>
             ) : null}
-            <h1 className={isHalloween ? 'text-[26px] font-bold leading-tight text-white' : ui.pageTitle}>
+            <h1 className={isHalloween ? 'text-[22px] font-bold leading-snug text-white' : ui.pageTitle}>
               {test.title}
             </h1>
             <p className={isHalloween ? 'mt-2 text-[15px] leading-relaxed text-[#d9c9ef]' : `${ui.pageDesc} mt-2`}>
               {test.description}
             </p>
+            <p className={`mt-3 text-[13px] font-bold ${isHalloween ? 'text-[#ffd59a]' : 'text-muted'}`}>
+              {questionCount}문항 · 약 {estimatedMinutes}분 · 결과 {test.results.length}개
+            </p>
           </div>
         </header>
       )}
-
-      {!isMeme ? (
-        <StickerCard
-          className={`mb-4 flex items-center justify-center gap-0 !p-4 ${
-            isHalloween ? '!border-[#70439a] !bg-[#211044]' : ''
-          }`}
-        >
-          {[
-            { value: questionCount, label: '문항', Icon: DocumentIcon },
-            { value: estimatedMinutes, label: '분', Icon: ClockIcon },
-            { value: test.results.length, label: '결과', Icon: LayersIcon },
-          ].map((stat, index) => (
-            <div key={stat.label} className="flex flex-1 items-center">
-              {index > 0 ? (
-                <div className={`h-10 w-px ${isHalloween ? 'bg-[#70439a]' : 'bg-gray-200'}`} />
-              ) : null}
-              <div className="flex flex-1 flex-col items-center gap-0.5">
-                <stat.Icon
-                  className={`h-[18px] w-[18px] ${isHalloween ? 'text-[#ffb247]' : 'text-accent'}`}
-                />
-                <span
-                  className={`text-xl font-extrabold ${
-                    isHalloween ? 'text-[#ffb247]' : 'text-ink'
-                  }`}
-                >
-                  {stat.value}
-                </span>
-                <span
-                  className={`text-xs font-semibold ${
-                    isHalloween ? 'text-[#d9c9ef]' : 'text-muted'
-                  }`}
-                >
-                  {stat.label}
-                </span>
-              </div>
-            </div>
-          ))}
-        </StickerCard>
-      ) : null}
-
-      <div
-        className={`mb-5 text-center text-sm font-bold leading-relaxed ${
-          isMeme
-            ? 'border border-dashed border-ink/40 bg-white/70 px-4 py-3 text-[#3f3a34]'
-            : isHalloween
-              ? 'rounded-2xl border border-[#ff942f] bg-[#2a1450] px-4 py-3 text-[#eadff7]'
-              : 'rounded-2xl bg-accent-soft/60 px-4 py-3 text-muted'
-        }`}
-      >
-        {isMeme
-          ? '○는 알고 있음, ×는 모름. 설명 듣고 아는 척은 금지.'
-          : '정답 없어요~ 지금 기분 그대로 골라주세요'}
-      </div>
-
       <button
         type="button"
-        className={`${ui.btnPrimary} wiggle-hover ${
+        className={`${ui.btnPrimary} ${
           isHalloween
             ? '!bg-[#f47721] hover:!bg-[#ff923f]'
             : isMeme
@@ -220,7 +183,6 @@ export default function TestDetail() {
         }}
       >
         {isMeme ? '문제 풀기' : '시작하기'}
-        <span aria-hidden>→</span>
       </button>
 
       <div className="mt-4">

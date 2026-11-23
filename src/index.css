@@ -15,9 +15,9 @@
   --font-sans: 'Pretendard Variable', 'Pretendard', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
   --font-pixel: 'NeoDunggeunmo', monospace;
 
-  /* 메인 히어로 일러스트(토끼·곰·강아지·고양이·여우)에서 뽑은 팔레트 */
-  --color-cream: #fbf3e6;
-  --color-cream-dark: #f2e2c8;
+  /* 페이지 바탕은 노란기 없는 회색. 포인트 색만 일러스트에서 가져온다. */
+  --color-cream: #f4f4f5;
+  --color-cream-dark: #e4e4e7;
   --color-ink: #1f1535;
   --color-muted: #756884;
   --color-accent: #e0527c;
@@ -45,8 +45,6 @@
 @layer base {
   body {
     @apply min-w-[320px] bg-cream font-sans text-base text-ink;
-    background-image: radial-gradient(circle, rgb(217 139 95 / 16%) 1.5px, transparent 1.5px);
-    background-size: 14px 14px;
   }
 
   #root {

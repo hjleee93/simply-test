@@ -1,3 +1,4 @@
+import { rankByViewCount } from '../lib/rankByViews'
 import { supabase } from '../lib/supabase'
 import type {
   Question,
@@ -36,6 +37,7 @@ type InlineTestData = {
   category: string
   character: string
   resultTemplate: string | null
+  viewCount?: number
 }
 
 type FullInlineTestData = {
@@ -134,7 +136,13 @@ export function getPreloadedTest(id: string): TestDefinition | undefined {
 }
 
 export function getPreloadedFeaturedTests(limit = MAIN_PAGE_TEST_LIMIT): TestDefinition[] {
-  return getPreloadedTests().slice(0, limit)
+  const tests = getPreloadedTests()
+  const inline = typeof window !== 'undefined' ? window.__TESTS__ : undefined
+  if (!inline?.some((item) => typeof item.viewCount === 'number')) {
+    return tests.slice(0, limit)
+  }
+  const counts = new Map(inline.map((item) => [item.id, item.viewCount ?? 0]))
+  return rankByViewCount(tests, counts).slice(0, limit)
 }
 
 export function getPreloadedRecommendedTests(
@@ -195,11 +203,31 @@ export async function fetchTest(id: string): Promise<TestDefinition | undefined>
   return tests.find((test) => test.id === id)
 }
 
+async function fetchViewCounts(): Promise<Map<string, number> | null> {
+  if (!supabase) return null
+
+  const { data, error } = await supabase.from('test_view_counts').select('test_slug, count')
+  if (error) {
+    console.error('조회수를 불러오지 못했어요:', error.message)
+    return null
+  }
+
+  const counts = new Map<string, number>()
+  for (const row of data ?? []) {
+    if (typeof row.test_slug === 'string' && typeof row.count === 'number') {
+      counts.set(row.test_slug, row.count)
+    }
+  }
+  return counts
+}
+
 export async function fetchFeaturedTests(
   limit = MAIN_PAGE_TEST_LIMIT,
 ): Promise<TestDefinition[]> {
   const tests = await fetchAllTests()
-  return tests.slice(0, limit)
+  const counts = await fetchViewCounts()
+  if (!counts) return tests.slice(0, limit)
+  return rankByViewCount(tests, counts).slice(0, limit)
 }
 
 export async function fetchRecommendedTests(

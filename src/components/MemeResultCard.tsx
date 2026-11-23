@@ -117,7 +117,7 @@ export default function MemeResultCard({
       </div>
 
       <div className="mt-3 flex flex-col gap-2">
-        <button type="button" className={cn(ui.btnPrimary, 'wiggle-hover !rounded-sm !bg-ink hover:!bg-[#333]')} onClick={onRetry}>
+        <button type="button" className={cn(ui.btnPrimary, ' !rounded-sm !bg-ink hover:!bg-[#333]')} onClick={onRetry}>
           <RefreshIcon className="h-[18px] w-[18px]" />
           다시 해보기
         </button>

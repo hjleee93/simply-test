@@ -1,5 +1,4 @@
 import { useRef, type ComponentType } from 'react'
-import { cn } from '../lib/cn'
 import { AlertIcon, HomeIcon, LightbulbIcon, PinIcon, RefreshIcon } from './icons'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
@@ -59,16 +58,12 @@ export default function JinsangResultCard({
             <span className="text-[28px] font-bold text-accent">%</span>
           </p>
           <p className="mt-3 text-lg font-extrabold text-ink">{result.title}</p>
-          <span className="mt-2 inline-block rounded-full bg-lemon px-3 py-1 text-sm font-bold text-ink">
+          <span className="mt-2 block text-sm font-bold text-muted">
             {result.keyword}
           </span>
         </section>
 
-        <div className="my-5 flex items-center justify-center gap-3 text-xs font-bold text-muted">
-          <span className="h-px flex-1 bg-gray-200" />
-          결과 리포트
-          <span className="h-px flex-1 bg-gray-200" />
-        </div>
+        <div className="mt-6" />
 
         <StickerCard className="mb-4">
           <p className="whitespace-pre-line text-[15px] leading-relaxed text-ink">
@@ -126,7 +121,7 @@ export default function JinsangResultCard({
       </div>
 
       <div className="mt-3 flex flex-col gap-2">
-        <button type="button" className={cn(ui.btnPrimary, 'wiggle-hover')} onClick={onRetry}>
+        <button type="button" className={ui.btnPrimary} onClick={onRetry}>
           <RefreshIcon className="h-[18px] w-[18px]" />
           다시 해보기
         </button>

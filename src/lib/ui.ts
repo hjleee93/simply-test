@@ -1,16 +1,15 @@
-/** 공통 UI 클래스 — 부드러운 필(pill)·소프트 섀도우 톤 */
+/** 공통 UI. 장식은 줄이고, 버튼과 구분선만 남긴다. */
 export const ui = {
   btnPrimary:
-    'inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-accent px-5 text-base font-bold text-white shadow-[0_10px_22px_-8px_rgba(224,82,124,0.55)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-accent-hover active:translate-y-0',
+    'inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-md bg-accent px-5 text-[15px] font-bold text-white transition-colors hover:bg-accent-hover',
   btnSecondary:
-    'inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-white px-5 text-base font-bold text-ink shadow-[0_2px_12px_-4px_rgba(31,21,53,0.16)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 hover:bg-cream-dark active:translate-y-0',
+    'inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-md border border-ink/15 bg-white px-5 text-[15px] font-bold text-ink transition-colors hover:bg-cream-dark',
   btnGhost:
-    'inline-flex h-12 w-full items-center justify-center rounded-full border border-muted/25 bg-transparent px-5 text-sm font-bold text-muted transition-colors hover:border-accent hover:bg-accent-soft hover:text-ink disabled:cursor-not-allowed disabled:opacity-40',
-  sticker: 'rounded-2xl bg-white p-5 shadow-[0_2px_18px_-6px_rgba(31,21,53,0.12)]',
-  stickerSoft: 'rounded-2xl bg-accent-soft/60 p-5',
-  badge:
-    'inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[13px] font-bold text-accent-hover',
-  pageTitle: 'text-[26px] font-black leading-tight text-ink',
+    'inline-flex h-11 items-center text-sm font-bold text-muted transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-40',
+  sticker: 'rounded-md border border-ink/10 bg-white p-4',
+  stickerSoft: 'rounded-md bg-cream-dark/50 p-4',
+  badge: 'inline-flex items-center bg-cream-dark px-2 py-0.5 text-[12px] font-bold text-ink',
+  pageTitle: 'text-[22px] font-bold leading-snug tracking-tight text-ink',
   pageDesc: 'text-[15px] leading-relaxed text-muted',
-  sectionTitle: 'mb-3 text-[15px] font-bold text-ink',
+  sectionTitle: 'mb-1 text-[13px] font-bold text-muted',
 } as const

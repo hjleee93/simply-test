@@ -8,8 +8,16 @@ create table if not exists public.test_view_counts (
 
 alter table public.test_view_counts enable row level security;
 
--- 직접 select/insert/update 정책은 없음 — 아래 increment_test_view() 함수(security definer)를
--- 통해서만 값이 바뀐다. anon은 함수 호출만 가능하고 테이블에 바로 쓸 수는 없다.
+-- 쓰기는 increment_test_view()만 허용한다. 읽기는 홈 "인기 테스트" 정렬용으로 anon에게 연다.
+grant select on table public.test_view_counts to anon;
+
+drop policy if exists "View counts are readable by anyone" on public.test_view_counts;
+
+create policy "View counts are readable by anyone"
+  on public.test_view_counts
+  for select
+  to anon
+  using (true);
 
 create or replace function public.increment_test_view(test_slug text)
 returns void

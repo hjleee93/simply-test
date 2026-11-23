@@ -81,6 +81,7 @@ type TestRouteSource = {
   ogImageWidth: number | null
   ogImageHeight: number | null
   resultTemplate: string | null
+  viewCount: number
 }
 
 type FullTestData = {
@@ -122,6 +123,17 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 /** src/data 의 MAIN_PAGE_TEST_LIMIT 과 같이 맞춰서 바꿔야 한다. */
 const HOME_FEATURED_LIMIT = 10
+
+/** src/lib/rankByViews.ts 와 같이 맞춰야 한다. 빌드 설정은 .ts 상대 임포트를 쓸 수 없다. */
+function rankByViewCount<T extends { id: string }>(
+  items: readonly T[],
+  viewCounts: ReadonlyMap<string, number>,
+): T[] {
+  return items
+    .map((item, index) => ({ item, index, views: viewCounts.get(item.id) ?? 0 }))
+    .sort((a, b) => b.views - a.views || a.index - b.index)
+    .map(({ item }) => item)
+}
 
 type RouteOg = {
   path: string
@@ -241,6 +253,21 @@ async function loadPublishedTests(
     return { routes: [], fullTests: new Map() }
   }
 
+  const { data: viewRows, error: viewError } = await supabase
+    .from('test_view_counts')
+    .select('test_slug, count')
+
+  const viewCounts = new Map<string, number>()
+  if (viewError) {
+    console.warn(`[vite] 조회수를 불러오지 못해 인기 테스트는 공개순으로 둡니다: ${viewError.message}`)
+  } else {
+    for (const row of viewRows ?? []) {
+      if (typeof row.test_slug === 'string' && typeof row.count === 'number') {
+        viewCounts.set(row.test_slug, row.count)
+      }
+    }
+  }
+
   const fullTests = new Map<string, FullTestData>()
   const routes: TestRouteSource[] = []
 
@@ -259,6 +286,7 @@ async function loadPublishedTests(
       ogImageWidth: typeof row.og_image_width === 'number' ? row.og_image_width : null,
       ogImageHeight: typeof row.og_image_height === 'number' ? row.og_image_height : null,
       resultTemplate: row.result_template ?? null,
+      viewCount: viewCounts.get(row.id) ?? 0,
     })
 
     fullTests.set(row.id, {
@@ -363,38 +391,30 @@ const escapeHtml = escapeXml
  *  React는 createRoot().render() 로 #root 를 그대로 덮어쓰므로 하이드레이션 충돌은 없다. */
 function testLinkItem(test: TestRouteSource): string {
   const label = CATEGORY_LABELS[test.category] ?? ''
-  return `<li class="mb-3 rounded-2xl bg-white p-4 shadow-[0_2px_18px_-6px_rgba(31,21,53,0.12)] list-none">
-      <a href="/tests/${escapeAttr(test.id)}" class="block">
-        ${label ? `<span class="mb-1 inline-block text-[11px] font-bold text-accent">${escapeHtml(label)}</span>` : ''}
-        <p class="mb-1 text-[15px] font-extrabold text-ink">${escapeHtml(test.title)}</p>
-        <p class="text-sm leading-snug text-muted">${escapeHtml(test.description)}</p>
-      </a>
-    </li>`
+  return `<a href="/tests/${escapeAttr(test.id)}" class="flex items-center gap-3 border-t border-ink/10 py-3">
+      <span>
+        <span class="block text-[15px] font-bold text-ink">${escapeHtml(test.title)}</span>
+        ${label ? `<span class="mt-0.5 block text-[13px] text-muted">${escapeHtml(label)} · ${test.questionCount}문항</span>` : ''}
+      </span>
+    </a>`
 }
 
 function buildHomeContent(tests: TestRouteSource[]): string {
-  const featured = tests.slice(0, HOME_FEATURED_LIMIT)
+  const counts = new Map(tests.map((test) => [test.id, test.viewCount]))
+  const featured = rankByViewCount(tests, counts).slice(0, HOME_FEATURED_LIMIT)
   return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
-    <div class="pb-10 pt-6 text-center">
-      <div class="mx-auto mb-2 flex h-60 items-center justify-center">
-        <picture>
-          <source srcset="/characters/pixel/main_hero.webp" type="image/webp" />
-          <img src="/characters/pixel/main_hero.png" alt="토끼, 곰, 강아지, 고양이, 여우가 함께 모여 있는 모습" width="1050" height="656" fetchpriority="high" class="h-full w-auto object-contain" />
-        </picture>
-      </div>
-      <h1 class="mt-5 text-[30px] font-black leading-[1.25] tracking-tight text-ink">나도 몰랐던<br />내 진짜 모습</h1>
-      <p class="mx-auto mt-3 max-w-[260px] text-[15px] leading-relaxed text-muted">귀엽게 그려진 캐릭터가<br />당신의 숨겨진 성향을 알려줘요</p>
-    </div>
-    <h2 class="mb-3 text-center text-sm font-extrabold text-muted">인기 테스트</h2>
-    <ul>${featured.map(testLinkItem).join('')}</ul>
-    <p class="mt-4 text-center"><a href="/tests" class="text-sm font-bold text-accent">전체 테스트 보기 (${tests.length}개) →</a></p>
+    <h1 class="text-[22px] font-bold leading-snug text-ink">나도 몰랐던<br />내 진짜 모습</h1>
+    <p class="mt-2 text-[15px] leading-relaxed text-muted">캐릭터가 숨겨진 성향을 알려줘요</p>
+    <h2 class="mt-8 text-[13px] font-bold text-muted">인기 테스트</h2>
+    <div class="mt-1 border-b border-ink/10">${featured.map(testLinkItem).join('')}</div>
+    <p class="mt-4"><a href="/tests" class="text-sm font-bold text-ink">전체 ${tests.length}개</a></p>
   </div>`
 }
 
 function buildListContent(tests: TestRouteSource[]): string {
   return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
-    <h1 class="text-[26px] font-black leading-tight text-ink">테스트 목록</h1>
-    <ul class="mt-5">${tests.map(testLinkItem).join('')}</ul>
+    <h1 class="text-[22px] font-bold text-ink">테스트</h1>
+    <div class="mt-4 border-b border-ink/10">${tests.map(testLinkItem).join('')}</div>
   </div>`
 }
 
@@ -402,14 +422,14 @@ function buildTestContent(test: TestRouteSource, allTests: TestRouteSource[]): s
   const label = CATEGORY_LABELS[test.category] ?? ''
   const related = allTests.filter((other) => other.id !== test.id).slice(0, 3)
   return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
-    ${label ? `<span class="inline-flex items-center rounded-full bg-accent-soft px-3.5 py-1.5 text-[13px] font-bold text-accent-hover">${escapeHtml(label)}</span>` : ''}
-    <h1 class="mt-3 text-[26px] font-black leading-tight text-ink">${escapeHtml(test.title)}</h1>
-    <p class="mt-3 text-[15px] leading-relaxed text-muted">${escapeHtml(test.description)}</p>
-    <p class="mt-2 text-xs font-bold text-muted">${test.questionCount}문항</p>
-    <p class="mt-6"><a href="/tests/${escapeAttr(test.id)}/play" class="inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-accent px-5 text-base font-bold text-white">테스트 시작하기</a></p>
+    ${label ? `<p class="text-[13px] font-bold text-muted">${escapeHtml(label)}</p>` : ''}
+    <h1 class="mt-1 text-[22px] font-bold leading-snug text-ink">${escapeHtml(test.title)}</h1>
+    <p class="mt-2 text-[15px] leading-relaxed text-muted">${escapeHtml(test.description)}</p>
+    <p class="mt-3 text-[13px] font-bold text-muted">${test.questionCount}문항</p>
+    <p class="mt-5"><a href="/tests/${escapeAttr(test.id)}/play" class="inline-flex h-12 w-full items-center justify-center rounded-md bg-accent px-5 text-[15px] font-bold text-white">시작하기</a></p>
     ${
       related.length
-        ? `<h2 class="mb-3 mt-10 text-sm font-extrabold text-muted">다른 테스트도 해보세요</h2><ul>${related.map(testLinkItem).join('')}</ul>`
+        ? `<h2 class="mt-10 text-[13px] font-bold text-muted">다른 테스트</h2><div class="border-b border-ink/10">${related.map(testLinkItem).join('')}</div>`
         : ''
     }
   </div>`
@@ -677,6 +697,7 @@ function buildPageInlineScript(tests: TestRouteSource[], fullTests: Map<string, 
     category: t.category,
     character: t.character,
     resultTemplate: t.resultTemplate,
+    viewCount: t.viewCount,
   })))
 
   const testSlug = getTestSlugFromPath(routePath)

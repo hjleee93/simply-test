@@ -199,7 +199,7 @@ export default function ResultShareActions({
       <div className={cn('grid gap-2', kakaoEnabled ? 'grid-cols-4' : 'grid-cols-3')}>
         <button
           type="button"
-          className={cn(ui.btnPrimary, 'wiggle-hover px-2 text-sm')}
+          className={cn(ui.btnPrimary, 'px-2 text-sm')}
           onClick={handleShare}
           disabled={isSaving}
         >
@@ -215,7 +215,7 @@ export default function ResultShareActions({
         {kakaoEnabled ? (
           <button
             type="button"
-            className="inline-flex h-14 w-full items-center justify-center gap-1.5 rounded-full bg-[#FEE500] px-2 text-sm font-bold text-[#391b1b] shadow-[0_2px_12px_-4px_rgba(31,21,53,0.16)] transition-[transform,background-color] duration-200 hover:-translate-y-0.5 active:translate-y-0"
+            className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-md bg-[#FEE500] px-2 text-sm font-bold text-[#391b1b] transition-colors hover:bg-[#f5dc00]"
             onClick={handleKakaoShare}
             disabled={isSaving}
           >

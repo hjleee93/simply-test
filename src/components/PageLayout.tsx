@@ -10,24 +10,6 @@ interface PageLayoutProps {
   theme?: 'default' | 'halloween' | 'meme'
 }
 
-function ListIcon() {
-  return (
-    <svg
-      aria-hidden
-      viewBox="0 0 24 24"
-      className="h-4 w-4"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="square"
-    >
-      <line x1="4" y1="7" x2="20" y2="7" />
-      <line x1="4" y1="12" x2="20" y2="12" />
-      <line x1="4" y1="17" x2="14" y2="17" />
-    </svg>
-  )
-}
-
 function InstagramIcon() {
   return (
     <svg
@@ -59,40 +41,43 @@ export default function PageLayout({
     <div className={`min-h-svh ${isHalloween ? 'halloween-page' : isMeme ? 'meme-page' : ''}`}>
       <div className="mx-auto flex min-h-svh w-full max-w-[720px] flex-col">
       <header
-        className={`sticky top-0 z-10 flex h-14 items-center justify-between px-5`}
+        className={`sticky top-0 z-10 flex h-14 items-center justify-between border-b px-5 ${
+          isHalloween
+            ? 'border-[#7346a8] bg-[#10082b]'
+            : isMeme
+              ? 'border-ink/10 bg-[#ece8e1]'
+              : 'border-ink/10 bg-cream'
+        }`}
       >
         {backTo ? (
           <Link
-            className={`border-2 border-ink bg-white px-3 py-1.5 text-sm font-bold text-ink transition-colors hover:bg-lemon ${
-              isMeme ? 'rounded-sm' : 'rounded-md'
-            }`}
+            className={`text-sm font-bold ${isHalloween ? 'text-white' : 'text-ink'}`}
             to={backTo}
           >
             ← {backLabel ?? '뒤로'}
           </Link>
         ) : (
           <>
-            <LogoLink variant="full" className="wiggle-hover" />
+            <LogoLink variant="full" />
             <Link
               to="/tests"
-              className={`inline-flex items-center gap-1.5 text-sm font-bold transition-colors ${
+              className={`text-sm font-bold ${
                 isHalloween
                   ? 'text-white hover:text-[#ffb247]'
                   : isMeme
                     ? 'text-ink hover:text-[#e11d48]'
-                    : 'text-ink hover:text-accent'
+                    : 'text-muted hover:text-ink'
               }`}
             >
-              <ListIcon />
-              전체 테스트
+              전체
             </Link>
           </>
         )}
       </header>
-      <main className="flex-1 px-5 pb-8 pt-1">{children}</main>
+      <main className="flex-1 px-5 pb-10 pt-5">{children}</main>
       <footer
-        className={`mt-auto border-t-2 border-dashed px-5 pb-8 pt-5 text-center ${
-          isHalloween ? 'border-[#7346a8]' : isMeme ? 'border-ink/30' : 'border-lilac/70'
+        className={`mt-auto border-t px-5 pb-8 pt-5 ${
+          isHalloween ? 'border-[#7346a8]' : 'border-ink/10'
         }`}
       >
         <a
@@ -107,7 +92,7 @@ export default function PageLayout({
           @{INSTAGRAM_HANDLE}
         </a>
         <p
-          className={`mx-auto mt-3 max-w-[280px] text-[11px] leading-relaxed ${
+          className={`mt-3 max-w-[280px] text-[11px] leading-relaxed ${
             isHalloween ? 'text-[#c9b8e8]' : isMeme ? 'text-[#5c564e]' : 'text-muted'
           }`}
         >

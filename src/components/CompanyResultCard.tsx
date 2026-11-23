@@ -1,5 +1,4 @@
 import { useRef, type ComponentType } from 'react'
-import { cn } from '../lib/cn'
 import { ChatIcon, CheckIcon, DocumentIcon, EyeIcon, HomeIcon, MoonIcon, RefreshIcon, StarIcon } from './icons'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
@@ -57,17 +56,13 @@ export default function CompanyResultCard({
           <p className="text-[22px] font-extrabold leading-snug text-ink">
             당신은 「{result.title}」입니다.
           </p>
-          <span className="mt-3 inline-block rounded-full bg-lemon px-3 py-1 text-sm font-bold text-ink">
+          <span className="mt-3 block text-sm font-bold text-muted">
             {result.keyword}
           </span>
           <p className="mt-2 text-xs font-bold text-muted">일치도 {matchPercent}%</p>
         </section>
 
-        <div className="my-5 flex items-center justify-center gap-3 text-xs font-bold text-muted">
-          <span className="h-px flex-1 bg-gray-200" />
-          결과 리포트
-          <span className="h-px flex-1 bg-gray-200" />
-        </div>
+        <div className="mt-6" />
 
         <section className="mb-4">
           <SectionTitle Icon={DocumentIcon}>당신의 특징</SectionTitle>
@@ -161,7 +156,7 @@ export default function CompanyResultCard({
       </div>
 
       <div className="mt-3 flex flex-col gap-2">
-        <button type="button" className={cn(ui.btnPrimary, 'wiggle-hover')} onClick={onRetry}>
+        <button type="button" className={ui.btnPrimary} onClick={onRetry}>
           <RefreshIcon className="h-[18px] w-[18px]" />
           다시 해보기
         </button>
