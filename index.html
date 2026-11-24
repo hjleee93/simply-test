@@ -38,20 +38,30 @@
     <meta name="twitter:image" content="__OG_IMAGE__" />
     <title>__OG_TITLE__</title>
     __JSON_LD__
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2VVC5GJ8KN"></script>
     <meta name="naver-site-verification" content="c33d5e96362d8d80766d579db73b07c5a8f0eefe" />
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-2VVC5GJ8KN', { send_page_view: false });
-    </script>
-    <script type="text/javascript">
-      (function(c,l,a,r,i,t,y){
-          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-      })(window, document, "clarity", "script", "ycvltkcsdg");
+      (function () {
+        if (location.hostname !== 'simply-test.co.kr') return
+
+        var ga = document.createElement('script')
+        ga.async = true
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-2VVC5GJ8KN'
+        document.head.appendChild(ga)
+
+        window.dataLayer = window.dataLayer || []
+        window.gtag = function () { window.dataLayer.push(arguments) }
+        window.gtag('js', new Date())
+        window.gtag('config', 'G-2VVC5GJ8KN', { send_page_view: false })
+
+        ;(function (c, l, a, r, i, t, y) {
+          c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments) }
+          t = l.createElement(r)
+          t.async = 1
+          t.src = 'https://www.clarity.ms/tag/' + i
+          y = l.getElementsByTagName(r)[0]
+          y.parentNode.insertBefore(t, y)
+        })(window, document, 'clarity', 'script', 'ycvltkcsdg')
+      })()
     </script>
   </head>
   <body>
