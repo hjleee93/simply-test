@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import PageMeta from '../../components/PageMeta'
+import AdminImageUpload from '../../components/AdminImageUpload'
 import {
   deleteAdminTest,
   fetchAdminTest,
@@ -65,15 +66,6 @@ function fieldClassName() {
   return 'mt-1 w-full rounded-md border-2 border-ink px-3 py-2 text-sm'
 }
 
-function previewOgImage(value: string): string | null {
-  const trimmed = value.trim()
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
-  if (trimmed.startsWith('/') && !trimmed.startsWith('//') && !/[\s"<>]/.test(trimmed)) {
-    return trimmed
-  }
-  return null
-}
-
 function parseOptionalDimension(value: string): number | null | undefined {
   if (value === '') return null
   if (!/^\d+$/.test(value)) return undefined
@@ -91,8 +83,6 @@ export default function AdminTestEdit() {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
-
-  const ogPreview = previewOgImage(input.ogImage)
 
   const title = useMemo(
     () => (isNew ? '새 테스트' : `편집 · ${input.title || id}`),
@@ -270,37 +260,30 @@ export default function AdminTestEdit() {
             </select>
           </label>
 
-          <label className="block text-sm font-bold text-ink">
-            썸네일 character
-            <input
-              value={input.thumbnailCharacter}
-              onChange={(e) =>
-                setInput((prev) => ({ ...prev, thumbnailCharacter: e.target.value }))
-              }
-              className={fieldClassName()}
-              placeholder="main-hero 또는 https://... 이미지 URL"
-            />
-            <span className="mt-1 block text-xs font-normal text-muted">
-              pixel 캐릭터 id(예: main-hero) 또는 http(s):// 이미지 URL을 입력할 수 있어요. 새 캐릭터 이미지는
-              Cloudflare R2(cdn.simply-test.co.kr)에 올리고 URL로 입력해주세요.
-            </span>
-          </label>
+          <AdminImageUpload
+            label="썸네일"
+            hint="파일을 올리면 R2(cdn.simply-test.co.kr)에 저장돼요. 올린 뒤 아래 저장을 눌러야 테스트에 반영돼요. 기존 pixel 캐릭터 id도 쓸 수 있어요."
+            kind="thumbnail"
+            testId={input.id}
+            value={input.thumbnailCharacter}
+            placeholder="adapted"
+            onChange={(value) => setInput((prev) => ({ ...prev, thumbnailCharacter: value }))}
+          />
 
-          <div className="sm:col-span-2">
-            <label className="block text-sm font-bold text-ink">
-              OG 이미지
-              <input
-                value={input.ogImage}
-                onChange={(e) => setInput((prev) => ({ ...prev, ogImage: e.target.value }))}
-                className={fieldClassName()}
-                placeholder="https://cdn.simply-test.co.kr/.../og_1200x630.jpg"
-              />
-              <span className="mt-1 block text-xs font-normal text-muted">
-                카카오·페이스북 공유 미리보기 이미지예요. 비우면 썸네일을 그대로 써요. 저장하면 다시 배포하지
-                않아도 반영돼요. 권장 크기는 1200×630이에요.
-              </span>
-            </label>
-            <div className="mt-3 grid grid-cols-2 gap-3">
+          <AdminImageUpload
+            label="OG 이미지"
+            hint="카카오·페이스북 공유 미리보기예요. 비우면 썸네일을 써요. 권장 크기는 1200×630이고, 파일을 올리면 가로·세로가 채워져요."
+            kind="og"
+            testId={input.id}
+            value={input.ogImage}
+            placeholder="비우면 썸네일을 사용해요"
+            onChange={(value) => setInput((prev) => ({ ...prev, ogImage: value }))}
+            onDimensions={({ width, height }) =>
+              setInput((prev) => ({ ...prev, ogImageWidth: width, ogImageHeight: height }))
+            }
+          />
+
+          <div className="grid grid-cols-2 gap-3 sm:col-span-2">
               <label className="block text-sm font-bold text-ink">
                 가로(px)
                 <input
@@ -329,14 +312,6 @@ export default function AdminTestEdit() {
                   placeholder="630"
                 />
               </label>
-            </div>
-            {ogPreview ? (
-              <img
-                src={ogPreview}
-                alt="OG 이미지 미리보기"
-                className="mt-3 h-32 w-auto max-w-full rounded-md border border-ink/20 object-contain"
-              />
-            ) : null}
           </div>
 
           <label className="block text-sm font-bold text-ink">

@@ -1,13 +1,24 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import CategoryTabs, { type CategoryFilter } from '../components/CategoryTabs'
 import PageLayout from '../components/PageLayout'
 import TestListCard from '../components/TestListCard'
 import { pixelCharacterPath, pixelCharacterWebpPath } from '../lib/characters'
+import { TEST_CATEGORIES } from '../lib/testCategories'
 import { useAllTests, useFeaturedTests } from '../lib/useTests'
 
 export default function Main() {
-  const { tests: featuredTests, loading } = useFeaturedTests()
-  const { tests: allTests } = useAllTests()
+  const { tests: featuredTests, loading: featuredLoading } = useFeaturedTests()
+  const { tests: allTests, loading: allLoading } = useAllTests()
+  const [activeCategory, setActiveCategory] = useState<CategoryFilter>('all')
   const totalCount = allTests.length
+
+  const visibleTests =
+    activeCategory === 'all'
+      ? featuredTests
+      : allTests.filter((test) => test.category === activeCategory)
+
+  const loading = activeCategory === 'all' ? featuredLoading && featuredTests.length === 0 : allLoading
 
   return (
     <PageLayout>
@@ -35,18 +46,26 @@ export default function Main() {
         </p>
       </header>
 
+      <CategoryTabs
+        categories={TEST_CATEGORIES}
+        active={activeCategory}
+        onChange={setActiveCategory}
+        allLabel="인기"
+      />
+
       <section>
-        <h2 className="text-[13px] font-bold text-muted">인기 테스트</h2>
-        {loading && featuredTests.length === 0 ? (
+        {loading ? (
           <p className="py-8 text-sm text-muted">불러오는 중...</p>
+        ) : visibleTests.length === 0 ? (
+          <p className="py-8 text-sm text-muted">이 분류에는 테스트가 없어요.</p>
         ) : (
-          <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-6">
-            {featuredTests.map((test) => (
+          <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-6">
+            {visibleTests.map((test) => (
               <TestListCard key={test.id} test={test} />
             ))}
           </div>
         )}
-        {totalCount > 0 ? (
+        {activeCategory === 'all' && totalCount > 0 ? (
           <Link to="/tests" className="mt-4 inline-block text-sm font-bold text-ink">
             전체 {totalCount}개
           </Link>

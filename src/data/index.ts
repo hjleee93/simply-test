@@ -10,7 +10,7 @@ import type {
 } from '../types/test'
 
 export const MAIN_PAGE_TEST_LIMIT = 10
-export const RECOMMENDED_TEST_LIMIT = 3
+export const RECOMMENDED_TEST_LIMIT = 4
 
 type TestRow = {
   id: string

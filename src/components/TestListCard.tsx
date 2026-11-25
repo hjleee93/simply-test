@@ -26,7 +26,7 @@ export default function TestListCard({ test, tone = 'default' }: TestListCardPro
     >
       <span
         className={`flex aspect-square w-full items-center justify-center overflow-hidden rounded-md ${
-          onDark ? 'bg-[#211044]' : 'bg-white'
+          onDark ? 'bg-[#211044]' : 'bg-transparent'
         }`}
       >
         <picture className="h-full w-full">

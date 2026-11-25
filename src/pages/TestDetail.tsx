@@ -138,7 +138,7 @@ export default function TestDetail() {
                 />
               </picture>
             ) : (
-              <div className="mx-auto mb-4 flex aspect-square w-full max-w-[360px] items-center justify-center overflow-hidden rounded-md bg-white">
+              <div className="mx-auto mb-4 flex aspect-square w-full max-h-[360px] items-center justify-center overflow-hidden rounded-md bg-transparent">
                 <picture className="h-full w-full">
                   {thumbnailWebp ? <source srcSet={thumbnailWebp} type="image/webp" /> : null}
                   <img

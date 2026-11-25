@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { devImageUploadPlugin } from './vite/devImageUploadPlugin.ts'
 
 const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
 const PIXEL_CHARACTER_DIR = '/characters/pixel'
@@ -420,7 +421,7 @@ function buildListContent(tests: TestRouteSource[]): string {
 
 function buildTestContent(test: TestRouteSource, allTests: TestRouteSource[]): string {
   const label = CATEGORY_LABELS[test.category] ?? ''
-  const related = allTests.filter((other) => other.id !== test.id).slice(0, 3)
+  const related = allTests.filter((other) => other.id !== test.id).slice(0, 4)
   return `<div class="mx-auto max-w-[720px] px-5 pb-8 pt-6">
     ${label ? `<p class="text-[13px] font-bold text-muted">${escapeHtml(label)}</p>` : ''}
     <h1 class="mt-1 text-[22px] font-bold leading-snug text-ink">${escapeHtml(test.title)}</h1>
@@ -783,6 +784,12 @@ export default defineConfig(async ({ mode }) => {
   const { routes: tests, fullTests } = await loadPublishedTests(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY)
 
   return {
-    plugins: [react(), tailwindcss(), localUnpublishedTestsPreview(), injectOgMeta(siteUrl, og, tests, fullTests)],
+    plugins: [
+      react(),
+      tailwindcss(),
+      devImageUploadPlugin(),
+      localUnpublishedTestsPreview(),
+      injectOgMeta(siteUrl, og, tests, fullTests),
+    ],
   }
 })

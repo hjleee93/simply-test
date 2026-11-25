@@ -9,12 +9,21 @@ import {
   testPageTitle,
 } from './ogMeta'
 import ogConfig from '../src/lib/og.json'
+import { handleImageUpload } from './upload'
 
 interface Env {
   SUPABASE_URL: string
   SUPABASE_ANON_KEY: string
   SITE_URL: string
+  ADMIN_EMAILS?: string
   ASSETS: Fetcher
+  IMAGES: {
+    put(
+      key: string,
+      value: ReadableStream | ArrayBuffer | string,
+      options?: { httpMetadata?: { contentType?: string; cacheControl?: string } },
+    ): Promise<unknown>
+  }
 }
 
 interface TestRow {
@@ -321,6 +330,10 @@ export default {
 
     if (pathname === '/rss.xml') {
       return handleRss(request, env)
+    }
+
+    if (pathname === '/api/admin/uploads') {
+      return handleImageUpload(request, env)
     }
 
     const testId = request.method === 'GET' ? testIdFromPath(pathname) : null

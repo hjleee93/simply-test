@@ -1,13 +1,10 @@
 import { useMemo, useState } from 'react'
+import CategoryTabs, { type CategoryFilter } from '../components/CategoryTabs'
 import PageLayout from '../components/PageLayout'
 import TestListCard from '../components/TestListCard'
 import { useAllTests } from '../lib/useTests'
-import { cn } from '../lib/cn'
 import { TEST_CATEGORIES } from '../lib/testCategories'
 import { ui } from '../lib/ui'
-import type { TestCategoryId } from '../types/test'
-
-type CategoryFilter = TestCategoryId | 'all'
 
 export default function TestList() {
   const { tests, loading } = useAllTests()
@@ -30,31 +27,12 @@ export default function TestList() {
         <h1 className={ui.pageTitle}>테스트</h1>
       </header>
 
-      <div className="mb-2 flex gap-4 overflow-x-auto text-sm font-bold">
-        <button
-          type="button"
-          className={cn(
-            'shrink-0 border-b-2 pb-1',
-            activeCategory === 'all' ? 'border-ink text-ink' : 'border-transparent text-muted',
-          )}
-          onClick={() => setActiveCategory('all')}
-        >
-          전체
-        </button>
-        {availableCategories.map((category) => (
-          <button
-            key={category.id}
-            type="button"
-            className={cn(
-              'shrink-0 border-b-2 pb-1',
-              activeCategory === category.id ? 'border-ink text-ink' : 'border-transparent text-muted',
-            )}
-            onClick={() => setActiveCategory(category.id)}
-          >
-            {category.label}
-          </button>
-        ))}
-      </div>
+      <CategoryTabs
+        className="mb-2"
+        categories={availableCategories}
+        active={activeCategory}
+        onChange={setActiveCategory}
+      />
 
       <section>
         {loading ? (
