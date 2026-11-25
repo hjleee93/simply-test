@@ -6,6 +6,7 @@ import HalloweenResultCard from '../components/HalloweenResultCard'
 import JinsangResultCard from '../components/JinsangResultCard'
 import KkondaeResultCard from '../components/KkondaeResultCard'
 import MemeResultCard from '../components/MemeResultCard'
+import MovieResultCard from '../components/MovieResultCard'
 import RelationshipResultCard from '../components/RelationshipResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
@@ -213,6 +214,20 @@ export default function Result() {
         result={result}
         thresholdPercent={thresholdPercent}
         answeredCount={answeredCount}
+        testTitle={test.title}
+        testId={test.id}
+        resultLabel={resultLabel}
+        onHome={() => navigate('/')}
+        onRetry={() => navigate(`/tests/${test.id}/play`)}
+      />
+    )
+  } else if (resultTemplate === 'movie') {
+    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
+    pageDescription = `${test.title} 결과: ${result.title}. ${result.oneLiner ?? result.description}`
+    resultCard = (
+      <MovieResultCard
+        result={result}
+        matchPercent={thresholdPercent}
         testTitle={test.title}
         testId={test.id}
         resultLabel={resultLabel}

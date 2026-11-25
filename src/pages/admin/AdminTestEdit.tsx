@@ -21,6 +21,7 @@ import { ui } from '../../lib/ui'
 const RESULT_TEMPLATES: Array<TestResultTemplate | ''> = [
   '',
   'category',
+  'movie',
   'gender',
   'kkondae',
   'jinsang',

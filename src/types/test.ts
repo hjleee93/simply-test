@@ -6,6 +6,7 @@ export type TestScoringMode = 'category' | 'simple' | 'pattern'
 
 export type TestResultTemplate =
   | 'category'
+  | 'movie'
   | 'gender'
   | 'kkondae'
   | 'jinsang'
@@ -52,6 +53,7 @@ export type TestResult = {
   emoji: string
   description: string
   keyword: string
+  oneLiner?: string
   /** 결과 캐릭터 이미지. public 기준 경로 또는 http(s):// 이미지 URL. 없으면 /characters/{id}.png 시도 후 emoji 폴백 */
   characterImage?: string
   characteristics?: string[]
