@@ -15,9 +15,16 @@ function daysSince(iso: string | undefined, now: number): number | null {
   return Math.max(0, (now - time) / DAY_MS)
 }
 
+/** 홈 스포트라이트에 "이번 주 새 테스트"라고 붙이는 기간 */
+export const SPOTLIGHT_NEW_DAYS = 7
+
+export function isPublishedWithin(test: TestDefinition, days: number, now = Date.now()): boolean {
+  const elapsed = daysSince(test.publishAt, now)
+  return elapsed !== null && elapsed <= days
+}
+
 export function isNewTest(test: TestDefinition, now = Date.now()): boolean {
-  const days = daysSince(test.publishAt, now)
-  return days !== null && days <= NEW_BADGE_DAYS
+  return isPublishedWithin(test, NEW_BADGE_DAYS, now)
 }
 
 /**

@@ -2,21 +2,25 @@ import { Link } from 'react-router-dom'
 import { resolveCharacterImage, resolveCharacterWebp } from '../lib/characters'
 import { getPlayQuestionCount } from '../lib/questionSample'
 import { getCategoryMeta } from '../lib/testCategories'
-import { displayViewCount, isNewTest } from '../lib/trending'
+import { displayViewCount, isPublishedWithin, SPOTLIGHT_NEW_DAYS } from '../lib/trending'
 import type { TestDefinition } from '../types/test'
 
 interface SpotlightCardProps {
   test: TestDefinition
-  label?: string
 }
 
 /** 홈 최상단에 크게 거는 테스트 한 개. 사이트가 "지금" 운영 중이라는 걸 첫 화면에서 보여준다. */
-export default function SpotlightCard({ test, label = '이번 주 새 테스트' }: SpotlightCardProps) {
+/**
+ * 공개 7일 이내면 "이번 주 새 테스트" + NEW, 그 이후엔 "오늘의 추천 테스트"로 문구만 바꾼다.
+ * 업데이트가 잠시 뜸해도 문구가 사실과 어긋나지 않게 하기 위함.
+ */
+export default function SpotlightCard({ test }: SpotlightCardProps) {
   const thumbnailChar = test.thumbnailCharacter ?? 'adapted'
   const webpSrc = resolveCharacterWebp(thumbnailChar)
   const questionCount = getPlayQuestionCount(test.id, test.questions.length)
   const views = displayViewCount(test)
-  const isNew = isNewTest(test)
+  const isNew = isPublishedWithin(test, SPOTLIGHT_NEW_DAYS)
+  const label = isNew ? '이번 주 새 테스트' : '오늘의 추천 테스트'
   const category = getCategoryMeta(test.category)
 
   const meta = [
