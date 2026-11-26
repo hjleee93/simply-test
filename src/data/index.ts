@@ -23,6 +23,7 @@ type TestRow = {
   requires_gender: boolean
   result_label: string | null
   min_score_per_answer: number | null
+  publish_at?: string | null
   og_image?: string | null
   og_image_width?: number | null
   og_image_height?: number | null
@@ -38,6 +39,7 @@ type InlineTestData = {
   character: string
   resultTemplate: string | null
   viewCount?: number
+  publishAt?: string | null
 }
 
 type FullInlineTestData = {
@@ -82,6 +84,7 @@ function mapRow(row: TestRow): TestDefinition {
     ogImageHeight: row.og_image_height ?? undefined,
     resultLabel: row.result_label ?? undefined,
     minScorePerAnswer: row.min_score_per_answer ?? undefined,
+    publishAt: row.publish_at ?? undefined,
   }
 }
 
@@ -95,6 +98,8 @@ function mapInlineTest(data: InlineTestData): TestDefinition {
     results: [],
     resultTemplate: (data.resultTemplate as TestResultTemplate | null) ?? undefined,
     thumbnailCharacter: data.character,
+    publishAt: data.publishAt ?? undefined,
+    viewCount: data.viewCount,
   }
 }
 
@@ -203,7 +208,20 @@ export async function fetchTest(id: string): Promise<TestDefinition | undefined>
   return tests.find((test) => test.id === id)
 }
 
-async function fetchViewCounts(): Promise<Map<string, number> | null> {
+let viewCountsPromise: Promise<Map<string, number> | null> | null = null
+
+/** 테스트별 누적 조회수. 한 세션에서 한 번만 불러온다. */
+export function fetchViewCounts(): Promise<Map<string, number> | null> {
+  if (!viewCountsPromise) {
+    viewCountsPromise = loadViewCounts().catch(() => {
+      viewCountsPromise = null
+      return null
+    })
+  }
+  return viewCountsPromise
+}
+
+async function loadViewCounts(): Promise<Map<string, number> | null> {
   if (!supabase) return null
 
   const { data, error } = await supabase.from('test_view_counts').select('test_slug, count')
@@ -224,8 +242,7 @@ async function fetchViewCounts(): Promise<Map<string, number> | null> {
 export async function fetchFeaturedTests(
   limit = MAIN_PAGE_TEST_LIMIT,
 ): Promise<TestDefinition[]> {
-  const tests = await fetchAllTests()
-  const counts = await fetchViewCounts()
+  const [tests, counts] = await Promise.all([fetchAllTests(), fetchViewCounts()])
   if (!counts) return tests.slice(0, limit)
   return rankByViewCount(tests, counts).slice(0, limit)
 }
@@ -236,4 +253,23 @@ export async function fetchRecommendedTests(
 ): Promise<TestDefinition[]> {
   const tests = await fetchAllTests()
   return tests.filter((test) => test.id !== excludeTestId).slice(0, limit)
+}
+
+function withViewCounts(
+  tests: readonly TestDefinition[],
+  counts: ReadonlyMap<string, number> | null,
+): TestDefinition[] {
+  if (!counts) return [...tests]
+  return tests.map((test) => ({ ...test, viewCount: counts.get(test.id) ?? test.viewCount ?? 0 }))
+}
+
+/** 홈용: 전체 테스트(최신 공개순) + 조회수. 섹션 구성은 화면에서 한다. */
+export async function fetchHomeTests(): Promise<TestDefinition[]> {
+  const [tests, counts] = await Promise.all([fetchAllTests(), fetchViewCounts()])
+  return withViewCounts(tests, counts)
+}
+
+/** 빌드 시 HTML에 심어둔 목록(조회수 포함). 첫 화면을 네트워크 없이 그린다. */
+export function getPreloadedHomeTests(): TestDefinition[] {
+  return getPreloadedTests()
 }

@@ -50,6 +50,22 @@ const LOCAL_WEBP_FOLDERS = new Set([
   'meme-check',
 ])
 
+function withoutQuery(url: string): { path: string; suffix: string } {
+  const hash = url.indexOf('#')
+  const base = hash === -1 ? url : url.slice(0, hash)
+  const query = base.indexOf('?')
+  if (query === -1) return { path: base, suffix: hash === -1 ? '' : url.slice(hash) }
+  return { path: base.slice(0, query), suffix: base.slice(query) + (hash === -1 ? '' : url.slice(hash)) }
+}
+
+/** CDN PNG와 같은 경로의 WebP. 목록/상세 썸네일은 원본 PNG 대신 이 파일을 쓴다. */
+function cdnPngToWebp(url: string): string | null {
+  if (!url.startsWith(CDN_CHARACTER_BASE)) return null
+  const { path, suffix } = withoutQuery(url)
+  if (!path.endsWith('.png')) return null
+  return `${path.slice(0, -4)}.webp${suffix}`
+}
+
 function getCdnFolderName(cdnUrl: string): string | null {
   if (!cdnUrl.startsWith(CDN_CHARACTER_BASE)) return null
   const relativePath = cdnUrl.slice(CDN_CHARACTER_BASE.length)
@@ -65,12 +81,13 @@ function getCdnFolderName(cdnUrl: string): string | null {
  * - pixel 캐릭터 id → 로컬에 있으면 WebP 경로, 없으면 null
  */
 export function resolveCharacterWebp(value: string): string | null {
-  if (value.startsWith(CDN_CHARACTER_BASE) && value.endsWith('.png')) {
-    const folderName = getCdnFolderName(value)
+  const cdnWebp = cdnPngToWebp(value)
+  if (cdnWebp) {
+    const folderName = getCdnFolderName(withoutQuery(value).path)
     if (folderName && LOCAL_WEBP_FOLDERS.has(folderName)) {
-      return value.replace(CDN_CHARACTER_BASE, '/characters/').replace(/\.png$/, '.webp')
+      return cdnWebp.replace(CDN_CHARACTER_BASE, '/characters/')
     }
-    return null
+    return cdnWebp
   }
   if (/^https?:\/\//.test(value)) return null
   if (value.startsWith('/characters/') && value.endsWith('.png')) {

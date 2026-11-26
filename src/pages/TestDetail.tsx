@@ -7,7 +7,8 @@ import PageLayout from '../components/PageLayout'
 import RecommendedTests from '../components/RecommendedTests'
 import TestShareActions from '../components/TestShareActions'
 import { AlertIcon } from '../components/icons'
-import { useTest } from '../lib/useTests'
+import { formatCount, VIEW_COUNT_DISPLAY_MIN } from '../lib/trending'
+import { useTest, useViewCount } from '../lib/useTests'
 import { incrementTestView } from '../lib/supabase'
 import { ui } from '../lib/ui'
 
@@ -27,6 +28,7 @@ export default function TestDetail() {
   const { slug } = useParams<{ slug: string }>()
   const navigate = useNavigate()
   const { test, loading } = useTest(slug)
+  const viewCount = useViewCount(slug)
 
   useEffect(() => {
     if (!test) return
@@ -165,6 +167,15 @@ export default function TestDetail() {
             <p className={`mt-3 text-[13px] font-bold ${isHalloween ? 'text-[#ffd59a]' : 'text-muted'}`}>
               {questionCount}문항 · 약 {estimatedMinutes}분 · 결과 {test.results.length}개
             </p>
+            {viewCount !== null && viewCount >= VIEW_COUNT_DISPLAY_MIN ? (
+              <p
+                className={`mt-2 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-bold ${
+                  isHalloween ? 'bg-white/10 text-[#ffd59a]' : 'bg-accent-soft text-accent'
+                }`}
+              >
+                지금까지 {formatCount(viewCount)}명이 봤어요
+              </p>
+            ) : null}
           </div>
         </header>
       )}

@@ -196,26 +196,26 @@ export default function ResultShareActions({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className={cn('grid gap-2', kakaoEnabled ? 'grid-cols-4' : 'grid-cols-3')}>
-        <button
-          type="button"
-          className={cn(ui.btnPrimary, 'px-2 text-sm')}
-          onClick={handleShare}
-          disabled={isSaving}
-        >
-          {isSaving ? (
-            '만드는 중…'
-          ) : (
-            <>
-              <ShareIcon className="h-[18px] w-[18px]" />
-              자랑하기
-            </>
-          )}
-        </button>
+      <button
+        type="button"
+        className={ui.btnPrimary}
+        onClick={handleShare}
+        disabled={isSaving}
+      >
+        {isSaving ? (
+          '이미지 만드는 중…'
+        ) : (
+          <>
+            <ShareIcon className="h-[18px] w-[18px]" />
+            결과 이미지로 자랑하기
+          </>
+        )}
+      </button>
+      <div className={cn('grid gap-2', kakaoEnabled ? 'grid-cols-3' : 'grid-cols-2')}>
         {kakaoEnabled ? (
           <button
             type="button"
-            className="inline-flex h-12 w-full items-center justify-center gap-1.5 rounded-md bg-[#FEE500] px-2 text-sm font-bold text-[#391b1b] transition-colors hover:bg-[#f5dc00]"
+            className="inline-flex h-11 w-full items-center justify-center gap-1.5 rounded-md bg-[#FEE500] px-2 text-sm font-bold text-[#391b1b] transition-colors hover:bg-[#f5dc00]"
             onClick={handleKakaoShare}
             disabled={isSaving}
           >
@@ -225,7 +225,7 @@ export default function ResultShareActions({
         ) : null}
         <button
           type="button"
-          className={cn(ui.btnSecondary, 'px-2 text-sm')}
+          className={cn(ui.btnSecondary, 'h-11 px-2 text-sm')}
           onClick={handleCopyLink}
           disabled={isSaving}
         >
@@ -234,7 +234,7 @@ export default function ResultShareActions({
         </button>
         <button
           type="button"
-          className={cn(ui.btnSecondary, 'px-2 text-sm')}
+          className={cn(ui.btnSecondary, 'h-11 px-2 text-sm')}
           onClick={handleSave}
           disabled={isSaving}
         >

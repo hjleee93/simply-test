@@ -127,6 +127,7 @@ export default function Test() {
       backTo={`/tests/${test.id}`}
       backLabel="나가기"
       theme={pageTheme}
+      hideFooter
     >
       <div className="flex flex-col gap-5">
         <ProgressBar

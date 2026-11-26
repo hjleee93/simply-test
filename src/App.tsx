@@ -7,6 +7,7 @@ import AdminLogin from './pages/admin/AdminLogin'
 import AdminTestEdit from './pages/admin/AdminTestEdit'
 import Main from './pages/Main'
 import NotFound from './pages/NotFound'
+import { AboutPage, PrivacyPage, TermsPage } from './pages/StaticPages'
 import Result from './pages/Result'
 import Test from './pages/Test'
 import TestDetail from './pages/TestDetail'
@@ -20,6 +21,9 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/tests" element={<TestList />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/terms" element={<TermsPage />} />
           <Route path="/tests/:slug" element={<TestDetail />} />
           <Route path="/tests/:slug/play" element={<Test />} />
           <Route path="/tests/:slug/result" element={<Result />} />

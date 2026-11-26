@@ -155,8 +155,8 @@ export default function RelationshipResultCard({
         />
       </div>
 
-      <div className="mt-3 flex flex-col gap-2">
-        <button type="button" className={ui.btnPrimary} onClick={onRetry}>
+      <div className="mt-4 grid grid-cols-2 gap-2">
+        <button type="button" className={ui.btnSecondary} onClick={onRetry}>
           <RefreshIcon className="h-[18px] w-[18px]" />
           다시 해보기
         </button>

@@ -25,6 +25,24 @@ const STATIC_ROUTES: RouteMeta[] = [
     description: og.list.description,
     imagePath: getOgImagePath('/tests'),
   },
+  {
+    path: '/about',
+    title: '서비스 소개 | 심플리테스트',
+    description: og.home.description,
+    imagePath: getOgImagePath('/'),
+  },
+  {
+    path: '/privacy',
+    title: '개인정보처리방침 | 심플리테스트',
+    description: '심플리테스트 개인정보처리방침',
+    imagePath: getOgImagePath('/'),
+  },
+  {
+    path: '/terms',
+    title: '이용약관 | 심플리테스트',
+    description: '심플리테스트 이용약관',
+    imagePath: getOgImagePath('/'),
+  },
 ]
 
 export function getStaticRouteMeta(pathname: string): RouteMeta | undefined {

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { INSTAGRAM_HANDLE, INSTAGRAM_URL } from '../lib/site'
+import { CONTACT_EMAIL, INSTAGRAM_HANDLE, INSTAGRAM_URL, SITE_NAME_KO } from '../lib/site'
 import { LogoLink } from './Logo'
 
 interface PageLayoutProps {
@@ -8,6 +8,8 @@ interface PageLayoutProps {
   backTo?: string
   backLabel?: string
   theme?: 'default' | 'halloween' | 'meme'
+  /** 테스트 진행 화면처럼 집중이 필요한 곳에서 푸터를 숨긴다 */
+  hideFooter?: boolean
 }
 
 function InstagramIcon() {
@@ -33,6 +35,7 @@ export default function PageLayout({
   backTo,
   backLabel,
   theme = 'default',
+  hideFooter = false,
 }: PageLayoutProps) {
   const isHalloween = theme === 'halloween'
   const isMeme = theme === 'meme'
@@ -69,12 +72,13 @@ export default function PageLayout({
                     : 'text-muted hover:text-ink'
               }`}
             >
-              전체
+              전체 테스트
             </Link>
           </>
         )}
       </header>
       <main className="flex-1 px-5 pb-10 pt-5">{children}</main>
+      {hideFooter ? null : (
       <footer
         className={`mt-auto border-t px-5 pb-8 pt-5 ${
           isHalloween ? 'border-[#7346a8]' : 'border-ink/10'
@@ -91,15 +95,35 @@ export default function PageLayout({
           <InstagramIcon />
           @{INSTAGRAM_HANDLE}
         </a>
+        <nav
+          aria-label="사이트 정보"
+          className={`mt-4 flex flex-wrap gap-x-4 gap-y-2 text-[12px] font-semibold ${
+            isHalloween ? 'text-[#d9c9ef]' : 'text-ink/70'
+          }`}
+        >
+          <Link to="/about" className="hover:text-accent">서비스 소개</Link>
+          <a
+            href={CONTACT_EMAIL ? `mailto:${CONTACT_EMAIL}` : INSTAGRAM_URL}
+            target={CONTACT_EMAIL ? undefined : '_blank'}
+            rel={CONTACT_EMAIL ? undefined : 'noopener noreferrer'}
+            className="hover:text-accent"
+          >
+            문의하기
+          </a>
+          <Link to="/terms" className="hover:text-accent">이용약관</Link>
+          <Link to="/privacy" className="font-bold hover:text-accent">개인정보처리방침</Link>
+        </nav>
         <p
-          className={`mt-3 max-w-[280px] text-[11px] leading-relaxed ${
+          className={`mt-3 text-[11px] leading-relaxed ${
             isHalloween ? 'text-[#c9b8e8]' : isMeme ? 'text-[#5c564e]' : 'text-muted'
           }`}
         >
           본 사이트의 테스트 결과는 재미와 자기 이해를 위한 것이며, 전문적인 심리 상담을 대체할
           수 없습니다.
+          <br />© {new Date().getFullYear()} {SITE_NAME_KO} Simply Test
         </p>
       </footer>
+      )}
       </div>
     </div>
   )

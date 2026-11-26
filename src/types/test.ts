@@ -84,6 +84,10 @@ export type TestDefinition = {
   resultLabel?: string
   /** 문항당 최소 점수. 기본 1(1~4점), 꼰대 테스트처럼 0점부터면 0 */
   minScorePerAnswer?: number
+  /** 공개 시각(ISO). 신규 배지·트렌딩 정렬에 쓴다 */
+  publishAt?: string
+  /** 상세 페이지 누적 조회수. 목록용으로만 채워진다 */
+  viewCount?: number
 }
 
 export type SelectedAnswer = {

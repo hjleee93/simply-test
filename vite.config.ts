@@ -83,6 +83,7 @@ type TestRouteSource = {
   ogImageHeight: number | null
   resultTemplate: string | null
   viewCount: number
+  publishAt: string | null
 }
 
 type FullTestData = {
@@ -288,6 +289,7 @@ async function loadPublishedTests(
       ogImageHeight: typeof row.og_image_height === 'number' ? row.og_image_height : null,
       resultTemplate: row.result_template ?? null,
       viewCount: viewCounts.get(row.id) ?? 0,
+      publishAt: typeof row.publish_at === 'string' ? row.publish_at : null,
     })
 
     fullTests.set(row.id, {
@@ -330,6 +332,11 @@ function getAllRouteOg(og: SiteOgConfig, tests: TestRouteSource[], siteName: str
       indexable: true,
       image: DEFAULT_OG_IMAGE,
     },
+    ...[
+      { path: '/about', title: `서비스 소개 | 심플리테스트`, description: og.home.description },
+      { path: '/privacy', title: '개인정보처리방침 | 심플리테스트', description: '심플리테스트 개인정보처리방침' },
+      { path: '/terms', title: '이용약관 | 심플리테스트', description: '심플리테스트 이용약관' },
+    ].map((page) => ({ ...page, type: 'website', indexable: true, image: DEFAULT_OG_IMAGE })),
     ...tests.flatMap((test) => {
       const ogImage = getTestOgImageMeta(test.character || 'adapted', {
         image: test.ogImage,
@@ -528,7 +535,13 @@ function buildSitemapXml(origin: string, routes: RouteOg[]) {
     .filter((route) => route.indexable)
     .map((route) => {
       const priority =
-        route.path === '/' ? '1.0' : route.path === '/tests' ? '0.8' : '0.9'
+        route.path === '/'
+          ? '1.0'
+          : route.path === '/tests'
+            ? '0.8'
+            : ['/about', '/privacy', '/terms'].includes(route.path)
+              ? '0.3'
+              : '0.9'
       const loc = toCanonicalUrl(origin, route.path)
       return `  <url>
     <loc>${escapeXml(loc)}</loc>
@@ -699,6 +712,7 @@ function buildPageInlineScript(tests: TestRouteSource[], fullTests: Map<string, 
     character: t.character,
     resultTemplate: t.resultTemplate,
     viewCount: t.viewCount,
+    publishAt: t.publishAt,
   })))
 
   const testSlug = getTestSlugFromPath(routePath)

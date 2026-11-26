@@ -2,9 +2,12 @@ import { useEffect, useState } from 'react'
 import {
   fetchAllTests,
   fetchFeaturedTests,
+  fetchHomeTests,
   fetchRecommendedTests,
+  fetchViewCounts,
   fetchTest,
   getPreloadedFeaturedTests,
+  getPreloadedHomeTests,
   getPreloadedRecommendedTests,
   getPreloadedTest,
   MAIN_PAGE_TEST_LIMIT,
@@ -113,4 +116,42 @@ export function useTest(id: string | undefined): TestState {
   }
 
   return { test: state.test, loading: state.loading }
+}
+
+/** 홈: 최신 공개순 전체 + 조회수. 빌드 때 심어둔 데이터로 먼저 그리고, 최신 값으로 갱신한다. */
+export function useHomeTests(): ListState {
+  const [state, setState] = useState<ListState>(() => {
+    const preloaded = getPreloadedHomeTests()
+    return { tests: preloaded, loading: preloaded.length === 0 }
+  })
+
+  useEffect(() => {
+    let active = true
+    fetchHomeTests().then((tests) => {
+      if (active) setState({ tests, loading: false })
+    })
+    return () => {
+      active = false
+    }
+  }, [])
+
+  return state
+}
+
+/** 테스트 한 개의 누적 조회수. 모르면 null. */
+export function useViewCount(testId: string | undefined): number | null {
+  const [state, setState] = useState<{ id: string; count: number | null } | null>(null)
+
+  useEffect(() => {
+    if (!testId) return
+    let active = true
+    fetchViewCounts().then((counts) => {
+      if (active) setState({ id: testId, count: counts?.get(testId) ?? null })
+    })
+    return () => {
+      active = false
+    }
+  }, [testId])
+
+  return state && state.id === testId ? state.count : null
 }
