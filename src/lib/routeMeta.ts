@@ -43,6 +43,13 @@ const STATIC_ROUTES: RouteMeta[] = [
     description: '심플리테스트 이용약관',
     imagePath: getOgImagePath('/'),
   },
+  {
+    path: '/lab/drawing',
+    title: '그림 읽기 실험 | 심플리테스트',
+    description: '그린 그림에서 집, 나무, 사람 같은 요소를 찾아보는 실험 화면',
+    imagePath: getOgImagePath('/'),
+    indexable: false,
+  },
 ]
 
 export function getStaticRouteMeta(pathname: string): RouteMeta | undefined {

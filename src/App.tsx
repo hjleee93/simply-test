@@ -5,6 +5,7 @@ import { RoutePageMeta } from './components/PageMeta'
 import AdminHome from './pages/admin/AdminHome'
 import AdminLogin from './pages/admin/AdminLogin'
 import AdminTestEdit from './pages/admin/AdminTestEdit'
+import DrawingLab from './pages/DrawingLab'
 import Main from './pages/Main'
 import NotFound from './pages/NotFound'
 import { AboutPage, PrivacyPage, TermsPage } from './pages/StaticPages'
@@ -21,6 +22,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Main />} />
           <Route path="/tests" element={<TestList />} />
+          <Route path="/lab/drawing" element={<DrawingLab />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/terms" element={<TermsPage />} />

@@ -9,6 +9,7 @@ import {
   testPageTitle,
 } from './ogMeta'
 import ogConfig from '../src/lib/og.json'
+import { handleDrawingRead } from './drawing'
 import { handleImageUpload } from './upload'
 
 interface Env {
@@ -16,6 +17,8 @@ interface Env {
   SUPABASE_ANON_KEY: string
   SITE_URL: string
   ADMIN_EMAILS?: string
+  GEMINI_API_KEY?: string
+  GEMINI_MODEL?: string
   ASSETS: Fetcher
   IMAGES: {
     put(
@@ -334,6 +337,10 @@ export default {
 
     if (pathname === '/api/admin/uploads') {
       return handleImageUpload(request, env)
+    }
+
+    if (pathname === '/api/drawing/read') {
+      return handleDrawingRead(request, env)
     }
 
     const testId = request.method === 'GET' ? testIdFromPath(pathname) : null

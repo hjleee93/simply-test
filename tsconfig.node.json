@@ -19,5 +19,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-    "include": ["vite.config.ts", "vite/devImageUploadPlugin.ts"]
+    "include": ["vite.config.ts", "vite/devImageUploadPlugin.ts", "vite/devDrawingPlugin.ts"]
 }

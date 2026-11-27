@@ -5,6 +5,7 @@ import tailwindcss from '@tailwindcss/vite'
 import react from '@vitejs/plugin-react'
 import { createClient } from '@supabase/supabase-js'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
+import { devDrawingPlugin } from './vite/devDrawingPlugin.ts'
 import { devImageUploadPlugin } from './vite/devImageUploadPlugin.ts'
 
 const DEFAULT_OG_IMAGE = '/characters/pixel/main_hero.png'
@@ -565,6 +566,7 @@ function buildRobotsTxt(origin: string) {
     'Allow: /',
     'Disallow: /admin',
     'Disallow: /admin/',
+    'Disallow: /lab',
   ]
 
   if (origin) {
@@ -802,6 +804,7 @@ export default defineConfig(async ({ mode }) => {
       react(),
       tailwindcss(),
       devImageUploadPlugin(),
+      devDrawingPlugin(),
       localUnpublishedTestsPreview(),
       injectOgMeta(siteUrl, og, tests, fullTests),
     ],
