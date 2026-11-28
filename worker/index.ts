@@ -100,9 +100,9 @@ function buildRssXml(origin: string, tests: TestRow[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>심플리테스트 | Simply Test</title>
+    <title>심리테스트 | 심플리테스트 </title>
     <link>${escapeXml(origin)}</link>
-    <description>귀엽게 그려진 캐릭터가 당신의 숨겨진 성향을 알려주는 심리 테스트 모음</description>
+    <description>심플리테스트에서 진행 중인 무료 심리 테스트 목록을 확인해보세요. 직장생활, 인간관계, 연애 등 다양한 주제의 테스트가 준비되어 있어요. 귀여운 캐릭터가 당신의 숨겨진 성향을 알려줘요</description>
     <language>ko</language>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <atom:link href="${escapeXml(origin)}/rss.xml" rel="self" type="application/rss+xml"/>
