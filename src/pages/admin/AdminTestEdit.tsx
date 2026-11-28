@@ -30,6 +30,7 @@ const RESULT_TEMPLATES: Array<TestResultTemplate | ''> = [
   'company',
   'halloween',
   'meme',
+  'sage',
 ]
 
 const SCORING_MODES: TestScoringMode[] = ['simple', 'category', 'pattern']

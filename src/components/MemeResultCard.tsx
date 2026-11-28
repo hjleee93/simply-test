@@ -5,6 +5,7 @@ import { HomeIcon, LightbulbIcon, RefreshIcon } from './icons'
 import { ui } from '../lib/ui'
 import type { TestResult } from '../types/test'
 import Logo from './Logo'
+import ResultPeerStat from './ResultPeerStat'
 import ResultShareActions from './ResultShareActions'
 
 interface MemeResultCardProps {
@@ -16,6 +17,7 @@ interface MemeResultCardProps {
   resultLabel: string
   onRetry: () => void
   onHome: () => void
+  peerPercent?: number | null
 }
 
 export default function MemeResultCard({
@@ -27,6 +29,7 @@ export default function MemeResultCard({
   resultLabel,
   onRetry,
   onHome,
+  peerPercent,
 }: MemeResultCardProps) {
   const shareRef = useRef<HTMLDivElement>(null)
   const knownCount = Math.round((thresholdPercent / 100) * answeredCount)
@@ -81,6 +84,7 @@ export default function MemeResultCard({
             <span className="mt-1 inline-block border border-white/40 bg-white px-2 py-0.5 text-xs font-bold text-ink">
               {result.keyword}
             </span>
+            <ResultPeerStat percent={peerPercent} className="mt-2 text-white" />
           </div>
 
           <p className="whitespace-pre-line px-4 py-4 text-left text-[15px] leading-relaxed text-ink">

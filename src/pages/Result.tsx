@@ -1,23 +1,16 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
-import CompanyResultCard from '../components/CompanyResultCard'
-import GenderResultCard from '../components/GenderResultCard'
-import HalloweenResultCard from '../components/HalloweenResultCard'
-import JinsangResultCard from '../components/JinsangResultCard'
-import KkondaeResultCard from '../components/KkondaeResultCard'
 import MemeResultCard from '../components/MemeResultCard'
-import MovieResultCard from '../components/MovieResultCard'
-import RelationshipResultCard from '../components/RelationshipResultCard'
 import PageLayout from '../components/PageLayout'
 import PageMeta from '../components/PageMeta'
 import RecommendedTests from '../components/RecommendedTests'
-import ResultCard from '../components/ResultCard'
+import ResultView from '../components/ResultView'
 import { useTest } from '../lib/useTests'
-import { applyGenderToResult, buildGenderInsights } from '../lib/gender'
-import { buildKkondaeInsights } from '../lib/kkondae'
-import { buildResultInsights } from '../lib/resultInsights'
-import { getResult, getThresholdPercent, isSimpleScoring } from '../lib/scoring'
+import { applyGenderToResult } from '../lib/gender'
+import { buildResultModel } from '../lib/resultView'
+import { getResult, getThresholdPercent } from '../lib/scoring'
 import { resolveTestSession } from '../lib/testSession'
+import { fetchResultPeerPercent } from '../lib/resultPeer'
 import { saveTestResult } from '../lib/supabase'
 import { getVisitorId } from '../lib/visitorId'
 import { trackTestComplete } from '../lib/analytics'
@@ -48,25 +41,39 @@ export default function Result() {
   const gender = session?.gender
 
   const savedKeyRef = useRef<string | null>(null)
+  const savePromiseRef = useRef<Promise<void> | null>(null)
+  const [peerPercent, setPeerPercent] = useState<number | null>(null)
 
   useEffect(() => {
     if (!test || !answers) return
 
     const result = getResult(test, answers)
     const thresholdPercent = getThresholdPercent(test, answers)
-
     const savedKey = `${test.id}:${result.id}:${thresholdPercent}`
-    if (savedKeyRef.current === savedKey) return
-    savedKeyRef.current = savedKey
 
-    trackTestComplete(test.id, result.id)
+    let active = true
+    setPeerPercent(null)
 
-    void saveTestResult({
-      visitorId: getVisitorId(),
-      testSlug: test.id,
-      resultId: result.id,
-      score: thresholdPercent,
-    })
+    if (savedKeyRef.current !== savedKey) {
+      savedKeyRef.current = savedKey
+      trackTestComplete(test.id, result.id)
+      savePromiseRef.current = saveTestResult({
+        visitorId: getVisitorId(),
+        testSlug: test.id,
+        resultId: result.id,
+        score: thresholdPercent,
+      })
+    }
+
+    void (async () => {
+      await savePromiseRef.current
+      const percent = await fetchResultPeerPercent(test.id, result.id)
+      if (active) setPeerPercent(percent)
+    })()
+
+    return () => {
+      active = false
+    }
   }, [answers, test])
 
   if (loading) {
@@ -110,105 +117,17 @@ export default function Result() {
   const result =
     test.requiresGender && gender ? applyGenderToResult(baseResult, gender) : baseResult
   const resultLabel = test.resultLabel ?? '결과'
-  const resultTemplate = test.resultTemplate ?? (isSimpleScoring(test) ? 'gender' : 'category')
+  const model = buildResultModel({
+    test,
+    result,
+    answers,
+    percent: thresholdPercent,
+    resultLabel,
+  })
 
   let resultCard: ReactNode
-  let pageTitle: string
-  let pageDescription: string
-
-  if (resultTemplate === 'gender') {
-    const genderInsights = buildGenderInsights(thresholdPercent)
-    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
-    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
-    resultCard = (
-      <GenderResultCard
-        result={result}
-        thresholdPercent={thresholdPercent}
-        insights={genderInsights}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'kkondae') {
-    const kkondaeInsights = buildKkondaeInsights(thresholdPercent)
-    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
-    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
-    resultCard = (
-      <KkondaeResultCard
-        result={result}
-        thresholdPercent={thresholdPercent}
-        insights={kkondaeInsights}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'jinsang') {
-    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
-    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${result.keyword})`
-    resultCard = (
-      <JinsangResultCard
-        result={result}
-        thresholdPercent={thresholdPercent}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'relationship') {
-    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
-    pageDescription = `당신은 「${result.title}」입니다. ${result.keyword}`
-    resultCard = (
-      <RelationshipResultCard
-        result={result}
-        matchPercent={thresholdPercent}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'company') {
-    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
-    pageDescription = `당신은 「${result.title}」입니다. ${result.keyword}`
-    resultCard = (
-      <CompanyResultCard
-        result={result}
-        matchPercent={thresholdPercent}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'halloween') {
-    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
-    pageDescription = `내 안의 영화 빌런은 「${result.title}」! ${result.keyword}`
-    resultCard = (
-      <HalloweenResultCard
-        result={result}
-        matchPercent={thresholdPercent}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'meme') {
+  if (test.resultTemplate === 'meme') {
     const answeredCount = Object.keys(answers).length
-    const knownCount = Math.round((thresholdPercent / 100) * answeredCount)
-    pageTitle = `${answeredCount}문제 중 ${knownCount}문제 · ${result.title} | Simply Test`
-    pageDescription = `${test.title} 결과: ${answeredCount}문제 중 ${knownCount}문제. ${result.title}`
     resultCard = (
       <MemeResultCard
         result={result}
@@ -219,34 +138,20 @@ export default function Result() {
         resultLabel={resultLabel}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
-      />
-    )
-  } else if (resultTemplate === 'movie') {
-    pageTitle = `${result.title} · ${resultLabel} | Simply Test`
-    pageDescription = `${test.title} 결과: ${result.title}. ${result.oneLiner ?? result.description}`
-    resultCard = (
-      <MovieResultCard
-        result={result}
-        matchPercent={thresholdPercent}
-        testTitle={test.title}
-        testId={test.id}
-        resultLabel={resultLabel}
-        onHome={() => navigate('/')}
-        onRetry={() => navigate(`/tests/${test.id}/play`)}
+        peerPercent={peerPercent}
       />
     )
   } else {
-    const insights = buildResultInsights(test, answers, result.description)
-    pageTitle = `${resultLabel} ${thresholdPercent}% · ${result.title} | Simply Test`
-    pageDescription = `나의 ${resultLabel}는 ${thresholdPercent}%! ${result.title} (${insights.subtype})`
     resultCard = (
-      <ResultCard
+      <ResultView
         result={result}
-        thresholdPercent={thresholdPercent}
-        insights={insights}
         testTitle={test.title}
         testId={test.id}
-        resultLabel={resultLabel}
+        header={model.header}
+        blocks={model.blocks}
+        shareText={model.shareText}
+        shareTitle={model.shareTitle}
+        peerPercent={peerPercent}
         onHome={() => navigate('/')}
         onRetry={() => navigate(`/tests/${test.id}/play`)}
       />
@@ -262,17 +167,11 @@ export default function Result() {
 
   return (
     <PageLayout
-      theme={
-        resultTemplate === 'halloween'
-          ? 'halloween'
-          : resultTemplate === 'meme'
-            ? 'meme'
-            : 'default'
-      }
+      theme={model.theme}
     >
       <PageMeta
-        title={pageTitle}
-        description={pageDescription}
+        title={model.pageTitle}
+        description={model.pageDescription}
         imagePath={ogImage.image}
         imageWidth={ogImage.width}
         imageHeight={ogImage.height}
@@ -286,7 +185,7 @@ export default function Result() {
       <RecommendedTests
         excludeTestId={test.id}
         className="mt-8"
-        theme={resultTemplate === 'halloween' ? 'halloween' : 'default'}
+        theme={model.theme === 'halloween' ? 'halloween' : 'default'}
       />
     </PageLayout>
   )
